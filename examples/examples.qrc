@@ -1,0 +1,9 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>ColorDemo.qml</file>
+        <file>TypographyDemo.qml</file>
+        <file>ThemeSwitcher.qml</file>
+    </qresource>
+</RCC>
