@@ -13,7 +13,7 @@ set(QML_SOURCES
 # Installation destination
 set(INSTALL_DIR lib/Logos/DesignSystem)
 
-# Install
+# Install qmldir
 install(FILES src/qml/qmldir
     DESTINATION ${INSTALL_DIR}
 )
@@ -23,9 +23,10 @@ install(FILES ${QML_SOURCES}
     DESTINATION ${INSTALL_DIR}
 )
 
-# Install fonts
+# Install fonts directory with all TTF files
 install(DIRECTORY src/qml/fonts
     DESTINATION ${INSTALL_DIR}
+    FILES_MATCHING PATTERN "*.ttf"
 )
 
 # Build examples
