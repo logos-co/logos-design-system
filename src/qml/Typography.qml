@@ -24,6 +24,7 @@ QtObject {
 
     // Text font sizes
     readonly property int mainTitleText: 256
-    readonly property int headerText: 30
-    readonly property int secondaryText: 14
+    readonly property int titleText: 30
+    readonly property int primaryText: 14
+    readonly property int secondaryText: 12
 }
