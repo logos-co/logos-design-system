@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Logos.DesignSystem 1.0
+import Logos.Theme 1.0
+import Logos.Controls 1.0
 
 Rectangle {
     id: root
@@ -22,36 +23,18 @@ Rectangle {
                 Layout.fillWidth: true
                 spacing: Theme.spacing.large
                 
-                Text {
+                LogosText {
                     text: "Logos Design System Color Demo"
-                    font.pixelSize: Theme.typography.secondary.size
-                    font.weight: Theme.typography.secondary.weight
+                    font.pixelSize: Theme.typography.secondaryText
+                    font.weight: Theme.typography.weightMedium
                     color: Theme.palette.text
                 }
                 
                 Item { Layout.fillWidth: true }
                 
-                Button {
+                LogosButton {
                     text: Theme.isDark ? "☀️ Light Mode" : "🌙 Dark Mode"
                     onClicked: Theme.switchTheme()
-                    
-                    background: Rectangle {
-                        color: parent.pressed ? Theme.palette.primaryPressed :
-                               parent.hovered ? Theme.palette.primaryHover :
-                               Theme.palette.primary
-                        radius: Theme.spacing.radiusSmall
-                    }
-                    
-                    contentItem: Text {
-                        text: parent.text
-                        color: Theme.palette.background
-                        font.pixelSize: 12
-                        font.weight: Theme.typography.weightMedium
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-                    
-                    hoverEnabled: true
                 }
             }
             
@@ -164,10 +147,10 @@ Rectangle {
         Layout.fillWidth: true
         spacing: Theme.spacing.medium
         
-        Text {
+        LogosText {
             text: title
-            font.pixelSize: Theme.typography.tertiary.size
-            font.weight: Theme.typography.tertiary.weight
+            font.pixelSize: Theme.typography.secondaryText
+            font.weight: Theme.typography.weightMedium
             color: Theme.palette.text
         }
         
@@ -198,7 +181,7 @@ Rectangle {
                         anchors.centerIn: parent
                         spacing: Theme.spacing.tiny
                         
-                        Text {
+                        LogosText {
                             Layout.alignment: Qt.AlignHCenter
                             text: modelData.name
                             font.pixelSize: 12
@@ -213,7 +196,7 @@ Rectangle {
                             }
                         }
                         
-                        Text {
+                        LogosText {
                             Layout.alignment: Qt.AlignHCenter
                             text: modelData.color.toString()
                             font.pixelSize: 11

@@ -1,4 +1,4 @@
-module Logos.DesignSystem
+module Logos.Theme
 singleton Theme 1.0 Theme.qml
 ColorPalette 1.0 ColorPalette.qml
 Spacing 1.0 Spacing.qml

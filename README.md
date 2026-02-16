@@ -2,7 +2,7 @@
 
 A comprehensive QML design system for Logos applications, providing theming, colors, spacing, and typography.
 
-## Features
+## Theme (`Logos.Theme`)
 
 - 🎨 **Dark Theme** - Built-in dark theme with runtime extensibility
 - 🎯 **Design Tokens** - Single source of truth for colors via ColorPalette
@@ -11,6 +11,11 @@ A comprehensive QML design system for Logos applications, providing theming, col
 - 🔌 **Extensible** - Apps can add custom themes easily
 - 💾 **Persistent** - Theme preference saved via Qt.labs.settings
 - ⚡ **Fast** - Themes loaded at startup, instant switching
+
+## Controls (`Logos.Controls`)
+
+- 🧩 **Reusable components** - Themed UI controls that use Logos.Theme (e.g. LogosButton)
+- Import `Logos.Controls` in your QML to use buttons and other controls
 
 ## How to Build
 
@@ -61,15 +66,14 @@ engine.addImportPath("path/to/result/lib");
 ```qml
 import QtQuick
 import QtQuick.Controls
-import Logos.DesignSystem 1.0
+import Logos.Theme 1.0
+import Logos.Controls 1.0
 
 Rectangle {
     color: Theme.palette.background
 
-    Text {
+    LogosText {
         text: "Hello World"
-        color: Theme.palette.text
-        font.pixelSize: Theme.typography.body.size
     }
 }
 ```

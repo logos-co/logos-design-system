@@ -63,11 +63,16 @@
           installPhase = ''
             runHook preInstall
 
-            # Pure QML module - just install QML files + qmldir
-            mkdir -p $out/lib/Logos/DesignSystem
-            cp ${src}/src/qml/qmldir $out/lib/Logos/DesignSystem/
-            cp ${src}/src/qml/*.qml $out/lib/Logos/DesignSystem/
-            cp -r ${src}/src/qml/fonts $out/lib/Logos/DesignSystem/
+            # Logos.Theme module (theme/ not DesignSystem)
+            mkdir -p $out/lib/Logos/Theme
+            cp ${src}/src/qml/theme/qmldir $out/lib/Logos/Theme/
+            cp ${src}/src/qml/theme/*.qml $out/lib/Logos/Theme/
+            cp -r ${src}/src/qml/theme/fonts $out/lib/Logos/Theme/
+
+            # Logos.Controls module
+            mkdir -p $out/lib/Logos/Controls
+            cp ${src}/src/qml/controls/qmldir $out/lib/Logos/Controls/
+            cp ${src}/src/qml/controls/*.qml $out/lib/Logos/Controls/
 
             runHook postInstall
           '';

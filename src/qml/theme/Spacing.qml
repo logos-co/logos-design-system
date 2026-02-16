@@ -13,4 +13,4 @@ QtObject {
     readonly property int radiusSmall: 4
     readonly property int radiusLarge: 8
     readonly property int radiusXlarge: 16
-    }
+}

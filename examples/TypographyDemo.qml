@@ -1,7 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Logos.DesignSystem 1.0
+import Logos.Theme 1.0
+import Logos.Controls 1.0
 
 Rectangle {
     color: Theme.palette.background
@@ -14,11 +15,8 @@ Rectangle {
             width: parent.width
             spacing: Theme.spacing.xxlarge
             
-            Text {
+            LogosText {
                 text: "Typography System"
-                font.pixelSize: Theme.typography.secondary.size
-                font.weight: Theme.typography.secondary.weight
-                color: Theme.palette.text
             }
             
             // Typography styles (primary/secondary/tertiary)
@@ -26,18 +24,14 @@ Rectangle {
                 Layout.fillWidth: true
                 spacing: Theme.spacing.large
                 
-                Text {
+                LogosText {
                     text: "Styles"
-                    font.pixelSize: Theme.typography.tertiary.size
-                    font.weight: Theme.typography.tertiary.weight
-                    color: Theme.palette.text
                 }
                 
                 Repeater {
                     model: [
-                        {name: "Primary", key: "primary", style: Theme.typography.primary},
-                        {name: "Secondary", key: "secondary", style: Theme.typography.secondary},
-                        {name: "Tertiary", key: "tertiary", style: Theme.typography.tertiary}
+                        {name: "Primary", key: "primaryText", pixelSize: Theme.typography.primaryText},
+                        {name: "Secondary", key: "secondaryText", pixelSize: Theme.typography.secondaryText},
                     ]
                     
                     Rectangle {
@@ -55,21 +49,21 @@ Rectangle {
                                 Layout.preferredWidth: 180
                                 spacing: Theme.spacing.tiny
                                 
-                                Text {
+                                LogosText {
                                     text: modelData.name
                                     font.pixelSize: 12
                                     font.weight: Theme.typography.weightMedium
                                     color: Theme.palette.text
                                 }
                                 
-                                Text {
+                                LogosText {
                                     text: "Theme.typography." + modelData.key
                                     font.pixelSize: 11
                                     color: Theme.palette.textSecondary
                                 }
                                 
-                                Text {
-                                    text: modelData.style.size + "px / " + modelData.style.lineHeight + "px"
+                                LogosText {
+                                    text: modelData.pixelSize + "px"
                                     font.pixelSize: 11
                                     color: Theme.palette.textTertiary
                                 }
@@ -81,16 +75,12 @@ Rectangle {
                                 color: Theme.palette.border
                             }
                             
-                            Text {
+                            LogosText {
                                 id: sampleText
                                 Layout.fillWidth: true
                                 text: "The quick brown fox jumps over the lazy dog"
-                                font.family: modelData.style.family
-                                font.pixelSize: modelData.style.size
-                                font.weight: modelData.style.weight
-                                font.letterSpacing: modelData.style.letterSpacing
-                                lineHeight: modelData.style.lineHeight
-                                lineHeightMode: Text.FixedHeight
+                                font.family: Theme.typography.publicSans
+                                font.pixelSize: modelData.pixelSize
                                 color: Theme.palette.text
                             }
                         }
@@ -103,11 +93,8 @@ Rectangle {
                 Layout.fillWidth: true
                 spacing: Theme.spacing.large
                 
-                Text {
+                LogosText {
                     text: "Spacing Scale"
-                    font.pixelSize: Theme.typography.tertiary.size
-                    font.weight: Theme.typography.tertiary.weight
-                    color: Theme.palette.text
                 }
                 
                 Repeater {
@@ -120,49 +107,51 @@ Rectangle {
                         {name: "XXLarge", value: Theme.spacing.xxlarge, key: "xxlarge"}
                     ]
                     
-                    Rectangle {
+                    RowLayout {
                         Layout.fillWidth: true
-                        height: 60
-                        color: Theme.palette.backgroundSecondary
-                        radius: Theme.spacing.radiusLarge
-                        border.width: 1
-                        border.color: Theme.palette.border
-                        
-                        RowLayout {
-                            anchors.fill: parent
-                            anchors.margins: Theme.spacing.large
-                            spacing: Theme.spacing.large
+                        spacing: modelData.value
+
+                        Rectangle {
+                            Layout.preferredWidth: 150
+                            Layout.preferredHeight: 60
+                            color: Theme.palette.backgroundSecondary
+                            radius: Theme.spacing.radiusLarge
+                            border.width: 1
+                            border.color: Theme.palette.border
                             
                             ColumnLayout {
-                                Layout.preferredWidth: 150
+                                Layout.fillWidth: true
                                 spacing: Theme.spacing.tiny
                                 
-                                Text {
+                                LogosText {
+                                    Layout.topMargin: Theme.spacing.small
+                                    Layout.leftMargin: Theme.spacing.small
                                     text: modelData.name
                                     font.pixelSize: 12
                                     font.weight: Theme.typography.weightMedium
                                     color: Theme.palette.text
                                 }
                                 
-                                Text {
+                                LogosText {
+                                    Layout.leftMargin: Theme.spacing.small
                                     text: "Theme.spacing." + modelData.key
                                     font.pixelSize: 11
                                     color: Theme.palette.textSecondary
                                 }
-                            }
-                            
-                            Rectangle {
-                                width: modelData.value
-                                height: 30
-                                color: Theme.palette.primary
-                                
-                                Text {
-                                    anchors.centerIn: parent
+
+                                LogosText {
+                                    Layout.leftMargin: Theme.spacing.small
                                     text: modelData.value + "px"
-                                    font.pixelSize: 11
-                                    color: Theme.palette.background
+                                    font.pixelSize: 8
+                                    color: Theme.palette.textSecondary
                                 }
                             }
+                        }
+
+                        Rectangle {
+                            Layout.preferredWidth: modelData.value
+                            Layout.preferredHeight: 30
+                            color: Theme.palette.primary
                         }
                     }
                 }
