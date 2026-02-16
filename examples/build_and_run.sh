@@ -35,7 +35,7 @@ echo ""
 echo "✅ Build successful!"
 echo ""
 
-if [ ! -f "examples/DesignSystemDemo" ]; then
+if [ ! -f "DesignSystemDemo" ]; then
     echo "❌ Demo executable not found!"
     exit 1
 fi
@@ -48,5 +48,4 @@ echo "  - Explore different tabs to see all components"
 echo "  - Theme preference is automatically saved"
 echo ""
 
-cd examples
 ./DesignSystemDemo

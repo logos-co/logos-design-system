@@ -23,14 +23,16 @@ target_link_libraries(DesignSystemDemo PRIVATE
     Qt6::Qml
 )
 
-# Set up QML module directory for runtime
-set(QML_MODULE_DIR ${CMAKE_CURRENT_BINARY_DIR}/qml/Logos/DesignSystem)
+# Set up QML module directories for runtime
+# CMAKE_CURRENT_SOURCE_DIR is examples/; QML sources live in project root src/qml/
+set(DESIGN_SYSTEM_QML ${CMAKE_CURRENT_SOURCE_DIR}/../src/qml)
+set(QML_THEME_DIR ${CMAKE_CURRENT_BINARY_DIR}/qml/Logos/Theme)
+set(QML_CONTROLS_DIR ${CMAKE_CURRENT_BINARY_DIR}/qml/Logos/Controls)
 
-# Copy QML module files to runtime directory
-# Pure QML module - no library, just QML files + qmldir
 add_custom_command(TARGET DesignSystemDemo POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${QML_MODULE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/src/qml/qmldir ${QML_MODULE_DIR}/
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/src/qml/ ${QML_MODULE_DIR}/
-    COMMENT "Setting up pure QML module directory for DesignSystemDemo"
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${QML_THEME_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${DESIGN_SYSTEM_QML}/theme/ ${QML_THEME_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${QML_CONTROLS_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${DESIGN_SYSTEM_QML}/controls/ ${QML_CONTROLS_DIR}/
+    COMMENT "Setting up Logos.Theme and Logos.Controls QML modules for DesignSystemDemo"
 )
