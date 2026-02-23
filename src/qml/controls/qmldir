@@ -2,3 +2,4 @@ module Logos.Controls
 LogosButton 1.0 LogosButton.qml
 LogosText 1.0 LogosText.qml
 LogosTextField 1.0 LogosTextField.qml
+LogosTabButton 1.0 LogosTabButton.qml
