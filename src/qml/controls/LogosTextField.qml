@@ -25,6 +25,7 @@ Control {
     implicitHeight: 40
     leftPadding: 12
     rightPadding: 12
+    clip: true
 
     background: Rectangle {
         radius: Theme.spacing.radiusSmall
@@ -36,6 +37,7 @@ Control {
     contentItem: Item {
         id: contentRow
         property alias input: input
+        clip: true
 
         LogosText {
             id: placeholder
@@ -49,6 +51,7 @@ Control {
 
         TextInput {
             id: input
+            clip: true
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Theme.typography.secondaryText
