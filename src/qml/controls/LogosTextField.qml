@@ -10,7 +10,7 @@ Control {
     // --- Public API ---
     property alias text: input.text
     property string placeholderText: ""
-    property color placeholderTextColor: Theme.palette.textMuted
+    property color placeholderTextColor: Theme.palette.textTertiary
     property int echoMode: TextInput.Normal
 
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
