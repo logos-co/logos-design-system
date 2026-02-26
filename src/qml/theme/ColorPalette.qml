@@ -18,6 +18,8 @@ QtObject {
     readonly property color gray100: "#EBEBEB"
     readonly property color gray200: "#D9D9D9"
     readonly property color gray300: "#434343"
+    readonly property color gray330: "#333333"
+    readonly property color gray340: "#2F2F2F"
     readonly property color gray400: "#A4A4A4"
     readonly property color gray500: "#969696"
     readonly property color gray550: "#808080"
@@ -26,6 +28,7 @@ QtObject {
     readonly property color gray800: "#2B303B"
     readonly property color gray850: "#262626"
     readonly property color gray875: "#1C1C1C"
+    readonly property color gray925: "#141414"
     readonly property color gray900: "#171717"
     readonly property color gray950: "#0E121B"
     readonly property color gray975: "#101214"
@@ -34,7 +37,9 @@ QtObject {
     
     // Orange shades (Primary/Accent)
     readonly property color orange300: "#ED7B58"
+    readonly property color orange350: "#FF6F42"
     readonly property color orange400: "#FF8800"
+    readonly property color orange450: "#FF4911"
     readonly property color orange400Opacity30: getColor(orange400, 0.3)
     readonly property color orange500: "#F55702"
     readonly property color orange600: "#F57A02"
