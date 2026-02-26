@@ -8,6 +8,9 @@ QtObject {
     readonly property color backgroundTertiary: colors.gray875
     readonly property color backgroundElevated: colors.gray950
     readonly property color backgroundMuted: colors.gray550Opacity07
+    readonly property color backgroundBlack: colors.black
+    readonly property color backgroundInset: colors.gray925
+    readonly property color backgroundButton: colors.gray340
 
     readonly property color text: colors.white
     readonly property color textSecondary: colors.gray400
@@ -19,8 +22,11 @@ QtObject {
     readonly property color borderSecondary: colors.gray800
     readonly property color borderTertiary: colors.gray500
     readonly property color borderTertiaryMuted: Qt.rgba(borderTertiary.r, borderTertiary.g, borderTertiary.b, 0.2)
+    readonly property color borderSubtle: colors.gray330
+    readonly property color borderInteractive: colors.gray300
+    readonly property color borderDark: colors.gray340
 
-    readonly property color primary: colors.orange400
+    readonly property color primary: colors.orange300
     readonly property color primaryHover: colors.orange500
     readonly property color primaryPressed: colors.orange600
 
@@ -39,6 +45,8 @@ QtObject {
 
     readonly property color notification: colors.red500
     readonly property color accentOrange: colors.orange300
+    readonly property color accentOrangeMid: colors.orange350
+    readonly property color accentOrangeDeep: colors.orange450
     readonly property color accentBurntOrange: colors.orange700
     readonly property color accentYellowSoft: colors.yellow300
 
