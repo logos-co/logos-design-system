@@ -18,6 +18,7 @@ QtObject {
     readonly property color gray100: "#EBEBEB"
     readonly property color gray200: "#D9D9D9"
     readonly property color gray300: "#434343"
+    readonly property color gray320: "#343434"
     readonly property color gray330: "#333333"
     readonly property color gray340: "#2F2F2F"
     readonly property color gray400: "#A4A4A4"
