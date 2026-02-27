@@ -11,6 +11,7 @@ QtObject {
     readonly property color backgroundBlack: colors.black
     readonly property color backgroundInset: colors.gray925
     readonly property color backgroundButton: colors.gray340
+    readonly property color surface: colors.gray320
 
     readonly property color text: colors.white
     readonly property color textSecondary: colors.gray400
@@ -57,6 +58,7 @@ QtObject {
 
     readonly property color glassOverlay: colors.gray550Opacity07
     readonly property color glassStrong: colors.gray550Opacity30
+    readonly property color overlayDark: Qt.rgba(colors.gray875.r, colors.gray875.g, colors.gray875.b, 0.3)
     readonly property color overlayLight: colors.whiteOpacity06
     readonly property color overlayOrange: colors.orange400Opacity30
 }
