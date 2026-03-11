@@ -2,12 +2,12 @@
   description = "Logos Design System - Qt/QML design system (themes, colors, typography)";
 
   inputs = {
-    # Use a specific nixpkgs version for Qt compatibility across projects
-    # Projects using this design system should use the same nixpkgs or override it
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    # Follow the same nixpkgs as logos-cpp-sdk to ensure Qt compatibility
+    nixpkgs.follows = "logos-cpp-sdk/nixpkgs";
+    logos-cpp-sdk.url = "github:logos-co/logos-cpp-sdk";
   };
 
-  outputs = { self, nixpkgs }:
+  outputs = { self, nixpkgs, logos-cpp-sdk }:
     let
       systems = [ "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
