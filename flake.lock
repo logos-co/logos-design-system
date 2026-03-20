@@ -1,20 +1,20 @@
 {
   "nodes": {
-    "logos-cpp-sdk": {
+    "logos-nix": {
       "inputs": {
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1773672219,
-        "narHash": "sha256-p+kv2WHokT40rScnSFSIDp/EeFLaDUsTHW6QT6ejKuc=",
+        "lastModified": 1773955630,
+        "narHash": "sha256-KqzMoWYIVp2xMgphs7v02T/BE54RKMFxpdC2duhJKG0=",
         "owner": "logos-co",
-        "repo": "logos-cpp-sdk",
-        "rev": "a4bd66cd6eb04ee7140bb940b1d49d72d60248de",
+        "repo": "logos-nix",
+        "rev": "0e9e6d66ab8eb34f59e45ed448f7dc29130feb88",
         "type": "github"
       },
       "original": {
         "owner": "logos-co",
-        "repo": "logos-cpp-sdk",
+        "repo": "logos-nix",
         "type": "github"
       }
     },
@@ -36,9 +36,9 @@
     },
     "root": {
       "inputs": {
-        "logos-cpp-sdk": "logos-cpp-sdk",
+        "logos-nix": "logos-nix",
         "nixpkgs": [
-          "logos-cpp-sdk",
+          "logos-nix",
           "nixpkgs"
         ]
       }
