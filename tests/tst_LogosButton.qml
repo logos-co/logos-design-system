@@ -4,7 +4,7 @@ import QtTest
 import Logos.Controls
 
 TestCase {
-    id: tc
+    id: root
     name: "LogosButton"
     width: 400
     height: 200

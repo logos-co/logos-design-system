@@ -5,3 +5,4 @@ LogosTextField 1.0 LogosTextField.qml
 LogosTabButton 1.0 LogosTabButton.qml
 LogosTabBar 1.0 LogosTabBar.qml
 LogosCheckbox 1.0 LogosCheckbox.qml
+LogosSearchBar 1.0 LogosSearchBar.qml

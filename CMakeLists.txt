@@ -30,10 +30,15 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosTabButton.qml
     src/qml/Logos/Controls/LogosTabBar.qml
     src/qml/Logos/Controls/LogosCheckbox.qml
+    src/qml/Logos/Controls/LogosSearchBar.qml
 )
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})
 install(FILES ${CONTROLS_SOURCES}           DESTINATION ${CONTROLS_DIR})
+install(DIRECTORY src/qml/Logos/Controls/icons
+    DESTINATION ${CONTROLS_DIR}
+    FILES_MATCHING PATTERN "*.svg" PATTERN "*.png"
+)
 
 # Build storybook (opt-in: host app for browsing components + token catalog)
 option(LOGOS_DS_BUILD_STORYBOOK "Build the design-system storybook host app" OFF)

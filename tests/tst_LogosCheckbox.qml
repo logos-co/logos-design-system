@@ -5,7 +5,7 @@ import Logos.Theme
 import Logos.Controls
 
 TestCase {
-    id: tc
+    id: root
     name: "LogosCheckbox"
     width: 400
     height: 200

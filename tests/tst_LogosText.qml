@@ -5,7 +5,7 @@ import Logos.Theme
 import Logos.Controls
 
 TestCase {
-    id: tc
+    id: root
     name: "LogosText"
     width: 200
     height: 100

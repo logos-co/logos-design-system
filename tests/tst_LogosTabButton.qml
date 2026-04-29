@@ -6,7 +6,7 @@ import Logos.Theme
 import Logos.Controls
 
 TestCase {
-    id: tc
+    id: root
     name: "LogosTabButton"
     width: 600
     height: 80
@@ -14,7 +14,7 @@ TestCase {
 
     TabBar {
         id: bar
-        width: tc.width
+        width: root.width
         height: 40
 
         LogosTabButton {
