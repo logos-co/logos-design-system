@@ -1,0 +1,2 @@
+module Logos.Icons
+singleton LogosIcons 1.0 LogosIcons.qml

@@ -49,9 +49,6 @@ Control {
         id: bg
         color: Theme.palette.backgroundButton
         radius: Theme.spacing.radiusPill
-        // Figma spec is rgba(150,150,150,0.2) which renders nearly invisible
-        // on the dark chip — using borderStrong (#515151) for visibility while
-        // staying in the same gray family.
         border.color: Theme.palette.borderStrong
         border.width: 1
         antialiasing: true

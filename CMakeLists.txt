@@ -21,6 +21,21 @@ install(DIRECTORY src/qml/Logos/Theme/fonts
     FILES_MATCHING PATTERN "*.ttf"
 )
 
+# ===== Logos.Icons module =====
+# Curated icon set as its own module so icon-only consumers (or chrome-only
+# apps) can `import Logos.Icons` without dragging the full controls library in.
+set(ICONS_DIR lib/Logos/Icons)
+set(ICONS_SOURCES
+    src/qml/Logos/Icons/LogosIcons.qml
+)
+
+install(FILES src/qml/Logos/Icons/qmldir DESTINATION ${ICONS_DIR})
+install(FILES ${ICONS_SOURCES}           DESTINATION ${ICONS_DIR})
+install(DIRECTORY src/qml/Logos/Icons/icons
+    DESTINATION ${ICONS_DIR}
+    FILES_MATCHING PATTERN "*.svg" PATTERN "*.png"
+)
+
 # ===== Logos.Controls module =====
 set(CONTROLS_DIR lib/Logos/Controls)
 set(CONTROLS_SOURCES
@@ -38,10 +53,6 @@ set(CONTROLS_SOURCES
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})
 install(FILES ${CONTROLS_SOURCES}           DESTINATION ${CONTROLS_DIR})
-install(DIRECTORY src/qml/Logos/Controls/icons
-    DESTINATION ${CONTROLS_DIR}
-    FILES_MATCHING PATTERN "*.svg" PATTERN "*.png"
-)
 
 # Build storybook (opt-in: host app for browsing components + token catalog)
 option(LOGOS_DS_BUILD_STORYBOOK "Build the design-system storybook host app" OFF)

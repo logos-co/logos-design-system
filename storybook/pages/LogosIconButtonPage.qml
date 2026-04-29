@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 import Logos.Theme
 import Logos.Controls
+import Logos.Icons
 
 Rectangle {
     property string figmaUrl: ""
@@ -66,7 +67,7 @@ Rectangle {
                         color: Theme.palette.textTertiary
                     }
                     LogosIconButton {
-                        iconSource: "qrc:/assets/refresh.svg"
+                        iconSource: LogosIcons.refresh
                     }
                 }
                 ColumnLayout {
@@ -77,7 +78,7 @@ Rectangle {
                         color: Theme.palette.textTertiary
                     }
                     LogosIconButton {
-                        iconSource: "qrc:/assets/install.svg"
+                        iconSource: LogosIcons.install
                     }
                 }
                 ColumnLayout {
@@ -88,7 +89,7 @@ Rectangle {
                         color: Theme.palette.textTertiary
                     }
                     LogosIconButton {
-                        iconSource: "qrc:/assets/delete.svg"
+                        iconSource: LogosIcons.trash
                     }
                 }
                 ColumnLayout {
@@ -99,7 +100,7 @@ Rectangle {
                         color: Theme.palette.textTertiary
                     }
                     LogosIconButton {
-                        iconSource: "qrc:/assets/more.svg"
+                        iconSource: LogosIcons.more
                     }
                 }
                 ColumnLayout {
@@ -111,7 +112,7 @@ Rectangle {
                     }
                     LogosIconButton {
                         iconColor: Theme.palette.accentOrange
-                        iconSource: "qrc:/assets/refresh.svg"
+                        iconSource: LogosIcons.refresh
                     }
                 }
                 ColumnLayout {
@@ -123,7 +124,7 @@ Rectangle {
                     }
                     LogosIconButton {
                         enabled: false
-                        iconSource: "qrc:/assets/refresh.svg"
+                        iconSource: LogosIcons.refresh
                     }
                 }
             }
@@ -150,7 +151,7 @@ Rectangle {
 
                 LogosIconButton {
                     id: liveButton
-                    iconSource: "qrc:/assets/refresh.svg"
+                    iconSource: LogosIcons.refresh
                     enabled: !disableSwitch.checked
                     size: sizeSpin.value
                     iconSize: iconSizeSpin.value

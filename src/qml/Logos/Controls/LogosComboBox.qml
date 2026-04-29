@@ -4,6 +4,7 @@ import QtQuick.Effects
 
 import Logos.Theme
 import Logos.Controls
+import Logos.Icons
 
 
 // Public API (in addition to ComboBox's own model / currentIndex / currentText
@@ -70,7 +71,7 @@ ComboBox {
         Image {
             id: chevronImg
             anchors.fill: parent
-            source: Qt.resolvedUrl("icons/arrow-right-s-line.svg")
+            source: LogosIcons.arrowRight
             sourceSize: Qt.size(parent.width * 2, parent.height * 2)
             fillMode: Image.PreserveAspectFit
             visible: false

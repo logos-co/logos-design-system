@@ -26,6 +26,7 @@ ApplicationWindow {
     // Pages on the left, content on the right. Sections grouped by `section`.
     readonly property var pages: [
         { section: "Tokens",   title: "Colors",         file: "ColorsPage.qml" },
+        { section: "Tokens",   title: "Icons",          file: "LogosIconsPage.qml" },
         { section: "Tokens",   title: "Spacing",        file: "SpacingPage.qml" },
         { section: "Tokens",   title: "Typography",     file: "TypographyPage.qml" },
         { section: "Controls", title: "LogosButton",    file: "LogosButtonPage.qml" },

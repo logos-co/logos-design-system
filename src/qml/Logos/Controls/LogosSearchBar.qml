@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 import Logos.Theme
 import Logos.Controls
+import Logos.Icons
 
 // Public API:
 //     text             alias — read/write the current query
@@ -48,7 +49,7 @@ Control {
     property alias text: field.text
     property alias placeholderText: field.placeholderText
     property alias echoMode: field.echoMode
-    property url iconSource: Qt.resolvedUrl("icons/search.svg")
+    property url iconSource: LogosIcons.search
     property string shortcutHint: ""
 
     // Exposed for inspection (e.g., from tests). Read-only.

@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 import Logos.Theme
 import Logos.Controls
+import Logos.Icons
 
 // Public API:
 //     totalCount        total number of items across all pages (>= 0)
@@ -155,7 +156,7 @@ Control {
 
         LogosIconButton {
             id: firstBtn
-            iconSource: Qt.resolvedUrl("icons/arrow-left-double-line.png")
+            iconSource: LogosIcons.arrowLeftDouble
             iconColor: root.iconColor
             size: 36
             visible: root.showFirstLast
@@ -165,7 +166,7 @@ Control {
         }
         LogosIconButton {
             id: prevBtn
-            iconSource: Qt.resolvedUrl("icons/arrow-left-s-line.svg")
+            iconSource: LogosIcons.arrowLeft
             iconColor: root.iconColor
             size: 36
             visible: root.showPrevNext
@@ -227,7 +228,7 @@ Control {
 
         LogosIconButton {
             id: nextBtn
-            iconSource: Qt.resolvedUrl("icons/arrow-right-s-line.svg")
+            iconSource: LogosIcons.arrowRight
             iconColor: root.iconColor
             size: 36
             visible: root.showPrevNext
@@ -237,7 +238,7 @@ Control {
         }
         LogosIconButton {
             id: lastBtn
-            iconSource: Qt.resolvedUrl("icons/arrow-right-double-line.svg")
+            iconSource: LogosIcons.arrowRightDouble
             iconColor: root.iconColor
             size: 36
             visible: root.showFirstLast
