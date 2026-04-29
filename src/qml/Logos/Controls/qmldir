@@ -1,0 +1,11 @@
+module Logos.Controls
+LogosButton 1.0 LogosButton.qml
+LogosIconButton 1.0 LogosIconButton.qml
+LogosText 1.0 LogosText.qml
+LogosTextField 1.0 LogosTextField.qml
+LogosTabButton 1.0 LogosTabButton.qml
+LogosTabBar 1.0 LogosTabBar.qml
+LogosCheckbox 1.0 LogosCheckbox.qml
+LogosSearchBar 1.0 LogosSearchBar.qml
+LogosComboBox 1.0 LogosComboBox.qml
+LogosPaginator 1.0 LogosPaginator.qml

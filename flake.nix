@@ -10,80 +10,38 @@
     let
       systems = [ "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux" ];
       forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
+        inherit system;
         pkgs = import nixpkgs { inherit system; };
       });
     in
     {
-      packages = forAllSystems ({ pkgs }: rec {
-        default = pkgs.stdenv.mkDerivation rec {
-          pname = "logos-design-system";
-          version = "1.0.0";
+      packages = forAllSystems ({ pkgs, ... }:
+        let
+          common = import ./nix/common.nix { inherit pkgs; };
+        in
+        rec {
+          default = import ./nix/library.nix { inherit pkgs common; };
+          storybook = import ./nix/storybook.nix { inherit pkgs common; };
+          tests = import ./nix/tests.nix { inherit pkgs common; };
+        });
 
-          # Exclude local build/ so Nix never sees a stale CMakeCache.txt
-          src = builtins.path {
-            path = ./.;
-            name = "logos-design-system-src";
-            filter = path: type:
-              type != "directory" || baseNameOf path != "build";
-          };
-
-          nativeBuildInputs = [
-            pkgs.cmake
-            pkgs.ninja
-            pkgs.qt6.wrapQtAppsHook
-          ];
-
-          buildInputs = [
-            pkgs.qt6.qtbase
-            pkgs.qt6.qtdeclarative
-          ];
-
-          cmakeFlags = [
-            "-GNinja"
-            "-DCMAKE_BUILD_TYPE=Release"
-          ];
-
-          preConfigure = ''
-            export MACOSX_DEPLOYMENT_TARGET=12.0
-          '';
-
-          configurePhase = ''
-            runHook preConfigure
-            cmake -S . -B build $cmakeFlags
-            runHook postConfigure
-          '';
-
-          buildPhase = ''
-            runHook preBuild
-            cmake --build build --target DesignSystemDemo || true
-            runHook postBuild
-          '';
-
-          installPhase = ''
-            runHook preInstall
-
-            # Logos.Theme module (theme/ not DesignSystem)
-            mkdir -p $out/lib/Logos/Theme
-            cp ${src}/src/qml/theme/qmldir $out/lib/Logos/Theme/
-            cp ${src}/src/qml/theme/*.qml $out/lib/Logos/Theme/
-            cp -r ${src}/src/qml/theme/fonts $out/lib/Logos/Theme/
-
-            # Logos.Controls module
-            mkdir -p $out/lib/Logos/Controls
-            cp ${src}/src/qml/controls/qmldir $out/lib/Logos/Controls/
-            cp ${src}/src/qml/controls/*.qml $out/lib/Logos/Controls/
-
-            runHook postInstall
-          '';
-
-          meta = with pkgs.lib; {
-            description = "Logos Design System - Qt/QML themes, colors, typography";
-            platforms = platforms.unix;
-          };
+      apps = forAllSystems ({ system, ... }: rec {
+        storybook = {
+          type = "app";
+          program = "${self.packages.${system}.storybook}/bin/LogosStorybook";
         };
+        tests = {
+          type = "app";
+          program = "${self.packages.${system}.tests}/bin/LogosDesignSystemTests";
+        };
+        default = storybook;
       });
 
-      devShells = forAllSystems ({ pkgs }: {
+      checks = forAllSystems ({ system, ... }: {
+        tests = self.packages.${system}.tests;
+      });
+
+      devShells = forAllSystems ({ pkgs, ... }: {
         default = pkgs.mkShell {
           nativeBuildInputs = [
             pkgs.cmake
