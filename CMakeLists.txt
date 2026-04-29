@@ -39,3 +39,10 @@ option(LOGOS_DS_BUILD_STORYBOOK "Build the design-system storybook host app" OFF
 if(LOGOS_DS_BUILD_STORYBOOK)
     add_subdirectory(storybook)
 endif()
+
+# Build QML unit tests (opt-in)
+option(LOGOS_DS_BUILD_TESTS "Build the design-system QML unit tests" OFF)
+if(LOGOS_DS_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(tests)
+endif()

@@ -16,6 +16,9 @@ Control {
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
     readonly property alias textInput: input
 
+    // Exposed for inspection (e.g., from tests). Read-only.
+    readonly property alias placeholderItem: placeholder
+
     QtObject {
         id: d
         property bool inputActiveFocus: false

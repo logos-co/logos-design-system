@@ -16,8 +16,8 @@ import Logos.Theme
 //     LogosTabBar {
 //         id: bar
 //         Layout.fillWidth: true
-//         LogosTabButton { text: qsTr("Files");  icon.source: "qrc:/icons/files.svg"  }
-//         LogosTabButton { text: qsTr("Images"); icon.source: "qrc:/icons/images.svg" }
+//         LogosTabButton { text: qsTr("Files");  iconSource: "qrc:/icons/files.svg"  }
+//         LogosTabButton { text: qsTr("Images"); iconSource: "qrc:/icons/images.svg" }
 //         LogosTabButton { text: qsTr("Videos") }
 //     }
 //
@@ -37,41 +37,45 @@ TabBar {
     property int indicatorHeight: 3
     property int animationDuration: 200
 
-    background: Rectangle {
-        color: "transparent"
-    }
+    // Exposed for inspection (e.g., from tests). Read-only.
+    readonly property alias indicatorItem: indicator
 
-    Rectangle {
-        id: indicator
-
-        z: 1
-        height: root.indicatorHeight
-        color: root.indicatorColor
-        radius: height / 2
-        y: root.height - height
-        x: 0
-        width: 0
-
-        // Suppresses the first-paint slide-from-(0,0) flash; flipped on after
-        // the initial geometry settles.
-        property bool ready: false
-        visible: ready && root.currentItem
-
-        Behavior on x {
-            enabled: indicator.ready
-            NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
-        }
-        Behavior on width {
-            enabled: indicator.ready
-            NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
+    background: Item {
+        Rectangle {
+            anchors.fill: parent
+            color: "transparent"
         }
 
-        function refresh() {
-            if (!root.currentItem)
-                return
-            const p = root.currentItem.mapToItem(root, 0, 0)
-            indicator.x = p.x
-            indicator.width = root.currentItem.width
+        Rectangle {
+            id: indicator
+
+            z: 1
+            height: root.indicatorHeight
+            color: root.indicatorColor
+            radius: height / 2
+            y: parent.height - height
+            x: 0
+            width: 0
+
+            property bool ready: true
+            visible: ready
+
+            Behavior on x {
+                enabled: indicator.ready
+                NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
+            }
+            Behavior on width {
+                enabled: indicator.ready
+                NumberAnimation { duration: root.animationDuration; easing.type: Easing.OutCubic }
+            }
+
+            function refresh() {
+                if (!root.currentItem)
+                    return
+                const p = root.currentItem.mapToItem(root, 0, 0)
+                indicator.x = p.x
+                indicator.width = root.currentItem.width
+            }
         }
     }
 
@@ -83,10 +87,5 @@ TabBar {
         ignoreUnknownSignals: true
         function onXChanged() { indicator.refresh() }
         function onWidthChanged() { indicator.refresh() }
-    }
-
-    Component.onCompleted: {
-        indicator.refresh()
-        Qt.callLater(function() { indicator.ready = true })
     }
 }

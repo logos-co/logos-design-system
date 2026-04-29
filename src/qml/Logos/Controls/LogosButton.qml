@@ -10,6 +10,9 @@ Control {
     readonly property bool isActive: mouseArea.pressed || root.hovered
     signal clicked()
 
+    // Exposed for inspection (e.g., from tests). Read-only.
+    readonly property alias mouseAreaItem: mouseArea
+
     implicitWidth: 200
     implicitHeight: 50
     hoverEnabled: true
