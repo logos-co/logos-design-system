@@ -53,25 +53,17 @@
             runHook postConfigure
           '';
 
-          buildPhase = ''
-            runHook preBuild
-            cmake --build build --target DesignSystemDemo || true
-            runHook postBuild
-          '';
+          # The default package ships QML files only; there is nothing to
+          # compile. Skip the build phase entirely.
+          dontBuild = true;
 
           installPhase = ''
             runHook preInstall
 
-            # Logos.Theme module (theme/ not DesignSystem)
-            mkdir -p $out/lib/Logos/Theme
-            cp ${src}/src/qml/theme/qmldir $out/lib/Logos/Theme/
-            cp ${src}/src/qml/theme/*.qml $out/lib/Logos/Theme/
-            cp -r ${src}/src/qml/theme/fonts $out/lib/Logos/Theme/
-
-            # Logos.Controls module
-            mkdir -p $out/lib/Logos/Controls
-            cp ${src}/src/qml/controls/qmldir $out/lib/Logos/Controls/
-            cp ${src}/src/qml/controls/*.qml $out/lib/Logos/Controls/
+            # Source layout already matches the QML import path (Logos/Theme,
+            # Logos/Controls), so a single recursive copy suffices.
+            mkdir -p $out/lib
+            cp -r ${src}/src/qml/Logos $out/lib/
 
             runHook postInstall
           '';
@@ -81,6 +73,83 @@
             platforms = platforms.unix;
           };
         };
+
+        storybook = pkgs.stdenv.mkDerivation rec {
+          pname = "logos-storybook";
+          version = "1.0.0";
+
+          src = builtins.path {
+            path = ./.;
+            name = "logos-storybook-src";
+            filter = path: type:
+              type != "directory" || baseNameOf path != "build";
+          };
+
+          nativeBuildInputs = [
+            pkgs.cmake
+            pkgs.ninja
+            pkgs.qt6.wrapQtAppsHook
+          ];
+
+          buildInputs = [
+            pkgs.qt6.qtbase
+            pkgs.qt6.qtdeclarative
+          ];
+
+          cmakeFlags = [
+            "-GNinja"
+            "-DCMAKE_BUILD_TYPE=Release"
+            "-DLOGOS_DS_BUILD_STORYBOOK=ON"
+          ];
+
+          preConfigure = ''
+            export MACOSX_DEPLOYMENT_TARGET=12.0
+          '';
+
+          configurePhase = ''
+            runHook preConfigure
+            cmake -S . -B build $cmakeFlags
+            runHook postConfigure
+          '';
+
+          buildPhase = ''
+            runHook preBuild
+            cmake --build build --target LogosStorybook
+            runHook postBuild
+          '';
+
+          installPhase = ''
+            runHook preInstall
+
+            # Binary
+            mkdir -p $out/bin
+            cp build/storybook/LogosStorybook $out/bin/
+
+            # Storybook pages
+            mkdir -p $out/share/logos-storybook/pages
+            cp ${src}/storybook/pages/*.qml $out/share/logos-storybook/pages/
+
+            # Logos.Theme + Logos.Controls (source layout matches import path)
+            mkdir -p $out/lib
+            cp -r ${src}/src/qml/Logos $out/lib/
+
+            runHook postInstall
+          '';
+
+          meta = with pkgs.lib; {
+            description = "Browse and preview Logos Design System components";
+            mainProgram = "LogosStorybook";
+            platforms = platforms.unix;
+          };
+        };
+      });
+
+      apps = forAllSystems ({ pkgs }: rec {
+        storybook = {
+          type = "app";
+          program = "${self.packages.${pkgs.system}.storybook}/bin/LogosStorybook";
+        };
+        default = storybook;
       });
 
       devShells = forAllSystems ({ pkgs }: {
