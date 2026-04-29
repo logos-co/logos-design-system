@@ -29,6 +29,7 @@ ApplicationWindow {
         { section: "Tokens",   title: "Spacing",        file: "SpacingPage.qml" },
         { section: "Tokens",   title: "Typography",     file: "TypographyPage.qml" },
         { section: "Controls", title: "LogosButton",    file: "LogosButtonPage.qml" },
+        { section: "Controls", title: "LogosIconButton", file: "LogosIconButtonPage.qml" },
         { section: "Controls", title: "LogosCheckbox",  file: "LogosCheckboxPage.qml" },
         { section: "Controls", title: "LogosComboBox",  file: "LogosComboBoxPage.qml" },
         { section: "Controls", title: "LogosPaginator", file: "LogosPaginatorPage.qml" },

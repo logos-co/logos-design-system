@@ -25,6 +25,7 @@ install(DIRECTORY src/qml/Logos/Theme/fonts
 set(CONTROLS_DIR lib/Logos/Controls)
 set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosButton.qml
+    src/qml/Logos/Controls/LogosIconButton.qml
     src/qml/Logos/Controls/LogosText.qml
     src/qml/Logos/Controls/LogosTextField.qml
     src/qml/Logos/Controls/LogosTabButton.qml

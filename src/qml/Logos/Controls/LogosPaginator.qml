@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Effects
 import QtQuick.Layouts
 
 import Logos.Theme
@@ -154,18 +153,24 @@ Control {
 
         Item { Layout.fillWidth: true }   // spacer pushes controls to the right
 
-        NavButton {
+        LogosIconButton {
             id: firstBtn
             iconSource: Qt.resolvedUrl("icons/arrow-left-double-line.png")
+            iconColor: root.iconColor
+            size: 36
             visible: root.showFirstLast
             enabled: root.currentPage > 1
+            background: Item {}
             onClicked: d.request(1)
         }
-        NavButton {
+        LogosIconButton {
             id: prevBtn
             iconSource: Qt.resolvedUrl("icons/arrow-left-s-line.svg")
+            iconColor: root.iconColor
+            size: 36
             visible: root.showPrevNext
             enabled: root.currentPage > 1
+            background: Item {}
             onClicked: d.request(root.currentPage - 1)
         }
 
@@ -220,18 +225,24 @@ Control {
             }
         }
 
-        NavButton {
+        LogosIconButton {
             id: nextBtn
             iconSource: Qt.resolvedUrl("icons/arrow-right-s-line.svg")
+            iconColor: root.iconColor
+            size: 36
             visible: root.showPrevNext
             enabled: root.currentPage < root.pageCount
+            background: Item {}
             onClicked: d.request(root.currentPage + 1)
         }
-        NavButton {
+        LogosIconButton {
             id: lastBtn
             iconSource: Qt.resolvedUrl("icons/arrow-right-double-line.svg")
+            iconColor: root.iconColor
+            size: 36
             visible: root.showFirstLast
             enabled: root.currentPage < root.pageCount
+            background: Item {}
             onClicked: d.request(root.pageCount)
         }
 
@@ -264,39 +275,4 @@ Control {
         }
     }
 
-    // Inline themed nav button — 36×36 transparent square with a tinted icon.
-    component NavButton: Item {
-        id: navBtn
-        property url iconSource: ""
-        signal clicked()
-
-        width: 36
-        height: 36
-        Layout.alignment: Qt.AlignVCenter
-        opacity: enabled ? 1.0 : 0.4
-
-        Image {
-            id: navImg
-            anchors.centerIn: parent
-            width: 20
-            height: 20
-            source: navBtn.iconSource
-            sourceSize: Qt.size(width * 2, height * 2)
-            fillMode: Image.PreserveAspectFit
-            visible: false
-        }
-        MultiEffect {
-            anchors.fill: navImg
-            source: navImg
-            colorization: 1.0
-            colorizationColor: root.iconColor
-        }
-
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: navBtn.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-            enabled: navBtn.enabled
-            onClicked: navBtn.clicked()
-        }
-    }
 }

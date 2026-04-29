@@ -2,5 +2,10 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>assets/arrow-right-s-line.svg</file>
+        <file>assets/refresh.svg</file>
+        <file>assets/delete.svg</file>
+        <file>assets/install.svg</file>
+        <file>assets/more.svg</file>
     </qresource>
 </RCC>
