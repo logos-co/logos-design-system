@@ -31,6 +31,7 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosTabBar.qml
     src/qml/Logos/Controls/LogosCheckbox.qml
     src/qml/Logos/Controls/LogosSearchBar.qml
+    src/qml/Logos/Controls/LogosComboBox.qml
 )
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})
