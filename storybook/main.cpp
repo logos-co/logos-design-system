@@ -1,6 +1,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQuickStyle>
 #include <QFileSystemWatcher>
 #include <QTimer>
 #include <QDir>
@@ -100,6 +101,7 @@ int main(int argc, char* argv[])
     app.setOrganizationName("Logos");
     app.setOrganizationDomain("logos.co");
     app.setApplicationName("Logos Storybook");
+    QQuickStyle::setStyle("Basic");
 
     const QString binDir = QCoreApplication::applicationDirPath();
 

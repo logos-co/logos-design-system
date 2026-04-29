@@ -29,6 +29,7 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosTextField.qml
     src/qml/Logos/Controls/LogosTabButton.qml
     src/qml/Logos/Controls/LogosTabBar.qml
+    src/qml/Logos/Controls/LogosCheckbox.qml
 )
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})

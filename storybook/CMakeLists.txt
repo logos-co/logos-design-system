@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick QuickControls2 Qml)
 
 add_executable(LogosStorybook
     main.cpp
@@ -17,6 +17,7 @@ target_link_libraries(LogosStorybook PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Qml
 )
 

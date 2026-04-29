@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml QuickTest Test)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick QuickControls2 Qml QuickTest Test)
 
 add_executable(LogosDesignSystemTests main.cpp test-resources.qrc)
 
@@ -11,6 +11,7 @@ target_link_libraries(LogosDesignSystemTests PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Qml
     Qt6::QuickTest
     Qt6::Test

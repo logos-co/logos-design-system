@@ -4,6 +4,7 @@
 #include <QFileInfo>
 #include <QObject>
 #include <QQmlEngine>
+#include <QQuickStyle>
 
 #ifndef LOGOS_DS_QML_DIR
 #define LOGOS_DS_QML_DIR ""
@@ -51,6 +52,7 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("Logos");
     QCoreApplication::setOrganizationDomain("logos.co");
     QCoreApplication::setApplicationName("LogosDesignSystemTests");
+    QQuickStyle::setStyle("Basic");
 
     TestSetup setup;
 
