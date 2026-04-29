@@ -10,6 +10,9 @@ import Logos.Controls
 // / displayText / textRole / activated() / accepted()):
 //     placeholderText  shown in the closed control when no selection yet
 //                      (i.e. currentIndex === -1 or displayText is empty)
+//     textColor        color of the selected/displayed value (default = textPrimary)
+//                      placeholderText keeps its own muted color
+//     indicatorColor   color of the chevron (default = same as textColor when enabled)
 //
 // Read-only inspection aliases:
 //     contentLabel     the LogosText rendered in the closed control
@@ -28,6 +31,8 @@ ComboBox {
     id: root
 
     property string placeholderText: ""
+    property color textColor: Theme.palette.text
+    property color indicatorColor: textColor
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias contentLabel: contentText
@@ -47,7 +52,7 @@ ComboBox {
         color: !root.enabled
                ? Theme.palette.textMuted
                : (root.displayText.length > 0
-                  ? Theme.palette.text
+                  ? root.textColor
                   : Theme.palette.textTertiary)
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -65,7 +70,7 @@ ComboBox {
         Image {
             id: chevronImg
             anchors.fill: parent
-            source: Qt.resolvedUrl("icons/arrow-next.svg")
+            source: Qt.resolvedUrl("icons/arrow-right-s-line.svg")
             sourceSize: Qt.size(parent.width * 2, parent.height * 2)
             fillMode: Image.PreserveAspectFit
             visible: false
@@ -75,7 +80,7 @@ ComboBox {
             source: chevronImg
             colorization: 1.0
             colorizationColor: root.enabled
-                               ? Theme.palette.text
+                               ? root.indicatorColor
                                : Theme.palette.textMuted
         }
     }

@@ -54,7 +54,8 @@ Rules:
 
 - **Type all properties** (`property color`, `property url`, `property int`, etc.). Untyped `property var` only when the value is genuinely heterogeneous.
 - **Every configurable property has a default**. If a consumer doesn't set it, the control still renders correctly with theme tokens.
-- **All defaults reference `Theme.*` tokens**. Never hardcode a color, spacing value, font size, or radius. If the token you need doesn't exist, add it to `DarkTheme.qml` first (and back it with a value in `ColorPalette.qml` / `Spacing.qml` / `Typography.qml`).
+- **All defaults reference `Theme.*` tokens**. Never hardcode a color, spacing value, font size, or radius.
+- **Figma values are canonical, not approximations.** When a control's spec specifies a color or size that doesn't have an exact-matching token, **add the token first** rather than mapping to a "close enough" existing one — close-but-not-exact mappings drift away from the design over time and are hard to audit later. Add the raw value to `ColorPalette.qml` / `Spacing.qml` / `Typography.qml`, expose a semantic name on `DarkTheme.qml` (e.g., `surfaceRecessed`, `borderStrong`, `surfaceContrast`), then reference that semantic name from the control. Examples already in the palette: `gray350` / `gray355` / `gray370` were added when `LogosPaginator`'s figma needed `#515151` / `#595959` / `#1F1F1F` and no existing token matched.
 - **Public signals are part of the API contract**. Don't rely on inherited signals fired indirectly — declare your own if your control has a distinct event.
 
 ## 3. Open for extension, closed for modification
@@ -63,6 +64,34 @@ Rules:
 - For every internal item that tests or external tooling need to inspect, add a **`readonly property alias <name>Item: <id>`**. Read-only — consumers can read state, never mutate. Examples: `indicatorItem` on `LogosTabBar`, `mouseAreaItem` on `LogosButton`, `placeholderItem` and `textInput` on `LogosTextField`.
 - **`background:` and `contentItem:` are extension points**. A consumer can override either to re-skin without touching your code. Keep their defaults minimal so overrides don't fight inherited rules.
 - **Don't assign to inherited properties from `Component.onCompleted`** unless absolutely necessary. Declarative bindings are predictable; imperative writes from completion handlers are not (we hit several Qt-version-specific issues in this repo where `Component.onCompleted` fired unreliably).
+- **Internal state and helper functions live in a `QtObject { id: d }` block, not at the root.** This keeps the public surface (top-level `id: root` properties / signals / `*Item` aliases) cleanly separated from implementation details. Reference helpers as `d.foo()` from bindings and handlers; never put leading-underscore functions at the top level. If tests need to reach internals, expose them with one alias (`readonly property alias _d: d`) and stop — that's the only door consumers should see, and the underscore prefix marks it as inspection-only.
+
+  ```qml
+  Control {
+      id: root
+
+      // Public properties / signals up top
+      property int pageCount: 1
+      signal pageRequested(int page)
+
+      readonly property alias pagesItem: pagesRow
+      readonly property alias _d: d  // expose internals for tests; not for app use
+
+      QtObject {
+          id: d
+          function computedPages() { … }
+          function request(page) { … }
+      }
+
+      // Bindings + handlers reference d.<name>
+      contentItem: Repeater {
+          id: pagesRow
+          model: d.computedPages()
+      }
+  }
+  ```
+
+  Tests reach internals via `pager._d.computedPages()` / `pager._d.request(p)`. Application code shouldn't touch `_d`.
 
 ## 4. Known Qt 6 traps in this codebase
 
