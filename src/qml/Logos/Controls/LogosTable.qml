@@ -428,28 +428,8 @@ Rectangle {
     Component {
         id: _defaultLoadingDelegate
 
-        Rectangle {
-            width: 36
-            height: 36
-            radius: 18
-            color: "transparent"
-            border.color: Theme.palette.text
-            border.width: 3
-
-            Rectangle {
-                width: 6; height: 6; radius: 3
-                color: Theme.palette.text
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: 2
-            }
-
-            RotationAnimation on rotation {
-                from: 0; to: 360
-                duration: 1000
-                loops: Animation.Infinite
-                running: root.loading
-            }
+        LogosSpinner {
+            running: root.loading
         }
     }
 }
