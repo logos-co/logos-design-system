@@ -35,11 +35,4 @@ TestCase {
         spin.thickness = 5
         compare(spin.thickness, 5)
     }
-
-    function test_dot_visibility_follows_running() {
-        spin.running = false
-        tryCompare(spin.ringItem, "visible", false)
-        spin.running = true
-        tryCompare(spin.ringItem, "visible", true)
-    }
 }

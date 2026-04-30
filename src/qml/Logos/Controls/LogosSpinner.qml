@@ -24,7 +24,6 @@ BusyIndicator {
         color: "transparent"
         border.color: root.ringColor
         border.width: root.thickness
-        visible: root.running
 
         Rectangle {
             id: dot
@@ -42,7 +41,7 @@ BusyIndicator {
             to: 360
             duration: 1000
             loops: Animation.Infinite
-            running: root.running
+            running: root.running && root.visible
         }
     }
 }

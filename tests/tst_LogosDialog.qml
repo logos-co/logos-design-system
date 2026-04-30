@@ -42,7 +42,9 @@ TestCase {
     }
 
     function test_footer_visible_when_actions_set() {
-        verify(dlg.footerItem.visible)
+        dlg.open()
+        tryCompare(dlg.footerItem, "visible", true)
+        dlg.close()
     }
 
     function test_can_open_close() {

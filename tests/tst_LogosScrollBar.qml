@@ -18,6 +18,12 @@ TestCase {
         ScrollBar.vertical: LogosScrollBar { id: bar }
     }
 
+    function init() {
+        // QtTest runs alphabetically; reset state so leakage from earlier
+        // tests doesn't break later ones.
+        bar.barThickness = 6
+    }
+
     function test_default_thickness() { compare(bar.barThickness, 6) }
 
     function test_aliases_resolve() {
