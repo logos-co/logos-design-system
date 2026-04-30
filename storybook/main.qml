@@ -38,7 +38,21 @@ ApplicationWindow {
         { section: "Controls", title: "LogosTabBar",    file: "LogosTabBarPage.qml" },
         { section: "Controls", title: "LogosTable",     file: "LogosTablePage.qml" },
         { section: "Controls", title: "LogosText",      file: "LogosTextPage.qml" },
-        { section: "Controls", title: "LogosTextField", file: "LogosTextFieldPage.qml" }
+        { section: "Controls", title: "LogosTextField", file: "LogosTextFieldPage.qml" },
+
+        { section: "Controls (not designed)", title: "LogosDialog",       file: "LogosDialogPage.qml" },
+        { section: "Controls (not designed)", title: "LogosFrame",        file: "LogosFramePage.qml" },
+        { section: "Controls (not designed)", title: "LogosGroupBox",     file: "LogosGroupBoxPage.qml" },
+        { section: "Controls (not designed)", title: "LogosMenu",         file: "LogosMenuPage.qml" },
+        { section: "Controls (not designed)", title: "LogosProgressBar",  file: "LogosProgressBarPage.qml" },
+        { section: "Controls (not designed)", title: "LogosRadioButton",  file: "LogosRadioButtonPage.qml" },
+        { section: "Controls (not designed)", title: "LogosScrollBar",    file: "LogosScrollBarPage.qml" },
+        { section: "Controls (not designed)", title: "LogosSlider",       file: "LogosSliderPage.qml" },
+        { section: "Controls (not designed)", title: "LogosSpinBox",      file: "LogosSpinBoxPage.qml" },
+        { section: "Controls (not designed)", title: "LogosSpinner",      file: "LogosSpinnerPage.qml" },
+        { section: "Controls (not designed)", title: "LogosSwitch",       file: "LogosSwitchPage.qml" },
+        { section: "Controls (not designed)", title: "LogosTextArea",     file: "LogosTextAreaPage.qml" },
+        { section: "Controls (not designed)", title: "LogosToolBar",      file: "LogosToolBarPage.qml" }
     ]
 
     ListModel {

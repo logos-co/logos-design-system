@@ -51,6 +51,21 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosPaginator.qml
     src/qml/Logos/Controls/LogosTable.qml
     src/qml/Logos/Controls/LogosTableColumn.qml
+    src/qml/Logos/Controls/LogosSpinner.qml
+    src/qml/Logos/Controls/LogosScrollBar.qml
+    src/qml/Logos/Controls/LogosTextArea.qml
+    src/qml/Logos/Controls/LogosSwitch.qml
+    src/qml/Logos/Controls/LogosProgressBar.qml
+    src/qml/Logos/Controls/LogosRadioButton.qml
+    src/qml/Logos/Controls/LogosSlider.qml
+    src/qml/Logos/Controls/LogosMenu.qml
+    src/qml/Logos/Controls/LogosMenuItem.qml
+    src/qml/Logos/Controls/LogosDialog.qml
+    src/qml/Logos/Controls/LogosToolBar.qml
+    src/qml/Logos/Controls/LogosToolButton.qml
+    src/qml/Logos/Controls/LogosFrame.qml
+    src/qml/Logos/Controls/LogosGroupBox.qml
+    src/qml/Logos/Controls/LogosSpinBox.qml
 )
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})
