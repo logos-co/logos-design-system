@@ -17,7 +17,7 @@ ScrollBar {
         id: bar
         implicitWidth: root.barThickness
         implicitHeight: root.barThickness
-        radius: width / 2
+        radius: root.barThickness / 2
         color: root.pressed || root.hovered ? root.barColorActive : root.barColor
         Behavior on color { ColorAnimation { duration: 120 } }
     }

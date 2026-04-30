@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QQmlEngine>
 #include <QQuickStyle>
+#include <QSettings>
+#include <QStandardPaths>
 
 #ifndef LOGOS_DS_QML_DIR
 #define LOGOS_DS_QML_DIR ""
@@ -52,6 +54,10 @@ int main(int argc, char* argv[])
     QCoreApplication::setOrganizationName("Logos");
     QCoreApplication::setOrganizationDomain("logos.co");
     QCoreApplication::setApplicationName("LogosDesignSystemTests");
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope,
+                       QStandardPaths::writableLocation(QStandardPaths::TempLocation));
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
     QQuickStyle::setStyle("Basic");
 
     TestSetup setup;

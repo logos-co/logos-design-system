@@ -66,6 +66,14 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosFrame.qml
     src/qml/Logos/Controls/LogosGroupBox.qml
     src/qml/Logos/Controls/LogosSpinBox.qml
+    src/qml/Logos/Controls/LogosBadge.qml
+    src/qml/Logos/Controls/LogosScrollView.qml
+    src/qml/Logos/Controls/LogosToolTip.qml
+    src/qml/Logos/Controls/LogosItemDelegate.qml
+    src/qml/Logos/Controls/LogosDrawer.qml
+    src/qml/Logos/Controls/LogosStackView.qml
+    src/qml/Logos/Controls/LogosMenuSeparator.qml
+    src/qml/Logos/Controls/LogosToolSeparator.qml
 )
 
 install(FILES src/qml/Logos/Controls/qmldir DESTINATION ${CONTROLS_DIR})
