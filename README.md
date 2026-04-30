@@ -23,15 +23,25 @@ nix flake check              # CI: build + test
 
 ### `Logos.Controls` — themed components
 
-| Component | Public API (in addition to inherited Qt Controls API) |
-|---|---|
-| `LogosText` | Themed `Text` (default Public Sans + `Theme.palette.text`) |
-| `LogosButton` | `text`, `clicked()`, exposed `mouseAreaItem` |
-| `LogosTextField` | `text`, `placeholderText`, `placeholderTextColor`, `echoMode`; aliases `textInput`, `placeholderItem` |
-| `LogosTabBar` | `indicatorColor`, `indicatorHeight`, `animationDuration`; sliding underline below the active tab |
-| `LogosTabButton` | `iconSource: url`, `activeColor`, `inactiveColor`; aliases `iconItem`, `labelItem`. Use inside `LogosTabBar`. |
+Components are split into two groups. **Designed** controls have their final styling applied. **Placeholders** are themed minimally with current tokens (correct fonts, colors, radii) and ship with full tests + a storybook page, but their visuals will be replaced when the Figma spec for that control lands.
 
-Internal items exposed via `*Item` aliases (e.g. `indicatorItem`, `labelItem`) are for inspection by tests and tooling — treat them as read-only handles.
+**Designed**: `LogosButton`, `LogosCheckbox`, `LogosComboBox`, `LogosIconButton`, `LogosPaginator`, `LogosSearchBar`, `LogosTabBar`, `LogosTabButton`, `LogosTable` + `LogosTableColumn`, `LogosText`, `LogosTextField`.
+
+**Placeholder**: `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
+
+Open the storybook to see public API, props, and live examples for each. Internal items exposed via `*Item` aliases (e.g. `indicatorItem`, `labelItem`) are for inspection by tests and tooling — read-only handles.
+
+#### Designed vs placeholder
+
+Each storybook page declares `property bool designed` — `true` (the default) for final controls, `false` for placeholders. Placeholders are listed under the **Controls (not designed)** sidebar section in the storybook so reviewers and consumers can see at a glance what's finalised vs. pending.
+
+When a placeholder graduates to designed:
+
+1. Replace the visuals in `src/qml/Logos/Controls/Logos<X>.qml` with the final spec.
+2. In `storybook/pages/Logos<X>Page.qml`, flip `property bool designed: false` → `true` (or remove the line, since `true` is the default).
+3. In `storybook/main.qml`, move the entry from the `"Controls (not designed)"` section to the `"Controls"` section so it appears at the top.
+4. Add or update tests in `tests/tst_Logos<X>.qml` for any new design-specific behaviour.
+5. If a Figma URL exists, set `property string figmaUrl: "..."` on the page root so the storybook header surfaces an "Open in Figma" button.
 
 ## Repo layout
 
@@ -189,5 +199,7 @@ The storybook's **Colors / Spacing / Typography** pages show the full set with n
 
 1. **Add colors to `ColorPalette.qml` first**, then map to a semantic name in `DarkTheme.qml`. The semantic name is what consumers should reference (`Theme.palette.surfaceRaised`, not `Theme.colors.gray360`).
 2. **For new controls**: extend the right Qt Quick Controls base (`Control`, `TabButton`, etc.), expose only what consumers actually need, and add a `readonly property alias <name>Item: <id>` for any internal item that tests / tooling need to inspect.
-3. **Add a storybook page** for any new control (`storybook/pages/Logos<X>Page.qml`) and a unit test (`tests/tst_Logos<X>.qml`).
-4. Run `nix flake check` before pushing — CI runs the same.
+3. **Decide designed vs placeholder.** If the Figma spec is final, ship as a designed control: register under `"Controls"` in `storybook/main.qml` and either omit `designed` on the page (defaults to true) or set it to `true` explicitly. If the spec is pending, ship as a placeholder: theme it minimally with `Theme.palette.*` / `Theme.spacing.*`, register under `"Controls (not designed)"`, and set `property bool designed: false` on the page. Both kinds get the same testing + storybook treatment so promotions are mechanical.
+4. **Add a storybook page** for any new control (`storybook/pages/Logos<X>Page.qml`) and a unit test (`tests/tst_Logos<X>.qml`).
+5. **Promoting a placeholder to designed** — see the *Designed vs placeholder* section above for the four-step flip.
+6. Run `nix flake check` before pushing — CI runs the same.
