@@ -9,3 +9,5 @@ LogosCheckbox 1.0 LogosCheckbox.qml
 LogosSearchBar 1.0 LogosSearchBar.qml
 LogosComboBox 1.0 LogosComboBox.qml
 LogosPaginator 1.0 LogosPaginator.qml
+LogosTable 1.0 LogosTable.qml
+LogosTableColumn 1.0 LogosTableColumn.qml

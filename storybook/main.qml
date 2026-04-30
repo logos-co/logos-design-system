@@ -36,6 +36,7 @@ ApplicationWindow {
         { section: "Controls", title: "LogosPaginator", file: "LogosPaginatorPage.qml" },
         { section: "Controls", title: "LogosSearchBar", file: "LogosSearchBarPage.qml" },
         { section: "Controls", title: "LogosTabBar",    file: "LogosTabBarPage.qml" },
+        { section: "Controls", title: "LogosTable",     file: "LogosTablePage.qml" },
         { section: "Controls", title: "LogosText",      file: "LogosTextPage.qml" },
         { section: "Controls", title: "LogosTextField", file: "LogosTextFieldPage.qml" }
     ]
@@ -168,19 +169,36 @@ ApplicationWindow {
         }
 
         // ---- Page area ----
-        Loader {
-            id: pageLoader
+        Flickable {
+            id: pageScroll
 
             Layout.fillWidth: true
             Layout.fillHeight: true
-            asynchronous: false
-            source: window.currentPage
-                    ? "file:" + Hot.pagesDir + "/" + window.currentPage
-                    : ""
+            clip: true
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
 
-            onStatusChanged: {
-                if (status === Loader.Error)
-                    console.warn("Failed to load page:", source)
+            contentWidth: width
+            contentHeight: pageLoader.item
+                           ? Math.max(pageLoader.item.implicitHeight || 0, height)
+                           : height
+
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+            Loader {
+                id: pageLoader
+
+                width: pageScroll.width
+                height: pageScroll.contentHeight
+                asynchronous: false
+                source: window.currentPage
+                        ? "file:" + Hot.pagesDir + "/" + window.currentPage
+                        : ""
+
+                onStatusChanged: {
+                    if (status === Loader.Error)
+                        console.warn("Failed to load page:", source)
+                }
             }
         }
     }
