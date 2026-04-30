@@ -26,3 +26,11 @@ LogosToolButton 1.0 LogosToolButton.qml
 LogosFrame 1.0 LogosFrame.qml
 LogosGroupBox 1.0 LogosGroupBox.qml
 LogosSpinBox 1.0 LogosSpinBox.qml
+LogosBadge 1.0 LogosBadge.qml
+LogosScrollView 1.0 LogosScrollView.qml
+LogosToolTip 1.0 LogosToolTip.qml
+LogosItemDelegate 1.0 LogosItemDelegate.qml
+LogosDrawer 1.0 LogosDrawer.qml
+LogosStackView 1.0 LogosStackView.qml
+LogosMenuSeparator 1.0 LogosMenuSeparator.qml
+LogosToolSeparator 1.0 LogosToolSeparator.qml
