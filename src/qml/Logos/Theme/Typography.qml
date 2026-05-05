@@ -22,9 +22,12 @@ QtObject {
     readonly property int weightMedium: 500
     readonly property int weightBold: 700
 
-    // Text font sizes
-    readonly property int mainTitleText: 256
-    readonly property int titleText: 30
-    readonly property int primaryText: 14
-    readonly property int secondaryText: 12
+    // Text font sizes (descending hierarchy)
+    readonly property int mainTitleText: 256   // splash / marketing
+    readonly property int pageTitleText: 36    // page-level headline
+    readonly property int titleText: 30        // section / dialog title
+    readonly property int panelTitleText: 24   // panel / table title
+    readonly property int subtitleText: 16     // page subtitle / lead body
+    readonly property int primaryText: 14      // default body text
+    readonly property int secondaryText: 12    // caption / small text
 }

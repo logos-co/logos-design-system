@@ -7,6 +7,7 @@ Control {
     id: root
 
     property alias text: label.text
+    property real radius: Theme.spacing.radiusXlarge
     readonly property bool isActive: mouseArea.pressed || root.hovered
     signal clicked()
 
@@ -21,7 +22,7 @@ Control {
         color: !root.enabled
                ? Theme.palette.backgroundMuted
                : (root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundSecondary)
-        radius: Theme.spacing.radiusXlarge
+        radius: root.radius
         border.color: !root.enabled
                       ? Theme.palette.border
                       : (root.isActive ? Theme.palette.overlayOrange : Theme.palette.border)

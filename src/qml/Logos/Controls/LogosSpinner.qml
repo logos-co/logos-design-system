@@ -1,11 +1,12 @@
 import QtQuick
-import QtQuick.Controls
 
 import Logos.Theme
 
-BusyIndicator {
+// Plain-Item-based spinner. We deliberately do NOT extend BusyIndicator —
+Item {
     id: root
 
+    property bool running: true
     property color ringColor: Theme.palette.text
     property int thickness: 3
     property int dotSize: 6
@@ -16,10 +17,10 @@ BusyIndicator {
 
     implicitWidth: 36
     implicitHeight: 36
-    running: true
 
-    contentItem: Rectangle {
+    Rectangle {
         id: ring
+        anchors.fill: parent
         radius: Math.min(width, height) / 2
         color: "transparent"
         border.color: root.ringColor
@@ -41,7 +42,7 @@ BusyIndicator {
             to: 360
             duration: 1000
             loops: Animation.Infinite
-            running: root.running && root.visible
+            running: root.running
         }
     }
 }
