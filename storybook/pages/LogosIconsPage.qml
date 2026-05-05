@@ -47,7 +47,8 @@ Rectangle {
                     { name: "arrowLeftDouble",  value: LogosIcons.arrowLeftDouble },
                     { name: "arrowRight",       value: LogosIcons.arrowRight },
                     { name: "arrowRightDouble", value: LogosIcons.arrowRightDouble },
-                    { name: "upDown",           value: LogosIcons.upDown }
+                    { name: "triangleUp",       value: LogosIcons.triangleUp },
+                    { name: "triangleDown",     value: LogosIcons.triangleDown }
                 ]
             }
 

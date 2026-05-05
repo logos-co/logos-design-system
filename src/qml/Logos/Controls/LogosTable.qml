@@ -103,7 +103,7 @@ Rectangle {
             if (!root.model) return 0
             if (root.model.count !== undefined) return root.model.count
             if (root.model.length !== undefined) return root.model.length
-            return 0
+            return list.count
         }
 
         property LogosTableColumn _selectionColumn: LogosTableColumn {
@@ -288,16 +288,37 @@ Rectangle {
                     elide: Text.ElideRight
                 }
 
-                Image {
+                // Stacked triangles. Each is independently dimmed unless
+                // the column is the active sort AND its direction matches —
+                // gives a clear "this column is sorted ↑" / "↓" affordance
+                // instead of relying on rotating a single symmetric icon.
+                ColumnLayout {
+                    Layout.preferredWidth: 12
+                    Layout.preferredHeight: 16
+                    Layout.alignment: Qt.AlignVCenter
                     visible: columnDef.sortable
-                    source: LogosIcons.upDown
-                    sourceSize.width: 20
-                    sourceSize.height: 20
-                    Layout.preferredWidth: 20
-                    Layout.preferredHeight: 20
-                    opacity: parent.parent._isSorted ? 1.0 : 0.5
-                    rotation: parent.parent._isAscending ? 180 : 0
-                    Behavior on rotation { NumberAnimation { duration: 120 } }
+                    spacing: 0
+
+                    Image {
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 8
+                        source: LogosIcons.triangleUp
+                        sourceSize.width: 24
+                        sourceSize.height: 12
+                        fillMode: Image.PreserveAspectFit
+                        opacity: (parent.parent.parent._isSorted
+                                  && parent.parent.parent._isAscending) ? 1.0 : 0.35
+                    }
+                    Image {
+                        Layout.preferredWidth: 12
+                        Layout.preferredHeight: 8
+                        source: LogosIcons.triangleDown
+                        sourceSize.width: 24
+                        sourceSize.height: 12
+                        fillMode: Image.PreserveAspectFit
+                        opacity: (parent.parent.parent._isSorted
+                                  && !parent.parent.parent._isAscending) ? 1.0 : 0.35
+                    }
                 }
 
                 Item {

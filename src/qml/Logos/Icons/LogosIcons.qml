@@ -7,7 +7,8 @@ QtObject {
     readonly property url arrowLeftDouble:  Qt.resolvedUrl("icons/arrow-left-double-line.svg")
     readonly property url arrowRight:       Qt.resolvedUrl("icons/arrow-right-s-line.svg")
     readonly property url arrowRightDouble: Qt.resolvedUrl("icons/arrow-right-double-line.svg")
-    readonly property url upDown:           Qt.resolvedUrl("icons/up_down_arrow.svg")
+    readonly property url triangleUp:       Qt.resolvedUrl("icons/triangle_up.svg")
+    readonly property url triangleDown:     Qt.resolvedUrl("icons/triangle_down.svg")
 
     // Actions
     readonly property url refresh:  Qt.resolvedUrl("icons/refresh.svg")

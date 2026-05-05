@@ -56,7 +56,7 @@ Control {
     property string pageInfoText: ""
     property var pageSizeOptions: []        // empty array hides the selector
     property string pageSizeLabel: "/ page"
-    property color iconColor: Theme.palette.textSecondary
+    property color iconColor: Theme.palette.text
 
     readonly property int pageCount: Math.max(
         1, Math.ceil(totalCount / Math.max(1, pageSize)))
@@ -145,17 +145,22 @@ Control {
 
         LogosText {
             id: infoLabelText
+            Layout.alignment: Qt.AlignVCenter
+            Layout.minimumWidth: 0
             visible: root.pageInfoText.length > 0
             text: root.pageInfoText
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textMuted
-            Layout.alignment: Qt.AlignVCenter
+            elide: Text.ElideRight
         }
 
-        Item { Layout.fillWidth: true }   // spacer pushes controls to the right
+        Item { Layout.fillWidth: true }
 
         LogosIconButton {
             id: firstBtn
+            Layout.fillWidth: true
+            Layout.minimumWidth: 24
+            Layout.maximumWidth: 36
             iconSource: LogosIcons.arrowLeftDouble
             iconColor: root.iconColor
             size: 36
@@ -166,6 +171,9 @@ Control {
         }
         LogosIconButton {
             id: prevBtn
+            Layout.fillWidth: true
+            Layout.minimumWidth: 24
+            Layout.maximumWidth: 36
             iconSource: LogosIcons.arrowLeft
             iconColor: root.iconColor
             size: 36
@@ -228,6 +236,9 @@ Control {
 
         LogosIconButton {
             id: nextBtn
+            Layout.fillWidth: true
+            Layout.minimumWidth: 24
+            Layout.maximumWidth: 36
             iconSource: LogosIcons.arrowRight
             iconColor: root.iconColor
             size: 36
@@ -238,6 +249,9 @@ Control {
         }
         LogosIconButton {
             id: lastBtn
+            Layout.fillWidth: true
+            Layout.minimumWidth: 24
+            Layout.maximumWidth: 36
             iconSource: LogosIcons.arrowRightDouble
             iconColor: root.iconColor
             size: 36
@@ -253,10 +267,13 @@ Control {
 
         LogosComboBox {
             id: sizeSelector
+            Layout.alignment: Qt.AlignVCenter
+            Layout.fillWidth: true
+            Layout.minimumWidth: 80
+            Layout.preferredWidth: 130
+            Layout.maximumWidth: 130
             visible: root.pageSizeOptions && root.pageSizeOptions.length > 0
             implicitHeight: 36
-            Layout.preferredWidth: 130
-            Layout.alignment: Qt.AlignVCenter
 
             textColor: Theme.palette.textMuted
             indicatorColor: root.iconColor

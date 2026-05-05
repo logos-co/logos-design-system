@@ -42,24 +42,24 @@ Control {
 
         Image {
             id: iconImage
+            Layout.preferredWidth: d.hasIcon ? 12 : 0
+            Layout.preferredHeight: d.hasIcon ? 12 : 0
+            Layout.alignment: Qt.AlignVCenter
             visible: d.hasIcon
             source: root.iconSource
             sourceSize.width: 12
             sourceSize.height: 12
-            Layout.preferredWidth: d.hasIcon ? 12 : 0
-            Layout.preferredHeight: d.hasIcon ? 12 : 0
-            Layout.alignment: Qt.AlignVCenter
         }
 
         LogosText {
             id: label
+            Layout.alignment: Qt.AlignVCenter
             text: root.text
             font.weight: Theme.typography.weightMedium
             font.pixelSize: 11
             font.letterSpacing: 0.22
             font.capitalization: Font.AllUppercase
             color: root.color
-            Layout.alignment: Qt.AlignVCenter
         }
     }
 }

@@ -84,10 +84,10 @@ Control {
         Item {
             id: iconHolder
 
+            Layout.alignment: Qt.AlignVCenter
             visible: root.iconSource.toString().length > 0
             implicitWidth: 20
             implicitHeight: 20
-            Layout.alignment: Qt.AlignVCenter
 
             Image {
                 id: iconImg
@@ -108,20 +108,20 @@ Control {
         LogosTextField {
             id: field
 
-            background: Item {} 
-            placeholderText: "Search..."
             Layout.fillWidth: true
             Layout.fillHeight: true
             Layout.alignment: Qt.AlignVCenter
+            background: Item {}
+            placeholderText: "Search..."
         }
 
         Rectangle {
             id: shortcutChip
 
+            Layout.alignment: Qt.AlignVCenter
             visible: root.shortcutHint.length > 0
             implicitWidth: shortcutLabel.implicitWidth + Theme.spacing.medium
             implicitHeight: 20
-            Layout.alignment: Qt.AlignVCenter
 
             color: Theme.palette.surfaceRaised
             radius: Theme.spacing.radiusSmall
