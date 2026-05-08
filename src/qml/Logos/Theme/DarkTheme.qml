@@ -18,6 +18,7 @@ QtObject {
 
     readonly property color text: colors.white
     readonly property color textSecondary: colors.gray400
+    readonly property color textSubtle: colors.gray390
     readonly property color textTertiary: colors.gray500
     readonly property color textPlaceholder: colors.gray600
     readonly property color textMuted: colors.gray700

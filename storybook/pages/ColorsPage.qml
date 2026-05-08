@@ -69,6 +69,7 @@ Rectangle {
                 items: [
                     { name: "text",            value: Theme.palette.text },
                     { name: "textSecondary",   value: Theme.palette.textSecondary },
+                    { name: "textSubtle",      value: Theme.palette.textSubtle },
                     { name: "textTertiary",    value: Theme.palette.textTertiary },
                     { name: "textPlaceholder", value: Theme.palette.textPlaceholder },
                     { name: "textMuted",       value: Theme.palette.textMuted }

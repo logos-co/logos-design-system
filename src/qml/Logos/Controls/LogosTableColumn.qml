@@ -23,6 +23,11 @@ import QtQuick
 //     headerCellDelegate  Component for rendering the header cell. Same context
 //                         properties. Null = default title + sort icon.
 //
+//     cellPadding       Horizontal inset applied to body cells (px). -1 means
+//                       use the table's `defaultCellPadding` (Theme.spacing.
+//                       medium). Set to 0 for narrow icon/checkbox columns
+//                       where you want centered content to use the full width.
+//
 // Example:
 //     LogosTableColumn {
 //         title: qsTr("Status")
@@ -47,4 +52,6 @@ QtObject {
 
     property Component cellDelegate: null
     property Component headerCellDelegate: null
+
+    property int cellPadding: -1
 }

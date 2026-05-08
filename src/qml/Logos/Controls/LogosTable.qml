@@ -68,6 +68,9 @@ Rectangle {
     property int rowHeight: 64
     property int headerHeight: 36
 
+    // Default horizontal inset applied to every body cell + header cell
+    property int defaultCellPadding: Theme.spacing.medium
+
     // ─── Properties: overrides ───
     property Component rowDelegate: null
     property Component headerDelegate: null
@@ -110,6 +113,7 @@ Rectangle {
             minWidth: 40
             preferredWidth: 40
             maxWidth: 40
+            cellPadding: 0
             cellDelegate: _selectionCell
             headerCellDelegate: _selectionHeader
         }
@@ -159,6 +163,10 @@ Rectangle {
         function _maxWidthOrInf(col) {
             return col.maxWidth >= 0 ? col.maxWidth : Number.POSITIVE_INFINITY
         }
+
+        function _cellPadFor(col) {
+            return col.cellPadding >= 0 ? col.cellPadding : root.defaultCellPadding
+        }
     }
 
     color: "transparent"
@@ -193,17 +201,28 @@ Rectangle {
                     Repeater {
                         model: d.effectiveColumns
 
-                        Loader {
+                        Item {
                             Layout.minimumWidth: modelData.minWidth
                             Layout.preferredWidth: modelData.preferredWidth
                             Layout.maximumWidth: d._maxWidthOrInf(modelData)
                             Layout.fillWidth: modelData.fillWidth
                             Layout.fillHeight: true
 
-                            property var columnDef: modelData
-                            property int columnIndex: index
+                            Rectangle {
+                                anchors.fill: parent
+                                color: Theme.colors.getColor(Theme.palette.backgroundInset, 0.6)
+                            }
 
-                            sourceComponent: columnDef.headerCellDelegate || _defaultHeaderCell
+                            Loader {
+                                anchors.fill: parent
+                                anchors.leftMargin: d._cellPadFor(modelData)
+                                anchors.rightMargin: d._cellPadFor(modelData)
+
+                                property var columnDef: modelData
+                                property int columnIndex: index
+
+                                sourceComponent: columnDef.headerCellDelegate || _defaultHeaderCell
+                            }
                         }
                     }
                 }
@@ -263,16 +282,16 @@ Rectangle {
             readonly property bool _isAscending: _isSorted
                                                  && root.sortOrder === Qt.AscendingOrder
 
-            Rectangle {
+            MouseArea {
                 anchors.fill: parent
-                color: Theme.colors.getColor(Theme.palette.backgroundInset, 0.6)
+                cursorShape: columnDef.sortable ? Qt.PointingHandCursor : Qt.ArrowCursor
+                onClicked: d._onHeaderClick(columnDef)
+                z: -1
             }
 
             RowLayout {
                 anchors.fill: parent
-                anchors.leftMargin: Theme.spacing.medium
-                anchors.rightMargin: Theme.spacing.medium
-                spacing: Theme.spacing.tiny
+                spacing: 0
 
                 Item {
                     Layout.fillWidth: (columnDef.alignment & Qt.AlignRight)
@@ -293,6 +312,7 @@ Rectangle {
                 // gives a clear "this column is sorted ↑" / "↓" affordance
                 // instead of relying on rotating a single symmetric icon.
                 ColumnLayout {
+                    Layout.leftMargin: columnDef.sortable ? Theme.spacing.tiny : 0
                     Layout.preferredWidth: 12
                     Layout.preferredHeight: 16
                     Layout.alignment: Qt.AlignVCenter
@@ -325,12 +345,6 @@ Rectangle {
                     Layout.fillWidth: !(columnDef.alignment & Qt.AlignRight)
                 }
             }
-
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: columnDef.sortable ? Qt.PointingHandCursor : Qt.ArrowCursor
-                onClicked: d._onHeaderClick(columnDef)
-            }
         }
     }
 
@@ -349,19 +363,25 @@ Rectangle {
                 Repeater {
                     model: d.effectiveColumns
 
-                    Loader {
+                    Item {
                         Layout.minimumWidth: modelData.minWidth
                         Layout.preferredWidth: modelData.preferredWidth
                         Layout.maximumWidth: d._maxWidthOrInf(modelData)
                         Layout.fillWidth: modelData.fillWidth
                         Layout.fillHeight: true
 
-                        property var columnDef: modelData
-                        property int columnIndex: index
-                        property var rowItem: _rowRoot.capturedRowItem
-                        property int rowIndex: _rowRoot.capturedRowIndex
+                        Loader {
+                            anchors.fill: parent
+                            anchors.leftMargin: d._cellPadFor(modelData)
+                            anchors.rightMargin: d._cellPadFor(modelData)
 
-                        sourceComponent: columnDef.cellDelegate || _defaultBodyCell
+                            property var columnDef: modelData
+                            property int columnIndex: index
+                            property var rowItem: _rowRoot.capturedRowItem
+                            property int rowIndex: _rowRoot.capturedRowIndex
+
+                            sourceComponent: columnDef.cellDelegate || _defaultBodyCell
+                        }
                     }
                 }
             }
@@ -392,8 +412,6 @@ Rectangle {
         Item {
             LogosText {
                 anchors.fill: parent
-                anchors.leftMargin: Theme.spacing.medium
-                anchors.rightMargin: Theme.spacing.medium
                 text: rowItem && columnDef.role !== "" ? (rowItem[columnDef.role] || "") : ""
                 color: Theme.palette.text
                 font.pixelSize: Theme.typography.primaryText
@@ -422,11 +440,6 @@ Rectangle {
         id: _selectionHeader
 
         Item {
-            Rectangle {
-                anchors.fill: parent
-                color: Theme.colors.getColor(Theme.palette.backgroundInset, 0.6)
-            }
-
             LogosCheckbox {
                 anchors.centerIn: parent
                 visible: root.selectionMode === LogosTable.Multi
