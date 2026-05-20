@@ -56,9 +56,15 @@ Rectangle {
     // ─── Properties: selection ───
     property int selectionMode: LogosTable.None
     property var selectedIndices: []
+    // Optional per-row gate. When set, the auto-prepended checkbox is
+    // disabled (rendered at 50% opacity, non-clickable) for any row where
+    // the predicate returns falsy, and the header "select all" only
+    // toggles rows that pass. Default = null = every row selectable.
+    //   rowSelectable: function (index) { ... return bool }
+    property var rowSelectable: null
     readonly property bool allSelected: selectedIndices.length > 0
-                                        && d._modelCount > 0
-                                        && selectedIndices.length === d._modelCount
+                                        && d._selectableCount > 0
+                                        && selectedIndices.length === d._selectableCount
 
     // ─── Properties: sort state (consumer-driven) ───
     property string sortRole: ""
@@ -87,8 +93,26 @@ Rectangle {
     signal headerClicked(string role)
     signal sortRequested(string role, int order)
 
+    // Re-fires the selectionCell's enabled binding when the underlying
+    // model changes a row (e.g. PMU's setRowVersion flipping rowAction
+    // from Upgrade → NoOp). rowSelectable is a JS function reference,
+    // not a reactive value, so the binding wouldn't otherwise know to
+    // re-evaluate when the data driving the predicate changes.
+    Connections {
+        target: root.model
+        ignoreUnknownSignals: true
+        function onDataChanged() { d._selectableTick++ }
+        function onModelReset()  { d._selectableTick++ }
+        function onRowsInserted(){ d._selectableTick++ }
+        function onRowsRemoved() { d._selectableTick++ }
+    }
+
     property QtObject d: QtObject {
         id: d
+
+        // Bumped on model mutations so bindings that depend on the
+        // (non-reactive) rowSelectable predicate know to re-evaluate.
+        property int _selectableTick: 0
 
         readonly property var effectiveColumns: {
             return root.selectionMode !== LogosTable.None
@@ -109,6 +133,29 @@ Rectangle {
             return list.count
         }
 
+        // Count of rows the predicate (if any) accepts. The select-all
+        // header checkbox compares against this so a screen full of
+        // disabled rows + a couple selectable ones shows the box as
+        // "all" once the latter are picked. Reads _selectableTick so
+        // it re-evaluates after model mutations.
+        readonly property int _selectableCount: {
+            _selectableTick;                                // dep
+            if (!root.rowSelectable) return _modelCount
+            var n = 0
+            for (var i = 0; i < _modelCount; i++) if (root.rowSelectable(i)) n++
+            return n
+        }
+
+        // Single source of truth for "can this row be checked?". Used by
+        // the cell to disable the box and by _toggleAll to skip rows.
+        // Defaults to true when no predicate is set. Reads
+        // _selectableTick so callers re-evaluate after model mutations
+        // (the JS function ref alone isn't a tracked dependency).
+        function _isRowSelectable(i) {
+            _selectableTick;                                // dep
+            return root.rowSelectable ? !!root.rowSelectable(i) : true
+        }
+
         property LogosTableColumn _selectionColumn: LogosTableColumn {
             minWidth: 40
             preferredWidth: 40
@@ -123,6 +170,11 @@ Rectangle {
         }
 
         function _toggleRow(idx) {
+            // Defence in depth — the cell already disables the box when
+            // _isRowSelectable returns false, but if a consumer wires
+            // their own click path they shouldn't be able to bypass the
+            // gate via _toggleRow.
+            if (!_isRowSelectable(idx)) return
             var copy = selectedIndices.slice()
             var pos = copy.indexOf(idx)
             if (root.selectionMode === LogosTable.Single) {
@@ -140,7 +192,11 @@ Rectangle {
                 root.selectedIndices = []
             } else {
                 var all = []
-                for (var i = 0; i < d._modelCount; i++) all.push(i)
+                // Skip non-selectable rows so a bulk action plan never
+                // includes them. Without the predicate this collapses to
+                // "all rows", unchanged from before.
+                for (var i = 0; i < d._modelCount; i++)
+                    if (_isRowSelectable(i)) all.push(i)
                 root.selectedIndices = all
             }
             root.selectionChanged()
@@ -431,6 +487,13 @@ Rectangle {
             LogosCheckbox {
                 anchors.centerIn: parent
                 checked: d._isSelected(rowIndex)
+                // Bound, not cached: when the row's underlying data
+                // changes (e.g. a dropdown swap flips rowAction from
+                // NoOp to Upgrade), the checkbox needs to re-enable
+                // without waiting for a row recycle. The predicate
+                // reads role data through the model, which already
+                // dataChanged-emits on those flips.
+                enabled: d._isRowSelectable(rowIndex)
                 onClicked: d._toggleRow(rowIndex)
             }
         }
