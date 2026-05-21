@@ -70,6 +70,7 @@ Rectangle {
     // the predicate has no choice but to fail open ("return true"),
     // which is what was letting non-selectable rows render as clickable
     // until the model settled.
+    property var rowSelectable: null
     readonly property bool allSelected: selectedIndices.length > 0
                                         && d._selectableCount > 0
                                         && selectedIndices.length === d._selectableCount
