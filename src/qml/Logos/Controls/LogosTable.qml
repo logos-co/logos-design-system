@@ -60,8 +60,16 @@ Rectangle {
     // disabled (rendered at 50% opacity, non-clickable) for any row where
     // the predicate returns falsy, and the header "select all" only
     // toggles rows that pass. Default = null = every row selectable.
-    //   rowSelectable: function (index) { ... return bool }
-    property var rowSelectable: null
+    //   rowSelectable: function (index, rowItem) { ... return bool }
+    //
+    // `rowItem` is the same object the cellDelegate sees (QVariantMap
+    // for variant-list models, model-row context for QAIM models) — pass
+    // it through so predicates can read fields directly off it and
+    // skip the index → roleId → data(idx, role) hop. That hop has a
+    // race window during first paint where data() returns undefined and
+    // the predicate has no choice but to fail open ("return true"),
+    // which is what was letting non-selectable rows render as clickable
+    // until the model settled.
     readonly property bool allSelected: selectedIndices.length > 0
                                         && d._selectableCount > 0
                                         && selectedIndices.length === d._selectableCount
@@ -137,23 +145,38 @@ Rectangle {
         // header checkbox compares against this so a screen full of
         // disabled rows + a couple selectable ones shows the box as
         // "all" once the latter are picked. Reads _selectableTick so
-        // it re-evaluates after model mutations.
+        // it re-evaluates after model mutations. Calls with null for
+        // the item arg — consumers that need item-level access fall
+        // back to model.data() in their predicate's null branch.
         readonly property int _selectableCount: {
             _selectableTick;                                // dep
             if (!root.rowSelectable) return _modelCount
             var n = 0
-            for (var i = 0; i < _modelCount; i++) if (root.rowSelectable(i)) n++
+            for (var i = 0; i < _modelCount; i++)
+                if (root.rowSelectable(i, null)) n++
             return n
         }
 
-        // Single source of truth for "can this row be checked?". Used by
-        // the cell to disable the box and by _toggleAll to skip rows.
-        // Defaults to true when no predicate is set. Reads
-        // _selectableTick so callers re-evaluate after model mutations
-        // (the JS function ref alone isn't a tracked dependency).
+        // Cell-rendered path: the delegate already has the row's
+        // `rowItem` reactive binding (the cellDelegate hooks it in via
+        // the row Loader). Passing that through means the predicate can
+        // read row fields directly — no index→role→data() hop, which
+        // closes the first-paint race where data() returned undefined
+        // and the fail-open `return true` flipped the checkbox to
+        // enabled for non-selectable rows. _selectableTick is still
+        // read so the binding refreshes after model mutations.
+        function _isRowSelectableForItem(i, item) {
+            _selectableTick;                                // dep
+            return root.rowSelectable ? !!root.rowSelectable(i, item) : true
+        }
+
+        // Index-only fallback for callers that don't have a rowItem
+        // (currently just _toggleAll). Predicate's null branch is
+        // expected to handle this — either by looking the row up via
+        // model.data() itself or by returning the safe fail-open value.
         function _isRowSelectable(i) {
             _selectableTick;                                // dep
-            return root.rowSelectable ? !!root.rowSelectable(i) : true
+            return root.rowSelectable ? !!root.rowSelectable(i, null) : true
         }
 
         property LogosTableColumn _selectionColumn: LogosTableColumn {
@@ -484,16 +507,33 @@ Rectangle {
         id: _selectionCell
 
         Item {
+            // Swallow clicks that would otherwise fall through to the
+            // row's underlying MouseArea (which sits at z:-1 and emits
+            // rowClicked → details). Without this, a click on a
+            // disabled checkbox would trigger "open details" — visually
+            // indistinguishable from the box being clickable. Enabled
+            // only when the row isn't selectable, so selectable rows
+            // still funnel through the checkbox's own click handling.
+            MouseArea {
+                anchors.fill: parent
+                enabled: !d._isRowSelectableForItem(rowIndex, rowItem)
+                acceptedButtons: Qt.LeftButton
+                onClicked: {}
+                onPressed:  function(mouse) { mouse.accepted = true }
+            }
             LogosCheckbox {
                 anchors.centerIn: parent
                 checked: d._isSelected(rowIndex)
-                // Bound, not cached: when the row's underlying data
-                // changes (e.g. a dropdown swap flips rowAction from
-                // NoOp to Upgrade), the checkbox needs to re-enable
-                // without waiting for a row recycle. The predicate
-                // reads role data through the model, which already
-                // dataChanged-emits on those flips.
-                enabled: d._isRowSelectable(rowIndex)
+                // Bound to the row's `rowItem` (the cell-bound, reactive
+                // copy of the row's data), not a model.data() lookup
+                // through (index, role). That closes the first-paint
+                // race where data() returned undefined and the predicate
+                // failed open ("return true") — flipping the checkbox
+                // to clickable on rows it should never have been
+                // clickable on. dataChanged from setRowVersion still
+                // flips this binding because the underlying row object
+                // changes.
+                enabled: d._isRowSelectableForItem(rowIndex, rowItem)
                 onClicked: d._toggleRow(rowIndex)
             }
         }
