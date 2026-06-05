@@ -13,7 +13,12 @@ QtObject {
     // Actions
     readonly property url refresh:  Qt.resolvedUrl("icons/refresh.svg")
     readonly property url install:  Qt.resolvedUrl("icons/install.svg")
-    readonly property url trash:    Qt.resolvedUrl("icons/delete.svg") 
+    readonly property url trash:    Qt.resolvedUrl("icons/delete.svg")
     readonly property url more:     Qt.resolvedUrl("icons/more.svg")
     readonly property url search:   Qt.resolvedUrl("icons/search.svg")
+    readonly property url close:    Qt.resolvedUrl("icons/close.svg")
+
+    // View modes
+    readonly property url grid:     Qt.resolvedUrl("icons/grid.svg")
+    readonly property url list:     Qt.resolvedUrl("icons/list.svg")
 }

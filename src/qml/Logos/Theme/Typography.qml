@@ -30,4 +30,5 @@ QtObject {
     readonly property int subtitleText: 16     // page subtitle / lead body
     readonly property int primaryText: 14      // default body text
     readonly property int secondaryText: 12    // caption / small text
+    readonly property int badgeText: 8         // badge / tiny text
 }
