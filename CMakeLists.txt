@@ -40,6 +40,7 @@ install(DIRECTORY src/qml/Logos/Icons/icons
 set(CONTROLS_DIR lib/Logos/Controls)
 set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosButton.qml
+    src/qml/Logos/Controls/LogosIcon.qml
     src/qml/Logos/Controls/LogosIconButton.qml
     src/qml/Logos/Controls/LogosText.qml
     src/qml/Logos/Controls/LogosTextField.qml
