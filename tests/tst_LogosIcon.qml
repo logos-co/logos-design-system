@@ -21,6 +21,7 @@ TestCase {
     function init() {
         icon.source = "qrc:/test-icon.png"
         icon.color = "#ff8800"
+        icon.brightness = 0
         icon.width = 24
         icon.height = 24
     }
@@ -44,6 +45,19 @@ TestCase {
     function test_color_propagates_to_multieffect() {
         icon.color = "#112233"
         tryCompare(icon.effectItem, "colorizationColor", "#112233")
+    }
+
+    function test_brightness_propagates_to_multieffect() {
+        icon.brightness = 1.0
+        tryCompare(icon.effectItem, "brightness", 1.0)
+    }
+
+    function test_default_brightness_is_zero() {
+        var defaults = Qt.createQmlObject(
+            'import Logos.Controls; LogosIcon { source: "qrc:/test-icon.png" }',
+            tc, "defaultsBrightness")
+        compare(defaults.brightness, 0)
+        defaults.destroy()
     }
 
     function test_default_implicit_size_is_20() {

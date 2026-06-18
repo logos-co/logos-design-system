@@ -10,8 +10,11 @@ import Logos.Theme
 // inlined in LogosIconButton / LogosComboBox / LogosSearchBar / LogosTabButton.
 //
 // Public API:
-//     source   URL of the icon asset (PNG/SVG). Empty renders nothing.
-//     color    tint applied via MultiEffect colorization. Default = Theme.palette.text.
+//     source     URL of the icon asset (PNG/SVG). Empty renders nothing.
+//     color      tint applied via MultiEffect colorization. Default = Theme.palette.text.
+//     brightness MultiEffect brightness before colorization. Default 0 (unchanged).
+//                Set to 1.0 to normalize black/grey third-party silhouettes before
+//                tinting
 //
 // Read-only inspection aliases:
 //     imageItem    the underlying Image (hidden; source of the effect)
@@ -28,11 +31,20 @@ import Logos.Theme
 //         color: Theme.palette.accentOrange
 //         width: 24; height: 24
 //     }
+//
+//     // Third-party / package icon on a colored tile:
+//     LogosIcon {
+//         source: appData.iconUrl
+//         color: Theme.palette.text
+//         brightness: 1.0
+//         width: 40; height: 40
+//     }
 Item {
     id: root
 
     property url   source: ""
     property color color: Theme.palette.text
+    property real  brightness: 0
 
     readonly property alias imageItem: img
     readonly property alias effectItem: effect
@@ -54,6 +66,7 @@ Item {
         id: effect
         anchors.fill: img
         source: img
+        brightness: root.brightness
         colorization: 1.0
         colorizationColor: root.color
     }
