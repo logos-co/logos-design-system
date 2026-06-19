@@ -63,6 +63,13 @@ Rectangle {
                 ]
             }
 
+            Section {
+                title: "Status"
+                items: [
+                    { name: "warning", value: LogosIcons.warning }
+                ]
+            }
+
             Item { Layout.preferredHeight: Theme.spacing.xxlarge }
         }
     }

@@ -21,4 +21,7 @@ QtObject {
     // View modes
     readonly property url grid:     Qt.resolvedUrl("icons/grid.svg")
     readonly property url list:     Qt.resolvedUrl("icons/list.svg")
+
+    // Status
+    readonly property url warning:  Qt.resolvedUrl("icons/warning.svg")
 }
