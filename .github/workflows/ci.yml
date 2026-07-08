@@ -3,13 +3,20 @@ name: CI
 on:
   push:
     branches: [master, main]
+    tags: ['v*']
   pull_request:
     branches: [master, main]
 
 jobs:
-  test:
+  # Nix build on Linux — source of truth for correctness. Builds the QML
+  # library, runs unit tests, and builds the storybook via nix (same as
+  # `nix build .#storybook` locally). No artifact upload: producing a
+  # redistributable AppImage from the nix output would require wiring
+  # nix-bundle-appimage + a .desktop file + an icon (see
+  # logos-basecamp/flake.nix for the pattern). Named storybook-linux to
+  # match the storybook-macos / storybook-windows pattern.
+  storybook-linux:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -29,5 +36,133 @@ jobs:
       - name: Run unit tests
         run: nix build .#checks.x86_64-linux.tests --print-build-logs
 
-      - name: Build storybook
+      - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
+
+  # Nix build on macOS — validates the storybook builds cleanly on Darwin.
+  # Uses DeterminateSystems installer because cachix/install-nix-action fails
+  # on current macos-latest runners (same choice basecamp made — see
+  # logos-basecamp/.github/workflows/build.yml). No artifact upload; a
+  # distributable .app would need nix-bundle-macos-app + Info.plist + .icns
+  # wiring.
+  storybook-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: cachix/cachix-action@v15
+        with:
+          name: logos-co
+          authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+
+      - name: Build design system QML library
+        run: nix build --print-build-logs
+
+      - name: Build storybook (nix)
+        run: nix build .#storybook --print-build-logs
+
+  # Windows build via plain CMake + Qt from install-qt-action. Nix isn't an
+  # option on Windows, so this is the only path — and the only OS that
+  # currently produces a downloadable artifact.
+  storybook-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Qt6
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.7.3'
+          target: desktop
+          arch: win64_msvc2019_64
+          cache: true
+
+      - name: Configure
+        shell: bash
+        run: >
+          cmake -S . -B build
+          -DCMAKE_BUILD_TYPE=Release
+          -DLOGOS_DS_BUILD_STORYBOOK=ON
+
+      - name: Build
+        shell: bash
+        run: cmake --build build --config Release --target LogosStorybook
+
+      - name: Package
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          $stage = "stage\LogosStorybook"
+          New-Item -ItemType Directory -Force -Path `
+            "$stage\bin","$stage\share\logos-storybook\pages" | Out-Null
+
+          $exe = if (Test-Path "build\storybook\Release\LogosStorybook.exe") {
+            "build\storybook\Release\LogosStorybook.exe"
+          } else {
+            "build\storybook\LogosStorybook.exe"
+          }
+          Copy-Item $exe "$stage\bin\"
+          Copy-Item -Recurse "build\storybook\qml" "$stage\bin\qml"
+          Copy-Item "storybook\pages\*.qml" "$stage\share\logos-storybook\pages\"
+
+          & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
+            --qmldir "storybook" `
+            --qmldir "src\qml" `
+            --release `
+            --no-translations `
+            "$stage\bin\LogosStorybook.exe"
+
+          Compress-Archive -Path $stage -DestinationPath "LogosStorybook-windows-x86_64.zip" -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogosStorybook-windows-x86_64.zip
+          path: LogosStorybook-windows-x86_64.zip
+          if-no-files-found: error
+
+  pr-comment:
+    if: github.event_name == 'pull_request'
+    needs: storybook-windows
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Post storybook build links on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: storybook-builds
+          message: |
+            ### Storybook CI builds
+
+            Windows artifact is available on the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) (requires GitHub login).
+
+            | Platform | How to get it |
+            |----------|---------------|
+            | Linux    | `nix build .#storybook` (built + cached in this run) |
+            | macOS    | `nix build .#storybook` (built + cached in this run) |
+            | Windows  | `LogosStorybook-windows-x86_64.zip` (uploaded artifact) |
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: storybook-windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/*
+          generate_release_notes: true
+          fail_on_unmatched_files: true
