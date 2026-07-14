@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, textInput"
+                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, isValid, textInput"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -79,6 +79,18 @@ Rectangle {
                 LogosTextField {
                     text: "supersecret"
                     echoMode: TextInput.Password
+                    Layout.preferredWidth: 320
+                }
+
+                LogosText {
+                    text: "Validation"
+                    Layout.preferredWidth: 140
+                    color: Theme.palette.textSecondary
+                }
+                LogosTextField {
+                    id: numberField
+                    placeholderText: "1 – 100"
+                    isValid: (Number(numberField.text) >= 1 && Number(numberField.text) <= 100)
                     Layout.preferredWidth: 320
                 }
             }

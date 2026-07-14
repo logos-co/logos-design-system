@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
 
 TestCase {
@@ -21,6 +22,7 @@ TestCase {
         field.text = ""
         field.placeholderText = "Enter text"
         field.echoMode = TextInput.Normal
+        field.isValid = true
     }
 
     function test_text_alias_get_set() {
@@ -44,5 +46,24 @@ TestCase {
     function test_echo_mode_propagates_to_text_input() {
         field.echoMode = TextInput.Password
         compare(field.textInput.echoMode, TextInput.Password)
+    }
+
+    function test_valid_by_default() {
+        verify(field.isValid)
+    }
+
+    function test_error_border_when_invalid() {
+        field.isValid = false
+        compare(field.backgroundItem.border.color, Theme.palette.error)
+    }
+
+    function test_error_text_color_when_invalid() {
+        field.isValid = false
+        compare(field.textInput.color, Theme.palette.error)
+    }
+
+    function test_normal_text_color_when_valid() {
+        field.isValid = true
+        compare(field.textInput.color, Theme.palette.text)
     }
 }
