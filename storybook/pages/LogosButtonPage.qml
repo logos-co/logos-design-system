@@ -107,6 +107,7 @@ Rectangle {
                     type: LogosButton.Variant.Primary
                     iconSource: LogosIcons.arrowRight
                     iconPosition: LogosButton.IconPosition.Right
+                    iconBrightness: 1
                     implicitWidth: 160
                     implicitHeight: 50
                 }

@@ -28,8 +28,9 @@ TestCase {
         btn.enabled = true
         btn.text = "Click me"
         btn.type = LogosButton.Variant.Secondary
-        btn.iconSource = ""
-        btn.iconPosition = LogosButton.IconPosition.Left
+        btn.icon.source = ""
+        btn.icon.position = LogosButton.IconPosition.Left
+        btn.icon.color = Theme.palette.text
     }
 
     function test_renders_text() {
@@ -71,30 +72,31 @@ TestCase {
     }
 
     function test_icon_empty_by_default() {
-        compare(btn.iconSource.toString(), "")
+        compare(btn.icon.source.toString(), "")
     }
 
     function test_icon_source_round_trips() {
-        btn.iconSource = "qrc:/test-icon.png"
-        compare(btn.iconSource.toString(), "qrc:/test-icon.png")
-        btn.iconSource = ""
-        compare(btn.iconSource.toString(), "")
+        btn.icon.source = "qrc:/test-icon.png"
+        compare(btn.icon.source.toString(), "qrc:/test-icon.png")
+        btn.icon.source = ""
+        compare(btn.icon.source.toString(), "")
     }
 
     function test_icon_anchors_left() {
-        btn.iconSource = "qrc:/test-icon.png"
-        btn.iconPosition = LogosButton.IconPosition.Left
+        btn.icon.source = "qrc:/test-icon.png"
+        btn.icon.position = LogosButton.IconPosition.Left
         tryVerify(function () { return btn.iconItem.x < btn.iconItem.parent.width / 2 })
     }
 
     function test_icon_anchors_right() {
-        btn.iconSource = "qrc:/test-icon.png"
-        btn.iconPosition = LogosButton.IconPosition.Right
+        btn.icon.source = "qrc:/test-icon.png"
+        btn.icon.position = LogosButton.IconPosition.Right
         tryVerify(function () { return btn.iconItem.x > btn.iconItem.parent.width / 2 })
     }
 
-    function test_icon_tint_follows_content_color() {
-        btn.iconSource = "qrc:/test-icon.png"
-        compare(btn.iconItem.color, btn.contentColor)
+    function test_icon_tint_follows_icon_color() {
+        btn.icon.source = "qrc:/test-icon.png"
+        btn.icon.color = Theme.palette.primary
+        compare(btn.iconItem.color, Theme.palette.primary)
     }
 }

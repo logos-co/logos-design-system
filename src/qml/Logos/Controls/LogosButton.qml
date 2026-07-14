@@ -10,16 +10,26 @@ Control {
     enum Variant { Primary, Secondary }
     enum IconPosition { Left, Right }
 
+    QtObject {
+        id: iconObject
+        property url source: ""
+        property int size: 20
+        property string bgColor: ""
+        property int position: LogosButton.Left // LogosButton.IconPosition
+        property real brightness: 0
+        property color color: Theme.palette.text
+
+        readonly property bool isVisible: source != ""
+        readonly property bool isLeft: position === LogosButton.Left
+        readonly property bool isRight: position === LogosButton.Right
+    }
+
     property alias text: label.text
+    property alias icon: iconObject
     property real radius: Theme.spacing.radiusXlarge
-    property url iconSource: ""
-    property int iconPosition: LogosButton.IconPosition.Left // LogosButton.IconPosition
-    property int iconSize: 20
     property int type: LogosButton.Variant.Secondary // LogosButton.Variant
 
     readonly property bool isActive: mouseArea.pressed || root.hovered
-    readonly property color contentColor: root.enabled ? Theme.palette.text
-                                                        : Theme.palette.textMuted
 
     signal clicked()
 
@@ -27,8 +37,7 @@ Control {
     readonly property alias mouseAreaItem: mouseArea
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
-    readonly property Item iconItem: root.iconPosition === LogosButton.IconPosition.Right
-                                     ? iconRight : iconLeft
+    readonly property Item iconItem: root.icon.isRight ? iconRight : iconLeft
 
     implicitWidth: 200
     implicitHeight: 50
@@ -60,25 +69,25 @@ Control {
         }
     }
 
-    // Outer margins come from the control's padding. Leading/trailing icon is a
-    // separate slot on each side; only the one matching iconPosition shows.
     contentItem: RowLayout {
         spacing: Theme.spacing.small
 
         LogosIcon {
             id: iconLeft
-            source: root.iconSource
-            color: root.contentColor
-            visible: root.iconSource != "" && root.iconPosition === LogosButton.IconPosition.Left
-            Layout.preferredWidth: root.iconSize
-            Layout.preferredHeight: root.iconSize
+            source: root.icon.source
+            color: root.icon.color
+            visible: root.icon.isVisible
+            opacity: root.icon.isLeft ? 1 : 0
+            Layout.preferredWidth: root.icon.size
+            Layout.preferredHeight: root.icon.size
             Layout.alignment: Qt.AlignVCenter
+            brightness: root.icon.brightness
         }
 
         Text {
             id: label
             Layout.fillWidth: true
-            color: root.contentColor
+            color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
             font.pixelSize: Theme.typography.secondaryText
             font.weight: Theme.typography.weightMedium
             horizontalAlignment: Text.AlignHCenter
@@ -87,12 +96,14 @@ Control {
 
         LogosIcon {
             id: iconRight
-            source: root.iconSource
-            color: root.contentColor
-            visible: root.iconSource != "" && root.iconPosition === LogosButton.IconPosition.Right
-            Layout.preferredWidth: root.iconSize
-            Layout.preferredHeight: root.iconSize
+            source: root.icon.source
+            color: root.icon.color
+            visible: root.icon.isVisible
+            opacity: root.icon.isRight ? 1 : 0
+            Layout.preferredWidth: root.icon.size
+            Layout.preferredHeight: root.icon.size
             Layout.alignment: Qt.AlignVCenter
+            brightness: root.icon.brightness
         }
     }
 
