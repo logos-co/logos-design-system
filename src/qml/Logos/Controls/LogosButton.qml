@@ -25,7 +25,7 @@ Control {
     property alias text: label.text
     property IconSpec icon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
-    property int type: LogosButton.Variant.Secondary // LogosButton.Variant
+    property int type: LogosButton.Variant.Secondary
 
     readonly property bool isActive: mouseArea.pressed || root.hovered
 
