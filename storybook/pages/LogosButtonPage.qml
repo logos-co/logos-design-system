@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, isPrimary, iconSource, iconPosition, enabled, clicked()"
+                text: "Public API: text, type, iconSource, iconPosition, enabled, clicked()"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -91,22 +91,22 @@ Rectangle {
                 }
                 LogosButton {
                     text: "Primary"
-                    isPrimary: true
+                    type: LogosButton.Variant.Primary
                     implicitWidth: 160
                     implicitHeight: 50
                 }
                 LogosButton {
                     text: "Back"
                     iconSource: LogosIcons.arrowLeft
-                    iconPosition: "left"
+                    iconPosition: LogosButton.IconPosition.Left
                     implicitWidth: 160
                     implicitHeight: 50
                 }
                 LogosButton {
                     text: "Next"
-                    isPrimary: true
+                    type: LogosButton.Variant.Primary
                     iconSource: LogosIcons.arrowRight
-                    iconPosition: "right"
+                    iconPosition: LogosButton.IconPosition.Right
                     implicitWidth: 160
                     implicitHeight: 50
                 }

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 import Logos.Theme
 
@@ -12,7 +13,7 @@ Control {
     property alias text: label.text
     property real radius: Theme.spacing.radiusXlarge
     property url iconSource: ""
-    property string iconPosition: LogosButton.IconPosition.Left // LogosButton.IconPosition
+    property int iconPosition: LogosButton.IconPosition.Left // LogosButton.IconPosition
     property int iconSize: 20
     property int type: LogosButton.Variant.Secondary // LogosButton.Variant
 
@@ -26,10 +27,13 @@ Control {
     readonly property alias mouseAreaItem: mouseArea
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
-    readonly property alias iconItem: icon
+    readonly property Item iconItem: root.iconPosition === LogosButton.IconPosition.Right
+                                     ? iconRight : iconLeft
 
     implicitWidth: 200
     implicitHeight: 50
+    leftPadding: Theme.spacing.large
+    rightPadding: Theme.spacing.large
     hoverEnabled: true
 
     background: Rectangle {
@@ -56,31 +60,39 @@ Control {
         }
     }
 
-    // Icon uses an explicit size + anchors (not a Layout): MultiEffect fails to
-    // refresh its source when the size is set by a layout pass after init.
-    contentItem: Item {
+    // Outer margins come from the control's padding. Leading/trailing icon is a
+    // separate slot on each side; only the one matching iconPosition shows.
+    contentItem: RowLayout {
+        spacing: Theme.spacing.small
+
         LogosIcon {
-            id: icon
+            id: iconLeft
             source: root.iconSource
             color: root.contentColor
-            visible: root.iconSource != ""
-            width: root.iconSize
-            height: root.iconSize
-            anchors.verticalCenter: parent.verticalCenter
-            anchors.left: root.iconPosition === LogosButton.IconPosition.Left ? parent.left : undefined
-            anchors.leftMargin: Theme.spacing.large
-            anchors.right: root.iconPosition === LogosButton.IconPosition.Right ? parent.right : undefined
-            anchors.rightMargin: Theme.spacing.large
+            visible: root.iconSource != "" && root.iconPosition === LogosButton.IconPosition.Left
+            Layout.preferredWidth: root.iconSize
+            Layout.preferredHeight: root.iconSize
+            Layout.alignment: Qt.AlignVCenter
         }
 
         Text {
             id: label
-            anchors.centerIn: parent
+            Layout.fillWidth: true
             color: root.contentColor
             font.pixelSize: Theme.typography.secondaryText
             font.weight: Theme.typography.weightMedium
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+        }
+
+        LogosIcon {
+            id: iconRight
+            source: root.iconSource
+            color: root.contentColor
+            visible: root.iconSource != "" && root.iconPosition === LogosButton.IconPosition.Right
+            Layout.preferredWidth: root.iconSize
+            Layout.preferredHeight: root.iconSize
+            Layout.alignment: Qt.AlignVCenter
         }
     }
 
