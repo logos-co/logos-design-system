@@ -82,16 +82,20 @@ TestCase {
         compare(btn.icon.source.toString(), "")
     }
 
-    function test_icon_anchors_left() {
+    function test_icon_shows_on_left() {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Left
-        tryVerify(function () { return btn.iconItem.x < btn.iconItem.parent.width / 2 })
+        var slots = btn.contentItem.children
+        compare(slots[0].opacity, 1)
+        compare(slots[slots.length - 1].opacity, 0)
     }
 
-    function test_icon_anchors_right() {
+    function test_icon_shows_on_right() {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Right
-        tryVerify(function () { return btn.iconItem.x > btn.iconItem.parent.width / 2 })
+        var slots = btn.contentItem.children
+        compare(slots[slots.length - 1].opacity, 1)
+        compare(slots[0].opacity, 0)
     }
 
     function test_icon_tint_follows_icon_color() {
