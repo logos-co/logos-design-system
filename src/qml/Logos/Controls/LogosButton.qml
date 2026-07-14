@@ -10,22 +10,21 @@ Control {
     enum Variant { Primary, Secondary }
     enum IconPosition { Left, Right }
 
-    QtObject {
-        id: iconObject
+    component IconSpec: QtObject {
         property url source: ""
         property int size: 20
         property string bgColor: ""
-        property int position: LogosButton.Left // LogosButton.IconPosition
+        property int position: LogosButton.IconPosition.Left
         property real brightness: 0
         property color color: Theme.palette.text
 
         readonly property bool isVisible: source != ""
-        readonly property bool isLeft: position === LogosButton.Left
-        readonly property bool isRight: position === LogosButton.Right
+        readonly property bool isLeft: position === LogosButton.IconPosition.Left
+        readonly property bool isRight: position === LogosButton.IconPosition.Right
     }
 
     property alias text: label.text
-    property alias icon: iconObject
+    property IconSpec icon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
     property int type: LogosButton.Variant.Secondary // LogosButton.Variant
 
