@@ -13,7 +13,6 @@ Control {
     component IconSpec: QtObject {
         property url source: ""
         property int size: 20
-        property string bgColor: ""
         property int position: LogosButton.IconPosition.Left
         property real brightness: 0
         property color color: Theme.palette.text
@@ -83,7 +82,7 @@ Control {
             brightness: root.icon.brightness
         }
 
-        Text {
+        LogosText {
             id: label
             Layout.fillWidth: true
             color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
