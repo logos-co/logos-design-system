@@ -6,12 +6,15 @@ import Logos.Theme
 Control {
     id: root
 
+    enum Variant { Primary, Secondary }
+    enum IconPosition { Left, Right }
+
     property alias text: label.text
     property real radius: Theme.spacing.radiusXlarge
-    property bool isPrimary: false
     property url iconSource: ""
-    property string iconPosition: "left" // "left" | "right"
+    property string iconPosition: LogosButton.IconPosition.Left // LogosButton.IconPosition
     property int iconSize: 20
+    property int type: LogosButton.Variant.Secondary // LogosButton.Variant
 
     readonly property bool isActive: mouseArea.pressed || root.hovered
     readonly property color contentColor: root.enabled ? Theme.palette.text
@@ -34,7 +37,7 @@ Control {
         color: {
             if (!root.enabled)
                 return Theme.palette.backgroundMuted
-            if (root.isPrimary)
+            if (root.type == LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.primaryHover : Theme.palette.primary
             return root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundSecondary
         }
@@ -43,7 +46,7 @@ Control {
         border.color: {
             if (!root.enabled)
                 return Theme.palette.border
-            if (root.isPrimary)
+            if (root.type == LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.overlayOrange : Theme.palette.primary
             return root.isActive ? Theme.palette.overlayOrange : Theme.palette.border
         }
@@ -60,15 +63,13 @@ Control {
             id: icon
             source: root.iconSource
             color: root.contentColor
-            // Normalize dark/grey silhouettes so the tint shows at full strength.
-            brightness: 1.0
             visible: root.iconSource != ""
             width: root.iconSize
             height: root.iconSize
             anchors.verticalCenter: parent.verticalCenter
-            anchors.left: root.iconPosition === "left" ? parent.left : undefined
+            anchors.left: root.iconPosition === LogosButton.IconPosition.Left ? parent.left : undefined
             anchors.leftMargin: Theme.spacing.large
-            anchors.right: root.iconPosition === "right" ? parent.right : undefined
+            anchors.right: root.iconPosition === LogosButton.IconPosition.Right ? parent.right : undefined
             anchors.rightMargin: Theme.spacing.large
         }
 
