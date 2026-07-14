@@ -12,7 +12,7 @@ Control {
     property string placeholderText: ""
     property color placeholderTextColor: Theme.palette.textTertiary
     property int echoMode: TextInput.Normal
-    property bool isValid: true
+    property alias validator: input.validator
 
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
     readonly property alias textInput: input
@@ -38,7 +38,7 @@ Control {
         color: Theme.palette.backgroundSecondary
         border.width: 1
         border.color: {
-            if (!root.isValid)
+            if (!input.acceptableInput)
                 return Theme.palette.error
             if (d.inputActiveFocus)
                 return Theme.palette.overlayOrange
@@ -67,7 +67,7 @@ Control {
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Theme.typography.secondaryText
-            color: root.isValid ? Theme.palette.text : Theme.palette.error
+            color: input.acceptableInput ? Theme.palette.text : Theme.palette.error
             echoMode: root.echoMode
             onActiveFocusChanged: d.inputActiveFocus = input.activeFocus
         }
