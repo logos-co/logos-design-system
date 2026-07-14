@@ -4,6 +4,7 @@ import QtQuick.Layouts
 
 import Logos.Theme
 import Logos.Controls
+import Logos.Icons
 
 // Catalog page for LogosButton. Shows the public API states + a knobs panel
 // underneath so reviewers can poke the component without code.
@@ -27,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, enabled, clicked()"
+                text: "Public API: text, isPrimary, iconSource, iconPosition, enabled, clicked()"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -61,6 +62,53 @@ Rectangle {
                     implicitWidth: 160
                     implicitHeight: 50
                     enabled: false
+                }
+            }
+        }
+
+        // Variants + icons
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: Theme.spacing.medium
+
+            LogosText {
+                text: "Variants & icons"
+                font.pixelSize: Theme.typography.primaryText
+                font.weight: Theme.typography.weightBold
+                color: Theme.palette.text
+            }
+            Rectangle {
+                Layout.fillWidth: true; height: 1
+                color: Theme.palette.borderHairline
+            }
+            RowLayout {
+                spacing: Theme.spacing.large
+
+                LogosButton {
+                    text: "Neutral"
+                    implicitWidth: 160
+                    implicitHeight: 50
+                }
+                LogosButton {
+                    text: "Primary"
+                    isPrimary: true
+                    implicitWidth: 160
+                    implicitHeight: 50
+                }
+                LogosButton {
+                    text: "Back"
+                    iconSource: LogosIcons.arrowLeft
+                    iconPosition: "left"
+                    implicitWidth: 160
+                    implicitHeight: 50
+                }
+                LogosButton {
+                    text: "Next"
+                    isPrimary: true
+                    iconSource: LogosIcons.arrowRight
+                    iconPosition: "right"
+                    implicitWidth: 160
+                    implicitHeight: 50
                 }
             }
         }
