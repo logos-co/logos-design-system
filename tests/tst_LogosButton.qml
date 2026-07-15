@@ -27,7 +27,7 @@ TestCase {
         clickedSpy.clear()
         btn.enabled = true
         btn.text = "Click me"
-        btn.type = LogosButton.Variant.Secondary
+        btn.variant = LogosButton.Variant.Secondary
         btn.icon.source = ""
         btn.icon.position = LogosButton.IconPosition.Left
         btn.icon.color = Theme.palette.text
@@ -55,17 +55,17 @@ TestCase {
     }
 
     function test_neutral_by_default() {
-        compare(btn.type, LogosButton.Variant.Secondary)
+        compare(btn.variant, LogosButton.Variant.Secondary)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundSecondary)
     }
 
     function test_primary_uses_primary_background() {
-        btn.type = LogosButton.Variant.Primary
+        btn.variant = LogosButton.Variant.Primary
         tryCompare(btn.backgroundItem, "color", Theme.palette.primary)
     }
 
     function test_disabled_wins_over_primary() {
-        btn.type = LogosButton.Variant.Primary
+        btn.variant = LogosButton.Variant.Primary
         btn.enabled = false
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         compare(btn.labelItem.color, Theme.palette.textMuted)

@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, type, icon, enabled, clicked()"
+                text: "Public API: text, variant, icon, enabled, clicked()"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -91,7 +91,7 @@ Rectangle {
                 }
                 LogosButton {
                     text: "Primary"
-                    type: LogosButton.Variant.Primary
+                    variant: LogosButton.Variant.Primary
                     implicitWidth: 160
                     implicitHeight: 50
                 }
@@ -104,7 +104,7 @@ Rectangle {
                 }
                 LogosButton {
                     text: "Next"
-                    type: LogosButton.Variant.Primary
+                    variant: LogosButton.Variant.Primary
                     icon.source: LogosIcons.arrowRight
                     icon.position: LogosButton.IconPosition.Right
                     icon.brightness: 1

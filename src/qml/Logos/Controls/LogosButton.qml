@@ -25,7 +25,7 @@ Control {
     property alias text: label.text
     readonly property IconSpec icon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
-    property int type: LogosButton.Variant.Secondary
+    property int variant: LogosButton.Variant.Secondary
 
     readonly property bool isActive: mouseArea.pressed || root.hovered
 
@@ -48,7 +48,7 @@ Control {
         color: {
             if (!root.enabled)
                 return Theme.palette.backgroundMuted
-            if (root.type == LogosButton.Variant.Primary)
+            if (root.variant == LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.primaryHover : Theme.palette.primary
             return root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundSecondary
         }
@@ -57,7 +57,7 @@ Control {
         border.color: {
             if (!root.enabled)
                 return Theme.palette.border
-            if (root.type == LogosButton.Variant.Primary)
+            if (root.variant == LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.overlayOrange : Theme.palette.primary
             return root.isActive ? Theme.palette.overlayOrange : Theme.palette.border
         }
