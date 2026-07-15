@@ -95,9 +95,9 @@ TestCase {
     function test_icon_shows_on_right() {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Right
-        var slots = btn.contentItem.children
-        compare(slots[slots.length - 1].opacity, 1)
-        compare(slots[0].opacity, 0)
+        compare(btn.iconItem, btn.iconRightItem)
+        compare(btn.iconRightItem.opacity, 1)
+        compare(btn.iconLeftItem.opacity, 0)
     }
 
     function test_icon_tint_follows_icon_color() {
