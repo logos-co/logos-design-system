@@ -111,6 +111,11 @@ Rectangle {
                     implicitWidth: 160
                     implicitHeight: 50
                 }
+                LogosButton {
+                    text: "This is a very long label that will not fit inside the button width"
+                    implicitWidth: 160
+                    implicitHeight: 50
+                }
             }
         }
 

@@ -90,6 +90,7 @@ Control {
             font.weight: Theme.typography.weightMedium
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            elide: Text.ElideRight
         }
 
         LogosIcon {

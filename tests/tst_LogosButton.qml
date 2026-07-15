@@ -103,4 +103,10 @@ TestCase {
         btn.icon.color = Theme.palette.primary
         compare(btn.iconItem.color, Theme.palette.primary)
     }
+
+    function test_long_text_is_elided() {
+        btn.text = "This is a very long label that will not fit inside the button width"
+        tryVerify(function() { return btn.labelItem.truncated })
+        verify(btn.labelItem.width <= btn.width)
+    }
 }
