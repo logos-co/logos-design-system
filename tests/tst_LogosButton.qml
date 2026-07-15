@@ -106,7 +106,7 @@ TestCase {
 
     function test_long_text_is_elided() {
         btn.text = "This is a very long label that will not fit inside the button width"
-        tryVerify(function() { return btn.labelItem.truncated })
+        tryCompare(btn.labelItem, "truncated", true)
         verify(btn.labelItem.width <= btn.width)
     }
 }
