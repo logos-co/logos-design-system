@@ -13,6 +13,7 @@ Control {
     property color placeholderTextColor: Theme.palette.textTertiary
     property int echoMode: TextInput.Normal
     property alias validator: input.validator
+    property alias readOnly: input.readOnly
 
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
     readonly property alias textInput: input

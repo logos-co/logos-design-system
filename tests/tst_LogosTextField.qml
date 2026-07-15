@@ -29,6 +29,7 @@ TestCase {
         field.placeholderText = "Enter text"
         field.echoMode = TextInput.Normal
         field.validator = null
+        field.readOnly = false
     }
 
     function test_text_alias_get_set() {
@@ -79,5 +80,10 @@ TestCase {
         field.validator = rangeValidator
         field.text = "50"
         tryCompare(field.textInput, "color", Theme.palette.text)
+    }
+
+    function test_read_only_propagates_to_text_input() {
+        field.readOnly = true
+        compare(field.textInput.readOnly, true)
     }
 }
