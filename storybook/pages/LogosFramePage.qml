@@ -24,7 +24,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: Frame (padding, contentItem) + borderColor, backgroundColor. Alias: backgroundItem."
+                text: "Public API: Frame (padding, contentItem) + borderColor, backgroundColor, radius. Alias: backgroundItem."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -41,6 +41,18 @@ Rectangle {
 
                 LogosText { text: "Framed content"; font.weight: Theme.typography.weightBold; color: Theme.palette.text }
                 LogosText { text: "Anything inside a LogosFrame is bordered and padded by default."; color: Theme.palette.textSecondary; Layout.fillWidth: true; wrapMode: Text.WordWrap }
+            }
+        }
+
+        LogosFrame {
+            Layout.fillWidth: true
+            radius: Theme.spacing.radiusLarge
+
+            ColumnLayout {
+                width: parent.width
+                spacing: Theme.spacing.medium
+
+                LogosText { text: "Framed content inside custom radius frame"; font.weight: Theme.typography.weightBold; color: Theme.palette.text }
             }
         }
 
