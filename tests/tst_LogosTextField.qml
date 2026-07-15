@@ -58,12 +58,17 @@ TestCase {
         tryCompare(field.textInput, "color", Theme.palette.text)
     }
 
+    function test_normal_border_when_empty_with_validator() {
+        field.validator = rangeValidator
+        field.text = ""
+        tryCompare(field.backgroundItem.border, "color", Theme.palette.backgroundElevated)
+    }
+
     function test_error_border_when_input_not_acceptable() {
         field.validator = rangeValidator
         field.text = "5"
         tryCompare(field.backgroundItem.border, "color", Theme.palette.error)
     }
-
     function test_error_text_color_when_input_not_acceptable() {
         field.validator = rangeValidator
         field.text = "5"
