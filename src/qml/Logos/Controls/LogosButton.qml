@@ -23,7 +23,7 @@ Control {
     }
 
     property alias text: label.text
-    property IconSpec icon: IconSpec {}
+    readonly property IconSpec icon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
     property int type: LogosButton.Variant.Secondary
 
