@@ -1,3 +1,40 @@
+// LogosButton — a themed push button with an optional icon.
+//
+// A Control that pairs a centered text label with an optional LogosIcon on
+// the left or right. Long labels are elided rather than overflowing the
+// button. Colors, border and cursor react to hover/press and enabled state.
+//
+// Public API:
+//     text     button label. Elided with "…" when it overflows.
+//     icon     IconSpec grouping the icon's source/size/position/color/
+//              brightness (see below). Empty source renders no icon.
+//     variant  LogosButton.Variant.Primary or .Secondary (default). Drives
+//              the background and border palette.
+//     radius   background corner radius. Default = Theme.spacing.radiusXlarge.
+//     clicked  signal emitted when an enabled button is clicked.
+//
+// icon (IconSpec) fields:
+//     source     URL of the icon asset. Empty renders nothing.
+//     size       icon footprint in px. Default 20.
+//     position   LogosButton.IconPosition.Left (default) or .Right.
+//     color      tint applied to the icon. Default = Theme.palette.text.
+//                Falls back to textMuted when the button is disabled.
+//     brightness MultiEffect brightness before tinting. Default 0.
+//
+// Read-only inspection aliases (for tests):
+//     mouseAreaItem  the MouseArea handling clicks/hover
+//     backgroundItem the background Rectangle
+//     labelItem      the text label
+//     iconItem       the active LogosIcon (left or right per icon.position)
+//
+// Example:
+//     LogosButton {
+//         text: "Refresh"
+//         variant: LogosButton.Variant.Primary
+//         icon.source: LogosIcons.refresh
+//         icon.position: LogosButton.IconPosition.Left
+//         onClicked: model.refresh()
+//     }
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
