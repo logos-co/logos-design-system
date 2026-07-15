@@ -55,24 +55,24 @@ TestCase {
     }
 
     function test_normal_text_color_without_validator() {
-        compare(field.textInput.color, Theme.palette.text)
+        tryCompare(field.textInput, "color", Theme.palette.text)
     }
 
     function test_error_border_when_input_not_acceptable() {
         field.validator = rangeValidator
         field.text = "5"
-        compare(field.backgroundItem.border.color, Theme.palette.error)
+        tryCompare(field.backgroundItem.border, "color", Theme.palette.error)
     }
 
     function test_error_text_color_when_input_not_acceptable() {
         field.validator = rangeValidator
         field.text = "5"
-        compare(field.textInput.color, Theme.palette.error)
+        tryCompare(field.textInput, "color", Theme.palette.error)
     }
 
     function test_normal_text_color_when_input_acceptable() {
         field.validator = rangeValidator
         field.text = "50"
-        compare(field.textInput.color, Theme.palette.text)
+        tryCompare(field.textInput, "color", Theme.palette.text)
     }
 }
