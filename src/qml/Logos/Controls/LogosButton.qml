@@ -1,3 +1,9 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+import Logos.Theme
+import Logos.Controls
 // LogosButton — a themed push button with an optional icon.
 //
 // A Control that pairs a centered text label with an optional LogosIcon on
@@ -35,12 +41,6 @@
 //         icon.position: LogosButton.IconPosition.Left
 //         onClicked: model.refresh()
 //     }
-import QtQuick
-import QtQuick.Controls
-import QtQuick.Layouts
-
-import Logos.Theme
-import Logos.Controls
 Control {
     id: root
 
