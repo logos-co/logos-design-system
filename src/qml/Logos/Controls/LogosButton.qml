@@ -17,7 +17,7 @@ Control {
         property real brightness: 0
         property color color: Theme.palette.text
 
-        readonly property bool isVisible: source != ""
+        readonly property bool isVisible: source.toString().length > 0
         readonly property bool isLeft: position === LogosButton.IconPosition.Left
         readonly property bool isRight: position === LogosButton.IconPosition.Right
     }
