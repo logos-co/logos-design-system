@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, validator, textInput"
+                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, validator, textInput, readOnly"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
