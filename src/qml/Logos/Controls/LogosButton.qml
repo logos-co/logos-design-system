@@ -111,7 +111,7 @@ Control {
 
         LogosIcon {
             id: iconLeft
-            source: root.icon.source
+            source: root.icon.isLeft ? root.icon.source : ""
             color: root.enabled ? root.icon.color : Theme.palette.textMuted
             visible: root.icon.isVisible
             opacity: root.icon.isLeft ? 1 : 0
