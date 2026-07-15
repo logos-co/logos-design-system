@@ -127,6 +127,7 @@ Control {
             font.weight: Theme.typography.weightMedium
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
+            Layout.alignment: Qt.AlignVCenter
             elide: Text.ElideRight
         }
 
