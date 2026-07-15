@@ -38,7 +38,7 @@ Control {
         color: Theme.palette.backgroundSecondary
         border.width: 1
         border.color: {
-            if (!input.acceptableInput)
+            if (input.validator && input.text.length > 0 && !input.acceptableInput)
                 return Theme.palette.error
             if (d.inputActiveFocus)
                 return Theme.palette.overlayOrange
