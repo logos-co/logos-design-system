@@ -66,9 +66,11 @@ TestCase {
 
     function test_disabled_wins_over_primary() {
         btn.variant = LogosButton.Variant.Primary
+        btn.icon.source = "qrc:/test-icon.png"
         btn.enabled = false
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         compare(btn.labelItem.color, Theme.palette.textMuted)
+        compare(btn.iconItem.color, Theme.palette.textMuted)
     }
 
     function test_icon_empty_by_default() {
