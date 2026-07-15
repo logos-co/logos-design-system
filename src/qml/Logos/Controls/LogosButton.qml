@@ -3,7 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import Logos.Theme
-
+import Logos.Controls
 Control {
     id: root
 
