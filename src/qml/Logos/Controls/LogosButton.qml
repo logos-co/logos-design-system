@@ -73,7 +73,7 @@ Control {
         LogosIcon {
             id: iconLeft
             source: root.icon.source
-            color: root.icon.color
+            color: root.enabled ? root.icon.color : Theme.palette.textMuted
             visible: root.icon.isVisible
             opacity: root.icon.isLeft ? 1 : 0
             Layout.preferredWidth: root.icon.size
