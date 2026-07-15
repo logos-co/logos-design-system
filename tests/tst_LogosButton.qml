@@ -87,9 +87,9 @@ TestCase {
     function test_icon_shows_on_left() {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Left
-        var slots = btn.contentItem.children
-        compare(slots[0].opacity, 1)
-        compare(slots[slots.length - 1].opacity, 0)
+        compare(btn.iconItem, btn.iconLeftItem)
+        compare(btn.iconLeftItem.opacity, 1)
+        compare(btn.iconRightItem.opacity, 0)
     }
 
     function test_icon_shows_on_right() {
