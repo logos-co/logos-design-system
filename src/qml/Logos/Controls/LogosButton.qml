@@ -72,6 +72,8 @@ Control {
     readonly property alias mouseAreaItem: mouseArea
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
+    readonly property alias iconLeftItem: iconLeft
+    readonly property alias iconRightItem: iconRight
     readonly property Item iconItem: root.icon.isRight ? iconRight : iconLeft
 
     implicitWidth: 200
