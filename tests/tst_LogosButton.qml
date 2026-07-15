@@ -73,7 +73,7 @@ TestCase {
         compare(btn.iconItem.color, Theme.palette.textMuted)
     }
 
-    function test_icon_empty_by_default() {
+    function test_icon_source_is_empty_after_init() {
         compare(btn.icon.source.toString(), "")
     }
 
