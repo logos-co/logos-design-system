@@ -67,7 +67,7 @@ Control {
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Theme.typography.secondaryText
-            color: input.acceptableInput ? Theme.palette.text : Theme.palette.error
+            color: input.validator && input.text.length > 0 && !input.acceptableInput ? Theme.palette.error : Theme.palette.text
             echoMode: root.echoMode
             onActiveFocusChanged: d.inputActiveFocus = input.activeFocus
         }
