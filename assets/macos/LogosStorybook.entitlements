@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Intentionally empty. The storybook is a self-contained Qt app that does
+  not load third-party plugins, so it needs no entitlements. We do NOT
+  ship com.apple.security.cs.disable-library-validation the way basecamp
+  does — basecamp needs it because it loads external module bundles
+  (dylibs / Qt plugins) at runtime; the storybook doesn't. Adding it
+  here would weaken hardened runtime without cause.
+
+  Ad-hoc signing (below) also runs without --options runtime, so no
+  entitlements would take effect anyway — this file is here so the
+  mkMacOSApp bundler always has a valid plist to embed if it needs one.
+  When we move to Developer ID + notarization + hardened runtime, revisit
+  this file with the specific keys the notarized bundle actually requires.
+-->
+<plist version="1.0">
+<dict>
+</dict>
+</plist>

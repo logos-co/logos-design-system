@@ -31,12 +31,15 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/bin
     cp build/storybook/LogosStorybook $out/bin/
 
-    # Storybook pages
-    mkdir -p $out/share/logos-storybook/pages
-    cp ${src}/storybook/pages/*.qml $out/share/logos-storybook/pages/
+    # Storybook pages: installed under lib/ so nix-bundle-dir carries them
+    # through. It closure-walks share/ (drops anything the binary doesn't
+    # reference by absolute path), but treats lib/ as blanket-copied.
+    # On macOS, mkMacOSApp then relocates lib/ subdirs into Resources/qt/qml/,
+    # so main.cpp checks both layouts.
+    mkdir -p $out/lib/pages
+    cp ${src}/storybook/pages/*.qml $out/lib/pages/
 
     # Logos.Theme + Logos.Controls (source layout matches import path)
-    mkdir -p $out/lib
     cp -r ${src}/src/qml/Logos $out/lib/
 
     runHook postInstall

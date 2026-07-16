@@ -107,12 +107,14 @@ int main(int argc, char* argv[])
 
     // Resolve QML import roots in priority order: env override, dev-build path
     // baked at compile time, post-build copy next to binary, install layout
-    // ($out/bin → $out/lib).
+    // ($out/bin → $out/lib), macOS .app layout (Resources/qt/qml/ — see
+    // nix-bundle-macos-app which relocates Frameworks/Logos there).
     const QStringList qmlImportCandidates = {
         qEnvironmentVariable("LOGOS_DS_QML"),
         QString::fromUtf8(LOGOS_DS_QML_DIR),
         binDir + "/qml",
         binDir + "/../lib",
+        binDir + "/../Resources/qt/qml",
     };
     QStringList watchableImports;
     for (const QString& p : qmlImportCandidates) {
@@ -121,20 +123,18 @@ int main(int argc, char* argv[])
     }
 
     // Pages dir: env override → dev-build path → install layout
-    // ($out/bin → $out/share/logos-storybook/pages).
-    const QString pagesDir = firstExisting({
+    // ($out/bin → $out/lib/pages) → macOS .app after mkMacOSApp relocation.
+    const QStringList pagesCandidates = {
         qEnvironmentVariable("LOGOS_STORYBOOK_PAGES"),
         QString::fromUtf8(STORYBOOK_PAGES_DIR),
-        binDir + "/../share/logos-storybook/pages",
-    });
+        binDir + "/../lib/pages",
+        binDir + "/../Resources/qt/qml/pages",
+    };
+    const QString pagesDir = firstExisting(pagesCandidates);
 
     if (pagesDir.isEmpty() || watchableImports.isEmpty()) {
         qCritical() << "LogosStorybook: could not locate pages or QML modules.\n"
-                    << "  pages tried:    " << QStringList{
-                        qEnvironmentVariable("LOGOS_STORYBOOK_PAGES"),
-                        QString::fromUtf8(STORYBOOK_PAGES_DIR),
-                        binDir + "/../share/logos-storybook/pages"
-                       }
+                    << "  pages tried:    " << pagesCandidates
                     << "\n  qml tried:      " << qmlImportCandidates;
         return -1;
     }
