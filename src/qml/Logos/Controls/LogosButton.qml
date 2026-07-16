@@ -87,7 +87,7 @@ Control {
         color: {
             if (!root.enabled)
                 return Theme.palette.backgroundMuted
-            if (root.variant == LogosButton.Variant.Primary)
+            if (root.variant === LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.primaryHover : Theme.palette.primary
             return root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundSecondary
         }
@@ -96,13 +96,9 @@ Control {
         border.color: {
             if (!root.enabled)
                 return Theme.palette.border
-            if (root.variant == LogosButton.Variant.Primary)
+            if (root.variant === LogosButton.Variant.Primary)
                 return root.isActive ? Theme.palette.overlayOrange : Theme.palette.primary
             return root.isActive ? Theme.palette.overlayOrange : Theme.palette.border
-        }
-
-        Behavior on color {
-            ColorAnimation { duration: 150 }
         }
     }
 
