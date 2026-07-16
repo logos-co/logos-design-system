@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, validator, textInput, readOnly"
+                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, validator, readOnly, enabled, textInput"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -90,6 +90,28 @@ Rectangle {
                 LogosTextField {
                     placeholderText: "1 – 100"
                     validator: IntValidator { bottom: 1; top: 100 }
+                    Layout.preferredWidth: 320
+                }
+
+                LogosText {
+                    text: "Read-only"
+                    Layout.preferredWidth: 140
+                    color: Theme.palette.textSecondary
+                }
+                LogosTextField {
+                    text: "Cannot edit this"
+                    readOnly: true
+                    Layout.preferredWidth: 320
+                }
+
+                LogosText {
+                    text: "Disabled"
+                    Layout.preferredWidth: 140
+                    color: Theme.palette.textSecondary
+                }
+                LogosTextField {
+                    text: "Unavailable"
+                    enabled: false
                     Layout.preferredWidth: 320
                 }
             }

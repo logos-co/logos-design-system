@@ -22,11 +22,6 @@ Control {
     readonly property alias placeholderItem: placeholder
     readonly property alias backgroundItem: bg
 
-    QtObject {
-        id: d
-        property bool inputActiveFocus: false
-    }
-
     implicitWidth: 200
     implicitHeight: 40
     leftPadding: 12
@@ -41,7 +36,7 @@ Control {
         border.color: {
             if (input.validator && input.text.length > 0 && !input.acceptableInput)
                 return Theme.palette.error
-            if (d.inputActiveFocus)
+            if (input.activeFocus)
                 return Theme.palette.overlayOrange
             return Theme.palette.backgroundElevated
         }
@@ -70,9 +65,7 @@ Control {
             font.pixelSize: Theme.typography.secondaryText
             color: input.validator && input.text.length > 0 && !input.acceptableInput ? Theme.palette.error : Theme.palette.text
             echoMode: root.echoMode
-            onActiveFocusChanged: d.inputActiveFocus = input.activeFocus
+            enabled: root.enabled
         }
-
-        Component.onCompleted: d.inputActiveFocus = input.activeFocus
     }
 }
