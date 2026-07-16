@@ -56,7 +56,7 @@ TestCase {
 
     function test_border_color_applies_when_not_focused() {
         field.textInput.focus = false
-        compare(field.textInput.activeFocus, false)
+        tryCompare(field.textInput, "activeFocus", false)
 
         field.borderColor = Theme.palette.primary
         tryCompare(field.backgroundItem.border, "color", Theme.palette.primary)
