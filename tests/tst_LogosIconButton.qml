@@ -72,10 +72,19 @@ TestCase {
     }
 
     function test_active_colors_when_pressed() {
-        mousePress(btn)
+        // Route synthesized events to the MouseArea directly (more reliable in offscreen runs).
+        mousePress(btn.mouseAreaItem)
         compare(btn.backgroundItem.color, Theme.palette.backgroundMuted)
         compare(btn.backgroundItem.border.color, Theme.palette.overlayOrange)
-        mouseRelease(btn)
+
+        mouseRelease(btn.mouseAreaItem)
+
+        // Cursor is still over the button, so hover keeps the active styling.
+        compare(btn.backgroundItem.color, Theme.palette.backgroundMuted)
+        compare(btn.backgroundItem.border.color, Theme.palette.overlayOrange)
+
+        // Move away to clear hover and verify the inactive styling.
+        mouseMove(root, 0, 0)
         compare(btn.backgroundItem.color, Theme.palette.backgroundButton)
         compare(btn.backgroundItem.border.color, Theme.palette.borderStrong)
     }
