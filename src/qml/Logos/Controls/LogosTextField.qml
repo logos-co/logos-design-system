@@ -11,6 +11,8 @@ Control {
     property alias text: input.text
     property string placeholderText: ""
     property color placeholderTextColor: Theme.palette.textTertiary
+    property color backgroundColor: Theme.palette.backgroundSecondary
+    property color borderColor: Theme.palette.backgroundElevated
     property int echoMode: TextInput.Normal
 
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
@@ -18,6 +20,7 @@ Control {
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias placeholderItem: placeholder
+    readonly property alias backgroundItem: bg
 
     QtObject {
         id: d
@@ -31,10 +34,11 @@ Control {
     clip: true
 
     background: Rectangle {
+        id: bg
         radius: Theme.spacing.radiusSmall
-        color: Theme.palette.backgroundSecondary
+        color: root.backgroundColor
         border.width: 1
-        border.color: d.inputActiveFocus ? Theme.palette.overlayOrange : Theme.palette.backgroundElevated
+        border.color: d.inputActiveFocus ? Theme.palette.overlayOrange : root.borderColor
     }
 
     contentItem: Item {

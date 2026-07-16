@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
 
 TestCase {
@@ -21,6 +22,8 @@ TestCase {
         field.text = ""
         field.placeholderText = "Enter text"
         field.echoMode = TextInput.Normal
+        field.backgroundColor = Theme.palette.backgroundSecondary
+        field.borderColor = Theme.palette.backgroundElevated
     }
 
     function test_text_alias_get_set() {
@@ -44,5 +47,15 @@ TestCase {
     function test_echo_mode_propagates_to_text_input() {
         field.echoMode = TextInput.Password
         compare(field.textInput.echoMode, TextInput.Password)
+    }
+
+    function test_background_color_applies_to_background() {
+        field.backgroundColor = Theme.palette.primary
+        compare(field.backgroundItem.color, Theme.palette.primary)
+    }
+
+    function test_border_color_applies_when_not_focused() {
+        field.borderColor = Theme.palette.primary
+        compare(field.backgroundItem.border.color, Theme.palette.primary)
     }
 }

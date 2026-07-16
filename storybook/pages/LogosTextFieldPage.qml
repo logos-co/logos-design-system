@@ -25,7 +25,8 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, placeholderText, placeholderTextColor, echoMode, textInput"
+                text: "Public API: text, placeholderText, placeholderTextColor, backgroundColor, "
+                      + "borderColor, echoMode, textInput"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -79,6 +80,17 @@ Rectangle {
                 LogosTextField {
                     text: "supersecret"
                     echoMode: TextInput.Password
+                    Layout.preferredWidth: 320
+                }
+
+                LogosText {
+                    text: "Custom colors"
+                    Layout.preferredWidth: 140
+                    color: Theme.palette.textSecondary
+                }
+                LogosTextField {
+                    backgroundColor: Theme.palette.backgroundElevated
+                    borderColor: Theme.palette.primary
                     Layout.preferredWidth: 320
                 }
             }
