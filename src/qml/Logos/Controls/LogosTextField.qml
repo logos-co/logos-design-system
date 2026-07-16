@@ -12,12 +12,14 @@ Control {
     property string placeholderText: ""
     property color placeholderTextColor: Theme.palette.textTertiary
     property int echoMode: TextInput.Normal
+    property alias validator: input.validator
 
     /** Expose the inner TextInput for advanced use (cursorPosition, select, etc.) */
     readonly property alias textInput: input
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias placeholderItem: placeholder
+    readonly property alias backgroundItem: bg
 
     QtObject {
         id: d
@@ -31,10 +33,17 @@ Control {
     clip: true
 
     background: Rectangle {
+        id: bg
         radius: Theme.spacing.radiusSmall
         color: Theme.palette.backgroundSecondary
         border.width: 1
-        border.color: d.inputActiveFocus ? Theme.palette.overlayOrange : Theme.palette.backgroundElevated
+        border.color: {
+            if (input.validator && input.text.length > 0 && !input.acceptableInput)
+                return Theme.palette.error
+            if (d.inputActiveFocus)
+                return Theme.palette.overlayOrange
+            return Theme.palette.backgroundElevated
+        }
     }
 
     contentItem: Item {
@@ -58,7 +67,7 @@ Control {
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
             font.pixelSize: Theme.typography.secondaryText
-            color: Theme.palette.text
+            color: input.validator && input.text.length > 0 && !input.acceptableInput ? Theme.palette.error : Theme.palette.text
             echoMode: root.echoMode
             onActiveFocusChanged: d.inputActiveFocus = input.activeFocus
         }
