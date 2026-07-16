@@ -47,9 +47,9 @@ Control {
 
     background: Rectangle {
         id: bg
-        color: Theme.palette.backgroundButton
+        color: root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundButton
         radius: Theme.spacing.radiusPill
-        border.color: Theme.palette.borderStrong
+        border.color: root.isActive ? Theme.palette.overlayOrange : Theme.palette.borderStrong
         border.width: 1
         antialiasing: true
     }

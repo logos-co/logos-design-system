@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
 
 TestCase {
@@ -68,5 +69,14 @@ TestCase {
         verify(btn.iconImage, "iconImage must resolve")
         verify(btn.backgroundItem, "backgroundItem must resolve")
         verify(btn.mouseAreaItem, "mouseAreaItem must resolve")
+    }
+
+    function test_active_colors_when_pressed() {
+        mousePress(btn)
+        compare(btn.backgroundItem.color, Theme.palette.backgroundMuted)
+        compare(btn.backgroundItem.border.color, Theme.palette.overlayOrange)
+        mouseRelease(btn)
+        compare(btn.backgroundItem.color, Theme.palette.backgroundButton)
+        compare(btn.backgroundItem.border.color, Theme.palette.borderStrong)
     }
 }
