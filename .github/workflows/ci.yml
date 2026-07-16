@@ -9,12 +9,9 @@ on:
 
 jobs:
   # Nix build on Linux — source of truth for correctness. Builds the QML
-  # library, runs unit tests, and builds the storybook via nix (same as
-  # `nix build .#storybook` locally). No artifact upload: producing a
-  # redistributable AppImage from the nix output would require wiring
-  # nix-bundle-appimage + a .desktop file + an icon (see
-  # logos-basecamp/flake.nix for the pattern). Named storybook-linux to
-  # match the storybook-macos / storybook-windows pattern.
+  # library, runs unit tests, and produces an .AppImage via
+  # nix-bundle-appimage (same pattern as logos-basecamp/flake.nix's
+  # bin-appimage output).
   storybook-linux:
     runs-on: ubuntu-latest
     steps:
@@ -39,18 +36,31 @@ jobs:
       - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
 
-  # Nix build on macOS — validates the storybook builds cleanly on Darwin.
-  # Uses DeterminateSystems installer because cachix/install-nix-action fails
-  # on current macos-latest runners (same choice basecamp made — see
-  # logos-basecamp/.github/workflows/build.yml). No artifact upload; a
-  # distributable .app would need nix-bundle-macos-app + Info.plist + .icns
-  # wiring.
+      - name: Build AppImage
+        run: nix build .#bin-appimage --print-build-logs -o result-appimage
+
+      - name: Stage AppImage for upload
+        run: |
+          mkdir -p out
+          cp -L result-appimage/*.AppImage out/LogosStorybook-linux-x86_64.AppImage
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogosStorybook-linux-x86_64.AppImage
+          path: out/LogosStorybook-linux-x86_64.AppImage
+          if-no-files-found: error
+
+  # Nix build on macOS — validates the storybook builds cleanly on Darwin
+  # and produces a .app bundle via nix-bundle-macos-app. Uses
+  # DeterminateSystems installer because cachix/install-nix-action fails on
+  # current macos-latest runners (same choice basecamp made).
   storybook-macos:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/nix-installer-action@v22
 
       - uses: cachix/cachix-action@v15
         with:
@@ -63,9 +73,34 @@ jobs:
       - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
 
-  # Windows build via plain CMake + Qt from install-qt-action. Nix isn't an
-  # option on Windows, so this is the only path — and the only OS that
-  # currently produces a downloadable artifact.
+      - name: Build .app bundle
+        run: nix build .#bin-macos-app --print-build-logs -o result
+
+      - name: Package .app as tarball
+        run: |
+          # Mirrors logos-basecamp's approach: no codesigning in CI, ship
+          # a plain tar.gz. Users extract via `tar -xzf` in Terminal, which
+          # does NOT propagate the com.apple.quarantine attribute — so the
+          # unsigned .app runs without Gatekeeper's "damaged" refusal.
+          # (A .zip would auto-expand in Safari and DO propagate quarantine,
+          # which is why zip + unsigned + Gatekeeper = "damaged" dialog.)
+          #
+          # `-maxdepth 1` goes before `-name` for BSD `find` (macOS) — BSD
+          # rejects `-maxdepth` after other primaries. GNU find is lenient.
+          app=$(find result/ -maxdepth 1 -name '*.app' -print -quit)
+          tar -czf LogosStorybook-macos-unsigned.app.tar.gz \
+            -C result "$(basename "$app")"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LogosStorybook-macos-unsigned.app.tar.gz
+          path: LogosStorybook-macos-unsigned.app.tar.gz
+          if-no-files-found: error
+
+  # Windows build via plain CMake + Qt from install-qt-action. Nix isn't
+  # an option on Windows, so this is the only path. Linux and macOS also
+  # produce artifacts (AppImage and .app.tar.gz respectively) — see above.
   storybook-windows:
     runs-on: windows-latest
     steps:
@@ -100,7 +135,7 @@ jobs:
 
           $stage = "stage\LogosStorybook"
           New-Item -ItemType Directory -Force -Path `
-            "$stage\bin","$stage\share\logos-storybook\pages" | Out-Null
+            "$stage\bin","$stage\lib\pages" | Out-Null
 
           $exe = if (Test-Path "build\storybook\Release\LogosStorybook.exe") {
             "build\storybook\Release\LogosStorybook.exe"
@@ -109,7 +144,7 @@ jobs:
           }
           Copy-Item $exe "$stage\bin\"
           Copy-Item -Recurse "build\storybook\qml" "$stage\bin\qml"
-          Copy-Item "storybook\pages\*.qml" "$stage\share\logos-storybook\pages\"
+          Copy-Item "storybook\pages\*.qml" "$stage\lib\pages\"
 
           & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
             --qmldir "storybook" `
@@ -129,7 +164,7 @@ jobs:
 
   pr-comment:
     if: github.event_name == 'pull_request'
-    needs: storybook-windows
+    needs: [storybook-linux, storybook-macos, storybook-windows]
     runs-on: ubuntu-latest
     permissions:
       pull-requests: write
@@ -141,17 +176,24 @@ jobs:
           message: |
             ### Storybook CI builds
 
-            Windows artifact is available on the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) (requires GitHub login).
+            Artifacts are available on the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) (requires GitHub login).
 
             | Platform | How to get it |
             |----------|---------------|
-            | Linux    | `nix build .#storybook` (built + cached in this run) |
-            | macOS    | `nix build .#storybook` (built + cached in this run) |
+            | Linux    | `LogosStorybook-linux-x86_64.AppImage` (uploaded artifact) |
+            | macOS    | `LogosStorybook-macos-unsigned.app.tar.gz` (uploaded artifact) |
             | Windows  | `LogosStorybook-windows-x86_64.zip` (uploaded artifact) |
+
+            **macOS**: extract via Terminal, not Finder, so `com.apple.quarantine` doesn't propagate to the `.app`:
+            ```
+            tar -xzf LogosStorybook-macos-unsigned.app.tar.gz
+            open LogosStorybook.app
+            ```
+            First launch still shows *"cannot verify developer"* (no Apple Developer ID yet) — right-click → **Open** → **Open** once and macOS remembers.
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: storybook-windows
+    needs: [storybook-linux, storybook-macos, storybook-windows]
     runs-on: ubuntu-latest
     permissions:
       contents: write
