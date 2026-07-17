@@ -81,4 +81,13 @@ TestCase {
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
     }
+
+    function test_disabled_stays_inactive_on_press() {
+        btn.enabled = false
+        mousePress(btn)
+        verify(!btn.isActive)
+        tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
+        tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
+        mouseRelease(btn)
+    }
 }

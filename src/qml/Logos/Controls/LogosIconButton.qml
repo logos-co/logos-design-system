@@ -32,7 +32,7 @@ Control {
     property int   size: 40
     property int   iconSize: 20
 
-    readonly property bool isActive: mouseArea.pressed || root.hovered
+    readonly property bool isActive: root.enabled && (mouseArea.pressed || root.hovered)
 
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
