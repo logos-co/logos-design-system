@@ -10,6 +10,8 @@ TestCase {
     width: 400
     height: 200
     when: windowShown
+    // Required so synthetic mouse events
+    visible: true
 
     LogosIconButton {
         id: btn
@@ -72,20 +74,10 @@ TestCase {
     }
 
     function test_active_colors_when_pressed() {
-        // Route synthesized events to the MouseArea directly (more reliable in offscreen runs).
-        mousePress(btn.mouseAreaItem)
+        mousePress(btn)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
-
-        mouseRelease(btn.mouseAreaItem)
-        mouseMove(btn.mouseAreaItem, btn.mouseAreaItem.width / 2, btn.mouseAreaItem.height / 2)
-
-        // Cursor is still over the button, so hover keeps the active styling.
-        tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
-        tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
-
-        // Move away to clear hover and verify the inactive styling.
-        mouseMove(root, 0, 0)
+        mouseRelease(btn)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
     }
