@@ -78,6 +78,7 @@ TestCase {
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
 
         mouseRelease(btn.mouseAreaItem)
+        mouseMove(btn.mouseAreaItem, btn.mouseAreaItem.width / 2, btn.mouseAreaItem.height / 2)
 
         // Cursor is still over the button, so hover keeps the active styling.
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
