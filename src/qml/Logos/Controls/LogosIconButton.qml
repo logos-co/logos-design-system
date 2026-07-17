@@ -32,7 +32,14 @@ Control {
     property int   size: 40
     property int   iconSize: 20
 
-    property bool isActive: root.enabled && (mouseArea.pressed || root.hovered)
+    QtObject {
+        id: d
+        property bool forceActive: false
+    }
+    readonly property alias _d: d
+
+    readonly property bool isActive: root.enabled
+                                     && (d.forceActive || mouseArea.pressed || root.hovered)
 
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
