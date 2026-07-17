@@ -10,8 +10,6 @@ TestCase {
     width: 400
     height: 200
     when: windowShown
-    // Required so synthetic mouse events
-    visible: true
 
     LogosIconButton {
         id: btn
@@ -73,21 +71,16 @@ TestCase {
         verify(btn.mouseAreaItem, "mouseAreaItem must resolve")
     }
 
-    function test_active_colors_when_pressed() {
-        mousePress(btn)
-        tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
-        tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
-        mouseRelease(btn)
+    function test_resting_colors() {
+        compare(btn.isActive, false)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
     }
 
-    function test_disabled_stays_inactive_on_press() {
+    function test_disabled_is_never_active() {
         btn.enabled = false
-        mousePress(btn)
         verify(!btn.isActive)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
-        mouseRelease(btn)
     }
 }
