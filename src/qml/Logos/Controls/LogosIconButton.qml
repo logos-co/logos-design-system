@@ -34,11 +34,9 @@ Control {
 
     QtObject {
         id: d
-        property bool forceActive: false
+        property bool forceActive: false // test-only: override isActive without input events
     }
-    readonly property alias _d: d
-
-    readonly property bool isActive: root.enabled
+    readonly property alias _d: d // inspection-only (tests/tooling)
                                      && (d.forceActive || mouseArea.pressed || root.hovered)
 
     readonly property alias iconImage: iconImg
