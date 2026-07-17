@@ -82,7 +82,7 @@ TestCase {
 
         // Cursor is still over the button, so hover keeps the active styling.
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
-        tryCompare(btn.backgroundItem, "border.color", Theme.palette.overlayOrange)
+        tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
 
         // Move away to clear hover and verify the inactive styling.
         mouseMove(root, 0, 0)
