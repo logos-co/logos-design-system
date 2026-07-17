@@ -87,6 +87,6 @@ TestCase {
         // Move away to clear hover and verify the inactive styling.
         mouseMove(root, 0, 0)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
-        tryCompare(btn.backgroundItem, "border.color", Theme.palette.borderStrong)
+        tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
     }
 }
