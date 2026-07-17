@@ -75,7 +75,7 @@ TestCase {
         // Route synthesized events to the MouseArea directly (more reliable in offscreen runs).
         mousePress(btn.mouseAreaItem)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
-        tryCompare(btn.backgroundItem, "border.color", Theme.palette.overlayOrange)
+        tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
 
         mouseRelease(btn.mouseAreaItem)
 
