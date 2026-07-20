@@ -32,8 +32,7 @@ Control {
     property int   size: 40
     property int   iconSize: 20
 
-    readonly property bool isActive: mouseArea.pressed || root.hovered
-
+    readonly property bool isActive: enabled && (mouseArea.pressed || root.hovered || root.activeFocus)
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
     readonly property alias mouseAreaItem: mouseArea
@@ -47,9 +46,9 @@ Control {
 
     background: Rectangle {
         id: bg
-        color: Theme.palette.backgroundButton
+        color: root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundButton
         radius: Theme.spacing.radiusPill
-        border.color: Theme.palette.borderStrong
+        border.color: root.isActive ? Theme.palette.overlayOrange : Theme.palette.borderStrong
         border.width: 1
         antialiasing: true
     }
