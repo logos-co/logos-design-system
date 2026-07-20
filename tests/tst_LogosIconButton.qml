@@ -29,7 +29,7 @@ TestCase {
         btn.iconSource = "qrc:/test-icon.png"
         btn.size = 40
         btn.iconSize = 20
-        btn._d.forceActive = false
+        btn.focus = false
     }
 
     function test_iconSource_round_trips() {
@@ -79,14 +79,14 @@ TestCase {
     }
 
     function test_active_colors() {
-        btn._d.forceActive = true
+        btn.forceActiveFocus()
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
     }
 
     function test_disabled_is_never_active() {
         btn.enabled = false
-        btn._d.forceActive = true
+        btn.forceActiveFocus()
         verify(!btn.isActive)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)

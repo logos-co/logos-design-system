@@ -32,14 +32,7 @@ Control {
     property int   size: 40
     property int   iconSize: 20
 
-QtObject {
-        id: d
-        property bool forceActive: false // test-only: override isActive without input events
-    }
-
-    readonly property bool isActive: enabled && (d.forceActive || mouseArea.pressed || root.hovered)
-    readonly property alias _d: d // inspection-only (tests/tooling)
-
+    readonly property bool isActive: enabled && (mouseArea.pressed || root.hovered || root.activeFocus)
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
     readonly property alias mouseAreaItem: mouseArea
