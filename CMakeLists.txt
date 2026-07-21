@@ -62,6 +62,7 @@ set(CONTROLS_SOURCES
     src/qml/Logos/Controls/LogosMenu.qml
     src/qml/Logos/Controls/LogosMenuItem.qml
     src/qml/Logos/Controls/LogosDialog.qml
+    src/qml/Logos/Controls/LogosWarningDialog.qml
     src/qml/Logos/Controls/LogosToolBar.qml
     src/qml/Logos/Controls/LogosToolButton.qml
     src/qml/Logos/Controls/LogosFrame.qml

@@ -11,14 +11,12 @@ Rectangle {
 
     color: Theme.palette.background
 
+    // message: shorthand — no contentItem override needed for simple text.
     LogosDialog {
         id: confirmDlg
         anchors.centerIn: Overlay.overlay
         title: "Confirm action"
-        contentItem: LogosText {
-            text: "Are you sure you want to proceed? This action cannot be undone."
-            wrapMode: Text.WordWrap
-        }
+        message: "Are you sure you want to proceed? This action cannot be undone."
         rightActions: [
             LogosButton { text: "Cancel"; implicitWidth: 100; onClicked: confirmDlg.reject() },
             LogosButton { text: "Confirm"; implicitWidth: 100; onClicked: confirmDlg.accept() }
@@ -56,8 +54,8 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: Dialog (title, modal, accepted(), rejected(), accept(), reject(), open(), close()) "
-                      + "+ leftActions, rightActions (list<Item>). Aliases: backgroundItem, headerItem, footerItem."
+                text: "Public API: title, message (convenience body text), leftActions, rightActions (list<Item>). "
+                      + "Override contentItem for rich bodies. Aliases: backgroundItem, headerItem, footerItem, messageItem."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText

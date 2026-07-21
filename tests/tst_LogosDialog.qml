@@ -21,6 +21,14 @@ TestCase {
         ]
     }
 
+    function init() {
+        dlg.close()
+        dlg.title = "Confirm"
+        dlg.message = ""
+    }
+
+    // ── Existing alias / structural contract ─────────────────────────────
+
     function test_aliases_resolve() {
         verify(dlg.backgroundItem)
         verify(dlg.headerItem)
@@ -52,5 +60,27 @@ TestCase {
         tryCompare(dlg, "opened", true)
         dlg.close()
         tryCompare(dlg, "opened", false)
+    }
+
+    // ── message / messageItem (new API) ───────────────────────────────────
+
+    function test_messageItem_alias_resolves() {
+        verify(dlg.messageItem !== null)
+    }
+
+    function test_message_empty_by_default() {
+        compare(dlg.message, "")
+    }
+
+    function test_message_round_trips() {
+        dlg.message = "Are you sure?"
+        compare(dlg.message, "Are you sure?")
+        dlg.message = ""
+        compare(dlg.message, "")
+    }
+
+    function test_messageItem_text_tracks_message() {
+        dlg.message = "Confirmation needed."
+        tryCompare(dlg.messageItem, "text", "Confirmation needed.")
     }
 }

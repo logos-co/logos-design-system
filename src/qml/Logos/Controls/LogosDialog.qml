@@ -10,14 +10,16 @@ Dialog {
 
     property color borderColor: Theme.palette.border
     property color backgroundColor: Theme.palette.backgroundSecondary
+    property string message: ""
 
     property list<Item> leftActions
     property list<Item> rightActions
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias backgroundItem: bg
-    readonly property alias headerItem: titleLabel
-    readonly property alias footerItem: footerWrap
+    readonly property alias headerItem:     titleLabel
+    readonly property alias footerItem:     footerWrap
+    readonly property alias messageItem:    messageText
 
     modal: true
     padding: Theme.spacing.large
@@ -26,6 +28,7 @@ Dialog {
         id: bg
         color: root.backgroundColor
         border.color: root.borderColor
+        border.width: 1
         radius: Theme.spacing.radiusLarge
     }
 
@@ -40,6 +43,15 @@ Dialog {
         rightPadding: Theme.spacing.large
         bottomPadding: Theme.spacing.small
         visible: root.title.length > 0
+    }
+
+    contentItem: LogosText {
+        id: messageText
+        visible: root.message.length > 0
+        text: root.message
+        color: Theme.palette.textSecondary
+        font.pixelSize: Theme.typography.secondaryText
+        wrapMode: Text.WordWrap
     }
 
     footer: Rectangle {
