@@ -14,9 +14,12 @@ import Logos.Controls
 // info severity levels.
 //
 // Public API (additions over LogosDialog):
-//     accentColor   Color applied to the icon tint and border.
-//                   Default: Theme.palette.accentOrange
-//     iconSource    URL of the header icon. Default: LogosIcons.warning.
+//     accentColor     Color applied to the icon tint and border.
+//                     Default: Theme.palette.accentOrange
+//     iconSource      URL of the header icon. Default: LogosIcons.warning.
+//
+// Read-only inspection aliases:
+//     warningIconItem  The LogosIcon in the header (for tests / tooling).
 //
 // Inherited from LogosDialog:
 //     message       Convenience body text — renders as themed LogosText.
@@ -45,6 +48,9 @@ LogosDialog {
 
     property color accentColor: Theme.palette.accentOrange
     property url   iconSource:  LogosIcons.warning
+
+    // only for tests
+    readonly property alias warningIconItem: warningIcon
 
     // Wire accentColor to the inherited borderColor.
     borderColor: root.accentColor

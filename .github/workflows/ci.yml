@@ -70,6 +70,9 @@ jobs:
       - name: Build design system QML library
         run: nix build --print-build-logs
 
+      - name: Run unit tests
+        run: nix build ".#checks.$(nix eval --impure --raw --expr builtins.currentSystem).tests" --print-build-logs
+
       - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
 
@@ -123,10 +126,19 @@ jobs:
           cmake -S . -B build
           -DCMAKE_BUILD_TYPE=Release
           -DLOGOS_DS_BUILD_STORYBOOK=ON
+          -DLOGOS_DS_BUILD_TESTS=ON
 
       - name: Build
         shell: bash
         run: cmake --build build --config Release --target LogosStorybook
+
+      - name: Build tests
+        shell: bash
+        run: cmake --build build --config Release --target LogosDesignSystemTests
+
+      - name: Run unit tests
+        shell: bash
+        run: ctest --test-dir build --build-config Release --output-on-failure
 
       - name: Package
         shell: pwsh
