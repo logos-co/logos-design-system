@@ -17,10 +17,12 @@ QtObject {
     readonly property url more:     Qt.resolvedUrl("icons/more.svg")
     readonly property url search:   Qt.resolvedUrl("icons/search.svg")
     readonly property url close:    Qt.resolvedUrl("icons/close.svg")
+    readonly property url copy:     Qt.resolvedUrl("icons/copy.svg")
 
     // View modes
     readonly property url grid:     Qt.resolvedUrl("icons/grid.svg")
     readonly property url list:     Qt.resolvedUrl("icons/list.svg")
+    readonly property url pages:    Qt.resolvedUrl("icons/pages.svg")
 
     // Status
     readonly property url warning:  Qt.resolvedUrl("icons/warning.svg")

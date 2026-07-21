@@ -59,7 +59,18 @@ Rectangle {
                     { name: "install", value: LogosIcons.install },
                     { name: "trash",   value: LogosIcons.trash },
                     { name: "more",    value: LogosIcons.more },
-                    { name: "search",  value: LogosIcons.search }
+                    { name: "search",  value: LogosIcons.search },
+                    { name: "close",   value: LogosIcons.close },
+                    { name: "copy",    value: LogosIcons.copy }
+                ]
+            }
+
+            Section {
+                title: "View Modes"
+                items: [
+                    { name: "grid",  value: LogosIcons.grid },
+                    { name: "list",  value: LogosIcons.list },
+                    { name: "pages", value: LogosIcons.pages }
                 ]
             }
 
