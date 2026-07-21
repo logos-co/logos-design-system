@@ -44,6 +44,7 @@ ApplicationWindow {
         { section: "Controls", title: "LogosToolTip",   file: "LogosToolTipPage.qml" },
 
         { section: "Controls (not designed)", title: "LogosDialog",         file: "LogosDialogPage.qml" },
+        { section: "Controls (not designed)", title: "LogosWarningDialog",  file: "LogosWarningDialogPage.qml" },
         { section: "Controls (not designed)", title: "LogosDrawer",         file: "LogosDrawerPage.qml" },
         { section: "Controls (not designed)", title: "LogosFrame",          file: "LogosFramePage.qml" },
         { section: "Controls (not designed)", title: "LogosGroupBox",       file: "LogosGroupBoxPage.qml" },

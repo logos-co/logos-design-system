@@ -22,6 +22,7 @@ LogosSlider 1.0 LogosSlider.qml
 LogosMenu 1.0 LogosMenu.qml
 LogosMenuItem 1.0 LogosMenuItem.qml
 LogosDialog 1.0 LogosDialog.qml
+LogosWarningDialog 1.0 LogosWarningDialog.qml
 LogosToolBar 1.0 LogosToolBar.qml
 LogosToolButton 1.0 LogosToolButton.qml
 LogosFrame 1.0 LogosFrame.qml
