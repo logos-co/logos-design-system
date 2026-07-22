@@ -230,6 +230,9 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     needs: [storybook-linux, storybook-macos, storybook-windows]
     runs-on: ubuntu-latest
+    concurrency:
+      group: canary-${{ github.ref }}
+      cancel-in-progress: true
     permissions:
       contents: write
     steps:
