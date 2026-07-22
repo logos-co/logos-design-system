@@ -220,3 +220,62 @@ jobs:
           files: artifacts/*
           generate_release_notes: true
           fail_on_unmatched_files: true
+
+  # Rolling per-commit build of master. Recreated on every push so the
+  # `canary` tag/release always points at HEAD. Marked as prerelease with
+  # make_latest=false so real semver `v*` tags keep the "Latest" badge in
+  # the sidebar. Stable download URL:
+  #   https://github.com/<owner>/<repo>/releases/tag/canary
+  canary:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    needs: [storybook-linux, storybook-macos, storybook-windows]
+    runs-on: ubuntu-latest
+    concurrency:
+      group: canary-${{ github.ref }}
+      cancel-in-progress: true
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      # Delete the previous canary release + tag so the recreated one gets a
+      # fresh "published at" timestamp. `|| true` because the very first run
+      # has nothing to delete.
+      - name: Remove previous canary release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete canary --yes --cleanup-tag \
+            --repo "${{ github.repository }}" || true
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: canary
+          name: Canary (master)
+          target_commitish: ${{ github.sha }}
+          prerelease: true
+          make_latest: 'false'
+          body: |
+            Rolling build from `master`. Recreated on every push — always
+            reflects the current HEAD. Not a stable release; see the
+            releases list for tagged `v*` versions.
+
+            - Commit: ${{ github.sha }}
+            - Built: ${{ github.event.head_commit.timestamp }}
+
+            | Platform | File |
+            |----------|------|
+            | Linux    | `LogosStorybook-linux-x86_64.AppImage` |
+            | macOS    | `LogosStorybook-macos-unsigned.app.tar.gz` |
+            | Windows  | `LogosStorybook-windows-x86_64.zip` |
+
+            macOS: extract via Terminal so quarantine doesn't propagate:
+            ```
+            tar -xzf LogosStorybook-macos-unsigned.app.tar.gz
+            open LogosStorybook.app
+            ```
+          files: artifacts/*
+          fail_on_unmatched_files: true
