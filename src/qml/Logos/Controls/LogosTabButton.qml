@@ -80,4 +80,8 @@ TabButton {
             }
         }
     }
+
+    HoverHandler {
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
 }

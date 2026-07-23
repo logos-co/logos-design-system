@@ -122,6 +122,7 @@ ComboBox {
     }
 
     delegate: ItemDelegate {
+        id: comboItem
         width: root.width
         highlighted: root.highlightedIndex === index
 
@@ -135,5 +136,13 @@ ComboBox {
         background: Rectangle {
             color: parent.highlighted ? Theme.palette.surface : "transparent"
         }
+
+        HoverHandler {
+            cursorShape: comboItem.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        }
+    }
+
+    HoverHandler {
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
 }
