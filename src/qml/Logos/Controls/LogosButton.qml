@@ -7,11 +7,14 @@ import Logos.Controls
 // LogosButton — a themed push button with an optional icon.
 //
 // A Control that pairs a centered text label with an optional LogosIcon on
-// the left or right. Long labels are elided rather than overflowing the
-// button. Colors, border and cursor react to hover/press and enabled state.
+// the left or right. The implicit size follows the content, so a button left
+// at its natural size fits its own label; a label constrained by an explicit
+// width is elided rather than overflowing the button. Colors, border and
+// cursor react to hover/press and enabled state.
 //
 // Public API:
-//     text     button label. Elided with "…" when it overflows.
+//     text     button label. Drives the implicit width. Elided with "…" when
+//              the button is narrower than the label.
 //     icon     IconSpec grouping the icon's source/size/position/color/
 //              brightness (see below). Empty source renders no icon.
 //     variant  LogosButton.Variant.Primary or .Secondary (default). Drives
@@ -76,10 +79,15 @@ Control {
     readonly property alias iconRightItem: iconRight
     readonly property Item iconItem: root.icon.isRight ? iconRight : iconLeft
 
-    implicitWidth: 200
-    implicitHeight: 50
+    // Floors keep short labels ("OK") on a balanced pill, and hold the height
+    // steady whether or not the button carries a default-sized (20px) icon;
+    // beyond them the content decides.
+    implicitWidth: Math.max(100, implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(44, implicitContentHeight + topPadding + bottomPadding)
     leftPadding: Theme.spacing.large
     rightPadding: Theme.spacing.large
+    topPadding: Theme.spacing.medium
+    bottomPadding: Theme.spacing.medium
     hoverEnabled: true
 
     background: Rectangle {
@@ -109,8 +117,7 @@ Control {
             id: iconLeft
             source: root.icon.isLeft ? root.icon.source : ""
             color: root.enabled ? root.icon.color : Theme.palette.textMuted
-            visible: root.icon.isVisible
-            opacity: root.icon.isLeft ? 1 : 0
+            visible: root.icon.isVisible && root.icon.isLeft
             Layout.preferredWidth: root.icon.size
             Layout.preferredHeight: root.icon.size
             Layout.alignment: Qt.AlignVCenter
@@ -133,8 +140,7 @@ Control {
             id: iconRight
             source: root.icon.isRight ? root.icon.source : ""
             color: root.enabled ? root.icon.color : Theme.palette.textMuted
-            visible: root.icon.isVisible
-            opacity: root.icon.isRight ? 1 : 0
+            visible: root.icon.isVisible && root.icon.isRight
             Layout.preferredWidth: root.icon.size
             Layout.preferredHeight: root.icon.size
             Layout.alignment: Qt.AlignVCenter

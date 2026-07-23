@@ -54,13 +54,9 @@ Rectangle {
 
                 LogosButton {
                     text: "Default"
-                    implicitWidth: 160
-                    implicitHeight: 50
                 }
                 LogosButton {
                     text: "Disabled"
-                    implicitWidth: 160
-                    implicitHeight: 50
                     enabled: false
                 }
             }
@@ -86,21 +82,15 @@ Rectangle {
 
                 LogosButton {
                     text: "Neutral"
-                    implicitWidth: 160
-                    implicitHeight: 50
                 }
                 LogosButton {
                     text: "Primary"
                     variant: LogosButton.Variant.Primary
-                    implicitWidth: 160
-                    implicitHeight: 50
                 }
                 LogosButton {
                     text: "Back"
                     icon.source: LogosIcons.arrowLeft
                     icon.position: LogosButton.IconPosition.Left
-                    implicitWidth: 160
-                    implicitHeight: 50
                 }
                 LogosButton {
                     text: "Next"
@@ -108,13 +98,11 @@ Rectangle {
                     icon.source: LogosIcons.arrowRight
                     icon.position: LogosButton.IconPosition.Right
                     icon.brightness: 1
-                    implicitWidth: 160
-                    implicitHeight: 50
                 }
+                // Constrained on purpose: the one case where the label elides.
                 LogosButton {
                     text: "This is a very long label that will not fit inside the button width"
-                    implicitWidth: 160
-                    implicitHeight: 50
+                    Layout.preferredWidth: 160
                 }
             }
         }
@@ -142,8 +130,6 @@ Rectangle {
                     id: liveButton
                     text: textInput.text || "Live button"
                     enabled: !disableSwitch.checked
-                    implicitWidth: 200
-                    implicitHeight: 50
                     onClicked: clickCount.value++
                 }
 

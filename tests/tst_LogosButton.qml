@@ -17,6 +17,20 @@ TestCase {
         anchors.centerIn: parent
     }
 
+    // Sizing pair: same label, one with an icon. Declared rather than toggled
+    // at runtime because the layout only re-reads an item's visibility when
+    // the scene itself is shown, which it is not under the test runner.
+    LogosButton {
+        id: plainSizing
+        text: "A label long enough to clear the minimum width"
+    }
+
+    LogosButton {
+        id: iconSizing
+        text: plainSizing.text
+        icon.source: "qrc:/test-icon.png"
+    }
+
     SignalSpy {
         id: clickedSpy
         target: btn
@@ -26,6 +40,8 @@ TestCase {
     function init() {
         clickedSpy.clear()
         btn.enabled = true
+        btn.width = undefined
+        btn.height = undefined
         btn.text = "Click me"
         btn.variant = LogosButton.Variant.Secondary
         btn.icon.source = ""
@@ -88,16 +104,16 @@ TestCase {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Left
         compare(btn.iconItem, btn.iconLeftItem)
-        compare(btn.iconLeftItem.opacity, 1)
-        compare(btn.iconRightItem.opacity, 0)
+        compare(btn.iconLeftItem.source.toString(), "qrc:/test-icon.png")
+        compare(btn.iconRightItem.source.toString(), "")
     }
 
     function test_icon_shows_on_right() {
         btn.icon.source = "qrc:/test-icon.png"
         btn.icon.position = LogosButton.IconPosition.Right
         compare(btn.iconItem, btn.iconRightItem)
-        compare(btn.iconRightItem.opacity, 1)
-        compare(btn.iconLeftItem.opacity, 0)
+        compare(btn.iconRightItem.source.toString(), "qrc:/test-icon.png")
+        compare(btn.iconLeftItem.source.toString(), "")
     }
 
     function test_icon_tint_follows_icon_color() {
@@ -107,8 +123,43 @@ TestCase {
     }
 
     function test_long_text_is_elided() {
+        btn.width = 120
         btn.text = "This is a very long label that will not fit inside the button width"
-        tryCompare(btn.labelItem, "truncated", true)
-        verify(btn.labelItem.width <= btn.width)
+        // The label is only laid out on the next polish, so poll rather than
+        // read the width straight after the assignment.
+        tryVerify(function() { return btn.labelItem.width <= btn.width })
+        compare(btn.labelItem.truncated, true)
+    }
+
+    function test_default_width_fits_the_label() {
+        btn.text = "This is a very long label that will not fit inside 100px"
+        tryVerify(function() { return !btn.labelItem.truncated })
+        verify(btn.width >= btn.labelItem.implicitWidth + btn.leftPadding + btn.rightPadding)
+    }
+
+    function test_short_label_keeps_the_minimum_width() {
+        btn.text = "OK"
+        tryCompare(btn, "implicitWidth", 100)
+    }
+
+    function test_icon_adds_a_single_slot_to_the_width() {
+        tryVerify(function() { return !iconSizing.labelItem.truncated })
+        compare(iconSizing.implicitWidth,
+                plainSizing.implicitWidth + iconSizing.icon.size + iconSizing.contentItem.spacing)
+    }
+
+    function test_height_clears_the_label() {
+        verify(btn.implicitHeight >= btn.labelItem.implicitHeight + btn.topPadding + btn.bottomPadding)
+    }
+
+    function test_height_is_the_same_with_and_without_an_icon() {
+        compare(iconSizing.implicitHeight, plainSizing.implicitHeight)
+    }
+
+    function test_explicit_size_wins() {
+        btn.width = 300
+        btn.height = 60
+        tryCompare(btn, "width", 300)
+        tryCompare(btn, "height", 60)
     }
 }
