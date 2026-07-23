@@ -65,4 +65,8 @@ ItemDelegate {
                     ? root.highlightColor
                     : (root.hovered ? root.hoverColor : "transparent"))
     }
+
+    HoverHandler {
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
 }

@@ -391,6 +391,7 @@ Rectangle {
                 anchors.fill: parent
                 hoverEnabled: true
                 acceptedButtons: Qt.LeftButton
+                cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: root.rowClicked(_rowRoot.capturedRowIndex, _rowRoot.capturedRowItem)
                 onDoubleClicked: root.rowDoubleClicked(_rowRoot.capturedRowIndex, _rowRoot.capturedRowItem)
                 z: -1

@@ -29,4 +29,8 @@ MenuItem {
         radius: Theme.spacing.radiusSmall
         color: root.highlighted ? root.highlightColor : "transparent"
     }
+
+    HoverHandler {
+        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
 }
