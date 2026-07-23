@@ -24,6 +24,13 @@ Dialog {
     modal: true
     padding: Theme.spacing.large
 
+    Overlay.modal: Rectangle {
+        objectName: "modalScrim"
+        color: Theme.palette.scrim
+
+        Behavior on opacity { NumberAnimation { duration: 120 } }
+    }
+
     background: Rectangle {
         id: bg
         color: root.backgroundColor
