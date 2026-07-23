@@ -144,7 +144,8 @@ Rectangle {
                     { name: "glassStrong",   value: Theme.palette.glassStrong },
                     { name: "overlayDark",   value: Theme.palette.overlayDark },
                     { name: "overlayLight",  value: Theme.palette.overlayLight },
-                    { name: "overlayOrange", value: Theme.palette.overlayOrange }
+                    { name: "overlayOrange", value: Theme.palette.overlayOrange },
+                    { name: "scrim",         value: Theme.palette.scrim }
                 ]
             }
 

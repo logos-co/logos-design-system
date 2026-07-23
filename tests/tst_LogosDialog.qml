@@ -1,7 +1,9 @@
 import QtQuick
+import QtQuick.Controls
 import QtTest
 
 import Logos.Controls
+import Logos.Theme
 
 TestCase {
     name: "LogosDialog"
@@ -52,6 +54,18 @@ TestCase {
     function test_footer_visible_when_actions_set() {
         dlg.open()
         tryCompare(dlg.footerItem, "visible", true)
+        dlg.close()
+    }
+
+    function test_modal_scrim_dims_the_background() {
+        dlg.open()
+        tryCompare(dlg, "opened", true)
+        // The overlay owns the scrim instance, so no dialog alias can reach it;
+        // it is found by name instead.
+        var dim = findChild(dlg.Overlay.overlay, "modalScrim")
+        verify(dim)
+        compare(dim.color, Theme.palette.scrim)
+        tryCompare(dim, "opacity", 1)
         dlg.close()
     }
 

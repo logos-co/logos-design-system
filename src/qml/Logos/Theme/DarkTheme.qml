@@ -68,4 +68,5 @@ QtObject {
     readonly property color overlayDark: Qt.rgba(colors.gray875.r, colors.gray875.g, colors.gray875.b, 0.3)
     readonly property color overlayLight: colors.whiteOpacity06
     readonly property color overlayOrange: colors.orange400Opacity30
+    readonly property color scrim: colors.blackOpacity50
 }
