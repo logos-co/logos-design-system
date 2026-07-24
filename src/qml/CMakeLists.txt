@@ -85,7 +85,7 @@ qt_add_qml_module(logos_controls_qml
     RESOURCE_PREFIX /qt/qml
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Logos/Controls
     OUTPUT_TARGETS logos_controls_extra_targets
-    IMPORTS Logos.Theme
+    IMPORTS Logos.Theme Logos.Icons
     QML_FILES
         Logos/Controls/LogosButton.qml
         Logos/Controls/LogosIcon.qml
@@ -126,7 +126,7 @@ qt_add_qml_module(logos_controls_qml
         Logos/Controls/LogosToolSeparator.qml
 )
 
-target_link_libraries(logos_controls_qml PRIVATE logos_theme_qml)
+target_link_libraries(logos_controls_qml PRIVATE logos_theme_qml logos_icons_qml)
 
 # ===== Umbrella INTERFACE target =====
 #
@@ -137,6 +137,9 @@ target_link_libraries(logos_controls_qml PRIVATE logos_theme_qml)
 # QQmlEngineExtensionPlugin static constructor isn't stripped by the linker.
 
 add_library(logos_design_system INTERFACE)
+set_target_properties(logos_design_system PROPERTIES EXPORT_NAME DesignSystem)
+add_library(Logos::DesignSystem ALIAS logos_design_system)
+
 # $<TARGET_NAME:foo> makes install(EXPORT) rewrite the local target name to
 # its namespaced import alias (Logos::foo) in the generated Targets file.
 # Without it, `logos_*_qmlplugin` inside the LINK_LIBRARY genexpr survives

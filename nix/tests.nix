@@ -50,10 +50,8 @@ pkgs.stdenv.mkDerivation rec {
     cp ${src}/tests/tst_*.qml $out/share/logos-design-system-tests/
     cp ${src}/tests/test-icon.png $out/share/logos-design-system-tests/
 
-    # Logos.Theme + Logos.Controls — same as the storybook, so the test
-    # engine can resolve imports when run from $out/bin.
-    mkdir -p $out/lib
-    cp -r ${src}/src/qml/Logos $out/lib/
+    # Logos.Theme/.Controls/.Icons are STATIC-linked into the test binary via
+    # logos_design_system; no lib/Logos copy needed.
 
     runHook postInstall
   '';

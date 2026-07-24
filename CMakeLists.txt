@@ -1,4 +1,9 @@
-cmake_minimum_required(VERSION 3.16)
+# 3.24 is required for `$<LINK_LIBRARY:WHOLE_ARCHIVE,...>` used in
+# src/qml/CMakeLists.txt's umbrella INTERFACE target. Older CMake silently
+# drops that generator expression, so the qmlplugin static-init symbols
+# would never get pulled into consuming binaries and Logos.* registration
+# would silently no-op — every consumer would fail at first `import Logos.*`.
+cmake_minimum_required(VERSION 3.24)
 project(LogosDesignSystem VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -10,15 +15,17 @@ qt_standard_project_setup(REQUIRES 6.5)
 
 # Build the STATIC qt_add_qml_module targets for Logos.Theme / .Icons /
 # .Controls. See src/qml/CMakeLists.txt for the module definitions and the
-# Logos::DesignSystem umbrella target consumers link.
+# Logos::DesignSystem umbrella target consumers link. The storybook and
+# tests below link the same target — one code path for QML loading across
+# every build in the repo.
 add_subdirectory(src/qml)
 
 # ===== Install + export =====
 #
 # Downstream apps discover the STATIC targets via find_package(LogosDesignSystem
 # CONFIG). The umbrella `logos_design_system` INTERFACE target is exported as
-# Logos::DesignSystem — linking it pulls in every backing lib + plugin with the
-# right WHOLE_ARCHIVE flag.
+# Logos::DesignSystem — linking it pulls in every backing lib + plugin
+# with the right WHOLE_ARCHIVE flag.
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
