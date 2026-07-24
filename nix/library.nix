@@ -1,7 +1,11 @@
 { pkgs, common }:
 
-# The QML library — what every downstream consumer depends on. Just installs
-# Logos.Theme + Logos.Controls into $out/lib/Logos/. No compiled artifacts.
+# STATIC QML modules for Logos.Theme / .Icons / .Controls, plus the CMake
+# package config that downstream apps (logos-basecamp, logos-standalone-app)
+# consume via `find_package(LogosDesignSystem CONFIG)` and link as
+# `Logos::DesignSystem`. Bytecode + assets are embedded into the STATIC libs,
+# so no loose-file `lib/Logos/*.qml` install exists at runtime — nothing for
+# Qt's QML disk cache to go stale against across app upgrades.
 pkgs.stdenv.mkDerivation rec {
   pname = "logos-design-system";
   version = "1.0.0";
@@ -10,23 +14,23 @@ pkgs.stdenv.mkDerivation rec {
 
   cmakeFlags = common.baseCmakeFlags;
 
+  # Standard configure/build/install — supersedes the previous "just cp -r
+  # the source tree into $out/lib/Logos" install path.
   configurePhase = ''
     runHook preConfigure
-    cmake -S . -B build $cmakeFlags
+    cmake -S . -B build $cmakeFlags -DCMAKE_INSTALL_PREFIX=$out
     runHook postConfigure
   '';
 
-  # Pure file install — nothing to compile.
-  dontBuild = true;
+  buildPhase = ''
+    runHook preBuild
+    cmake --build build
+    runHook postBuild
+  '';
 
   installPhase = ''
     runHook preInstall
-
-    # Source layout already matches the QML import path (Logos/Theme,
-    # Logos/Controls), so a single recursive copy suffices.
-    mkdir -p $out/lib
-    cp -r ${src}/src/qml/Logos $out/lib/
-
+    cmake --install build
     runHook postInstall
   '';
 
