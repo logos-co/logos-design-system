@@ -30,6 +30,9 @@ TestCase {
         field.echoMode = TextInput.Normal
         field.validator = null
         field.readOnly = false
+        // QtTest runs alphabetically; take focus back so a focus test does not
+        // leak a focused border into later ones.
+        root.forceActiveFocus()
     }
 
     function test_text_alias_get_set() {
@@ -85,5 +88,10 @@ TestCase {
     function test_read_only_propagates_to_text_input() {
         field.readOnly = true
         compare(field.textInput.readOnly, true)
+    }
+
+    function test_focus_reaches_the_editor() {
+        field.forceActiveFocus()
+        tryCompare(field.textInput, "activeFocus", true)
     }
 }

@@ -28,6 +28,12 @@ Control {
     rightPadding: 12
     clip: true
 
+    focusPolicy: Qt.StrongFocus
+    // Focus handed to the field (forceActiveFocus, tab, key navigation) lands on
+    // the wrapper control; the editor is where it must end up.
+    onActiveFocusChanged: if (activeFocus)
+        input.forceActiveFocus()
+
     background: Rectangle {
         id: bg
         radius: Theme.spacing.radiusSmall
