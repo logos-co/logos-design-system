@@ -13,28 +13,31 @@ add_executable(LogosStorybook
     storybook.qrc
 )
 
+# Storybook links the SAME STATIC design-system target that basecamp and
+# logos-standalone-app do, so `import Logos.Theme/.Controls/.Icons` resolves
+# from process qrc — no loose-file scanning, no LOGOS_DS_QML_DIR compile-def,
+# no post-build copy_directory. This also makes the storybook a real smoke
+# test for the STATIC linkage that downstream apps depend on: if the exported
+# `Logos::DesignSystem` target regresses, this build catches it.
+#
+# The Logos::DesignSystem INTERFACE target is defined by src/qml/CMakeLists.txt
+# (added via add_subdirectory in the top-level CMakeLists), so it's addressable
+# by its namespaced alias here — no find_package needed for in-tree use, and
+# the name matches what downstream consumers see post-install.
 target_link_libraries(LogosStorybook PRIVATE
     Qt6::Core
     Qt6::Gui
     Qt6::Quick
     Qt6::QuickControls2
     Qt6::Qml
+    Logos::DesignSystem
 )
 
-# Bake in absolute paths so the binary can locate pages and the design-system
-# QML modules from the source tree. Lets us hot-reload edits without reinstall.
+# Pages (the storybook's own demo content, one .qml per component) stay loose
+# because HotReloader watches them for on-the-fly edits — the whole point of
+# the storybook. STORYBOOK_PAGES_DIR bakes the source-tree path into the dev
+# build; runtime install layout ($out/lib/pages) is picked up by main.cpp's
+# fallback resolver.
 target_compile_definitions(LogosStorybook PRIVATE
     STORYBOOK_PAGES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/pages"
-    LOGOS_DS_QML_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../src/qml"
-)
-
-# Mirror the QML modules next to the binary too — useful when running the
-# installed/packaged binary without env overrides. Source layout already
-# matches the import path so a single recursive copy suffices.
-add_custom_command(TARGET LogosStorybook POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/qml
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/../src/qml/Logos
-        ${CMAKE_CURRENT_BINARY_DIR}/qml/Logos
-    COMMENT "Copying Logos.Theme and Logos.Controls QML modules for LogosStorybook"
 )

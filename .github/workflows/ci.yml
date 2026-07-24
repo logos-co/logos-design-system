@@ -149,18 +149,25 @@ jobs:
           New-Item -ItemType Directory -Force -Path `
             "$stage\bin","$stage\lib\pages" | Out-Null
 
-          $exe = if (Test-Path "build\storybook\Release\LogosStorybook.exe") {
-            "build\storybook\Release\LogosStorybook.exe"
-          } else {
-            "build\storybook\LogosStorybook.exe"
+          $exe = Get-ChildItem -Path build -Recurse -Filter "LogosStorybook.exe" |
+                 Select-Object -First 1 -ExpandProperty FullName
+          if (-not $exe) {
+            Write-Error "LogosStorybook.exe not found under build\"
+            Get-ChildItem -Path build -Recurse -Filter "*.exe" |
+              ForEach-Object { Write-Host "  found: $($_.FullName)" }
+            exit 1
           }
+          Write-Host "Using $exe"
           Copy-Item $exe "$stage\bin\"
-          Copy-Item -Recurse "build\storybook\qml" "$stage\bin\qml"
+
+          # Pages QML stays loose so the storybook's HotReloader can watch it.
+          # Logos.Theme/.Controls/.Icons are STATIC-linked into the binary,
+          # so no build\storybook\qml directory to ship (and windeployqt only
+          # scans the storybook dir — Logos.* is embedded, nothing to deploy).
           Copy-Item "storybook\pages\*.qml" "$stage\lib\pages\"
 
           & "$env:QT_ROOT_DIR\bin\windeployqt.exe" `
             --qmldir "storybook" `
-            --qmldir "src\qml" `
             --release `
             --no-translations `
             "$stage\bin\LogosStorybook.exe"

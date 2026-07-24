@@ -2,15 +2,10 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
-#include <QObject>
-#include <QQmlEngine>
 #include <QQuickStyle>
 #include <QSettings>
 #include <QStandardPaths>
 
-#ifndef LOGOS_DS_QML_DIR
-#define LOGOS_DS_QML_DIR ""
-#endif
 #ifndef QUICK_TEST_SOURCE_DIR
 #define QUICK_TEST_SOURCE_DIR ""
 #endif
@@ -25,28 +20,6 @@ static QString firstExisting(const QStringList& candidates)
     return {};
 }
 
-// Adds Logos.Theme / Logos.Controls import paths to every test engine, trying
-// the source tree first then the install layout next to the binary.
-class TestSetup : public QObject
-{
-    Q_OBJECT
-public slots:
-    void qmlEngineAvailable(QQmlEngine* engine)
-    {
-        const QString binDir = QFileInfo(
-            QCoreApplication::applicationFilePath()).absolutePath();
-        const QStringList candidates = {
-            qEnvironmentVariable("LOGOS_DS_QML"),
-            QString::fromUtf8(LOGOS_DS_QML_DIR),
-            binDir + "/../lib",
-        };
-        for (const QString& p : candidates) {
-            if (!p.isEmpty() && QDir(p).exists())
-                engine->addImportPath(p);
-        }
-    }
-};
-
 int main(int argc, char* argv[])
 {
     // Required by `Settings` (used in Theme.qml) — must be set before any
@@ -60,7 +33,9 @@ int main(int argc, char* argv[])
 
     QQuickStyle::setStyle("Basic");
 
-    TestSetup setup;
+    // Logos.Theme/.Controls/.Icons are STATIC-linked via logos_design_system
+    // and register into the process qrc at load time, so tst_*.qml files can
+    // `import Logos.*` without the engine needing an addImportPath call.
 
     // Resolve where tst_*.qml files live, in priority order:
     //   1. QUICK_TEST_SOURCE_DIR env var (manual override)
@@ -78,8 +53,6 @@ int main(int argc, char* argv[])
     const char* sourceDirPtr = sourceDirBytes.isEmpty()
         ? nullptr : sourceDirBytes.constData();
 
-    return quick_test_main_with_setup(
-        argc, argv, "LogosDesignSystemTests", sourceDirPtr, &setup);
+    return quick_test_main(
+        argc, argv, "LogosDesignSystemTests", sourceDirPtr);
 }
-
-#include "main.moc"

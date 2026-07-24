@@ -5,7 +5,7 @@
 # consume via `find_package(LogosDesignSystem CONFIG)` and link as
 # `Logos::DesignSystem`. Bytecode + assets are embedded into the STATIC libs,
 # so no loose-file `lib/Logos/*.qml` install exists at runtime — nothing for
-# Qt's QML disk cache to go stale against across app upgrades.
+# Qt's QML disk cache to go stale across app upgrades.
 pkgs.stdenv.mkDerivation rec {
   pname = "logos-design-system";
   version = "1.0.0";

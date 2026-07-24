@@ -11,9 +11,6 @@
 #ifndef STORYBOOK_PAGES_DIR
 #define STORYBOOK_PAGES_DIR ""
 #endif
-#ifndef LOGOS_DS_QML_DIR
-#define LOGOS_DS_QML_DIR ""
-#endif
 
 // Watches QML source dirs and asks the engine to drop its component cache, then
 // signals QML to re-instantiate the current page Loader. Manual `reload()` is
@@ -105,22 +102,9 @@ int main(int argc, char* argv[])
 
     const QString binDir = QCoreApplication::applicationDirPath();
 
-    // Resolve QML import roots in priority order: env override, dev-build path
-    // baked at compile time, post-build copy next to binary, install layout
-    // ($out/bin → $out/lib), macOS .app layout (Resources/qt/qml/ — see
-    // nix-bundle-macos-app which relocates Frameworks/Logos there).
-    const QStringList qmlImportCandidates = {
-        qEnvironmentVariable("LOGOS_DS_QML"),
-        QString::fromUtf8(LOGOS_DS_QML_DIR),
-        binDir + "/qml",
-        binDir + "/../lib",
-        binDir + "/../Resources/qt/qml",
-    };
-    QStringList watchableImports;
-    for (const QString& p : qmlImportCandidates) {
-        if (!p.isEmpty() && QDir(p).exists())
-            watchableImports << p;
-    }
+    // Logos.Theme/.Controls/.Icons are STATIC-linked into this binary via
+    // Logos::DesignSystem and register into the process qrc at load time —
+    // no import-path lookup needed for the design system.
 
     // Pages dir: env override → dev-build path → install layout
     // ($out/bin → $out/lib/pages) → macOS .app after mkMacOSApp relocation.
@@ -132,19 +116,19 @@ int main(int argc, char* argv[])
     };
     const QString pagesDir = firstExisting(pagesCandidates);
 
-    if (pagesDir.isEmpty() || watchableImports.isEmpty()) {
-        qCritical() << "LogosStorybook: could not locate pages or QML modules.\n"
-                    << "  pages tried:    " << pagesCandidates
-                    << "\n  qml tried:      " << qmlImportCandidates;
+    if (pagesDir.isEmpty()) {
+        qCritical() << "LogosStorybook: could not locate pages dir.\n"
+                    << "  tried: " << pagesCandidates;
         return -1;
     }
 
     QQmlApplicationEngine engine;
-    for (const QString& p : watchableImports)
-        engine.addImportPath(p);
     engine.addImportPath("qrc:/");
 
-    HotReloader hot(&engine, pagesDir, watchableImports);
+    // HotReloader still watches pages for on-the-fly edits (the raison d'être
+    // of the storybook). Logos.* files are STATIC-embedded so their hot-reload
+    // path went away — editing a control now needs a rebuild + relaunch.
+    HotReloader hot(&engine, pagesDir, /*extraDirs=*/{});
     engine.rootContext()->setContextProperty("Hot", &hot);
 
     const QUrl url("qrc:/main.qml");

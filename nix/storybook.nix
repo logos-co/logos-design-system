@@ -39,8 +39,8 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/lib/pages
     cp ${src}/storybook/pages/*.qml $out/lib/pages/
 
-    # Logos.Theme + Logos.Controls (source layout matches import path)
-    cp -r ${src}/src/qml/Logos $out/lib/
+    # Logos.Theme/.Controls/.Icons are STATIC-linked into LogosStorybook via
+    # logos_design_system; nothing to copy for the design system itself.
 
     runHook postInstall
   '';
