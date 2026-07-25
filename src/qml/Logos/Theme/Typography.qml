@@ -17,6 +17,11 @@ QtObject {
     // Fallback to system font if custom font fails
     readonly property string publicSans: publicSansRegular.status == FontLoader.Ready ? publicSansRegular.name : "sans-serif"
 
+    // Family for hex identifiers, addresses and code, where fixed-width glyphs
+    // aid scanning and copying. No monospace face is bundled, so this resolves
+    // to the platform's own.
+    readonly property string mono: "monospace"
+
     // weights
     readonly property int weightRegular: 400
     readonly property int weightMedium: 500
