@@ -28,7 +28,14 @@ TestCase {
     LogosButton {
         id: iconSizing
         text: plainSizing.text
-        icon.source: "qrc:/test-icon.png"
+        leadingIcon.source: "qrc:/test-icon.png"
+    }
+
+    LogosButton {
+        id: bothIconsSizing
+        text: plainSizing.text
+        leadingIcon.source: "qrc:/test-icon.png"
+        trailingIcon.source: "qrc:/test-icon.png"
     }
 
     SignalSpy {
@@ -44,9 +51,11 @@ TestCase {
         btn.height = undefined
         btn.text = "Click me"
         btn.variant = LogosButton.Variant.Secondary
-        btn.icon.source = ""
-        btn.icon.position = LogosButton.IconPosition.Left
-        btn.icon.color = Theme.palette.text
+        btn.leadingIcon.source = ""
+        btn.leadingIcon.color = Theme.palette.text
+        btn.trailingIcon.source = ""
+        btn.trailingIcon.color = Theme.palette.text
+        btn.font.pixelSize = Theme.typography.secondaryText
     }
 
     function test_renders_text() {
@@ -82,44 +91,44 @@ TestCase {
 
     function test_disabled_wins_over_primary() {
         btn.variant = LogosButton.Variant.Primary
-        btn.icon.source = "qrc:/test-icon.png"
+        btn.leadingIcon.source = "qrc:/test-icon.png"
         btn.enabled = false
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         compare(btn.labelItem.color, Theme.palette.textMuted)
-        compare(btn.iconItem.color, Theme.palette.textMuted)
+        compare(btn.leadingIconItem.color, Theme.palette.textMuted)
     }
 
     function test_icon_source_is_empty_after_init() {
-        compare(btn.icon.source.toString(), "")
+        compare(btn.leadingIcon.source.toString(), "")
+        compare(btn.trailingIcon.source.toString(), "")
     }
 
     function test_icon_source_round_trips() {
-        btn.icon.source = "qrc:/test-icon.png"
-        compare(btn.icon.source.toString(), "qrc:/test-icon.png")
-        btn.icon.source = ""
-        compare(btn.icon.source.toString(), "")
+        btn.leadingIcon.source = "qrc:/test-icon.png"
+        compare(btn.leadingIcon.source.toString(), "qrc:/test-icon.png")
+        btn.leadingIcon.source = ""
+        compare(btn.leadingIcon.source.toString(), "")
     }
 
-    function test_icon_shows_on_left() {
-        btn.icon.source = "qrc:/test-icon.png"
-        btn.icon.position = LogosButton.IconPosition.Left
-        compare(btn.iconItem, btn.iconLeftItem)
-        compare(btn.iconLeftItem.source.toString(), "qrc:/test-icon.png")
-        compare(btn.iconRightItem.source.toString(), "")
-    }
-
-    function test_icon_shows_on_right() {
-        btn.icon.source = "qrc:/test-icon.png"
-        btn.icon.position = LogosButton.IconPosition.Right
-        compare(btn.iconItem, btn.iconRightItem)
-        compare(btn.iconRightItem.source.toString(), "qrc:/test-icon.png")
-        compare(btn.iconLeftItem.source.toString(), "")
+    function test_leading_and_trailing_icons_are_independent() {
+        btn.leadingIcon.source = "qrc:/test-icon.png"
+        compare(btn.leadingIconItem.source.toString(), "qrc:/test-icon.png")
+        compare(btn.trailingIconItem.source.toString(), "")
+        btn.trailingIcon.source = "qrc:/other-icon.png"
+        compare(btn.leadingIconItem.source.toString(), "qrc:/test-icon.png")
+        compare(btn.trailingIconItem.source.toString(), "qrc:/other-icon.png")
     }
 
     function test_icon_tint_follows_icon_color() {
-        btn.icon.source = "qrc:/test-icon.png"
-        btn.icon.color = Theme.palette.primary
-        compare(btn.iconItem.color, Theme.palette.primary)
+        btn.leadingIcon.source = "qrc:/test-icon.png"
+        btn.leadingIcon.color = Theme.palette.primary
+        compare(btn.leadingIconItem.color, Theme.palette.primary)
+    }
+
+    function test_label_font_follows_the_button_font() {
+        compare(btn.labelItem.font.pixelSize, Theme.typography.secondaryText)
+        btn.font.pixelSize = Theme.typography.primaryText
+        compare(btn.labelItem.font.pixelSize, Theme.typography.primaryText)
     }
 
     function test_long_text_is_elided() {
@@ -145,7 +154,13 @@ TestCase {
     function test_icon_adds_a_single_slot_to_the_width() {
         tryVerify(function() { return !iconSizing.labelItem.truncated })
         compare(iconSizing.implicitWidth,
-                plainSizing.implicitWidth + iconSizing.icon.size + iconSizing.contentItem.spacing)
+                plainSizing.implicitWidth + iconSizing.leadingIcon.size + iconSizing.contentItem.spacing)
+    }
+
+    function test_both_icons_add_two_slots_to_the_width() {
+        tryVerify(function() { return !bothIconsSizing.labelItem.truncated })
+        compare(bothIconsSizing.implicitWidth,
+                iconSizing.implicitWidth + bothIconsSizing.trailingIcon.size + bothIconsSizing.contentItem.spacing)
     }
 
     function test_height_clears_the_label() {

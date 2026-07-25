@@ -89,15 +89,18 @@ Rectangle {
                 }
                 LogosButton {
                     text: "Back"
-                    icon.source: LogosIcons.arrowLeft
-                    icon.position: LogosButton.IconPosition.Left
+                    leadingIcon.source: LogosIcons.arrowLeft
                 }
                 LogosButton {
                     text: "Next"
                     variant: LogosButton.Variant.Primary
-                    icon.source: LogosIcons.arrowRight
-                    icon.position: LogosButton.IconPosition.Right
-                    icon.brightness: 1
+                    trailingIcon.source: LogosIcons.arrowRight
+                    trailingIcon.brightness: 1
+                }
+                LogosButton {
+                    text: "Both"
+                    leadingIcon.source: LogosIcons.arrowLeft
+                    trailingIcon.source: LogosIcons.arrowRight
                 }
                 // Constrained on purpose: the one case where the label elides.
                 LogosButton {

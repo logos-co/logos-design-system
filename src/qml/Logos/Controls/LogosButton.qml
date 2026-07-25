@@ -4,66 +4,64 @@ import QtQuick.Layouts
 
 import Logos.Theme
 import Logos.Controls
-// LogosButton — a themed push button with an optional icon.
+// LogosButton — a themed push button with optional icons.
 //
 // A Control that pairs a centered text label with an optional LogosIcon on
-// the left or right. The implicit size follows the content, so a button left
+// either side of it. The implicit size follows the content, so a button left
 // at its natural size fits its own label; a label constrained by an explicit
 // width is elided rather than overflowing the button. Colors, border and
 // cursor react to hover/press and enabled state.
 //
 // Public API:
-//     text     button label. Drives the implicit width. Elided with "…" when
-//              the button is narrower than the label.
-//     icon     IconSpec grouping the icon's source/size/position/color/
-//              brightness (see below). Empty source renders no icon.
-//     variant  LogosButton.Variant.Primary or .Secondary (default). Drives
-//              the background and border palette.
-//     radius   background corner radius. Default = Theme.spacing.radiusXlarge.
-//     clicked  signal emitted when an enabled button is clicked.
+//     text         button label. Drives the implicit width. Elided with "…"
+//                  when the button is narrower than the label.
+//     font         label typography. Defaults to the 12px medium step; set
+//                  font.pixelSize for a button that carries another step.
+//     leadingIcon  IconSpec for the icon before the label (see below).
+//     trailingIcon IconSpec for the icon after the label. Both may be set.
+//     variant      LogosButton.Variant.Primary or .Secondary (default). Drives
+//                  the background and border palette.
+//     radius       background corner radius. Default = Theme.spacing.radiusXlarge.
+//     clicked      signal emitted when an enabled button is clicked.
 //
-// icon (IconSpec) fields:
+// IconSpec fields:
 //     source     URL of the icon asset. Empty renders nothing.
 //     size       icon footprint in px. Default 20.
-//     position   LogosButton.IconPosition.Left (default) or .Right.
 //     color      tint applied to the icon. Default = Theme.palette.text.
 //                Falls back to textMuted when the button is disabled.
 //     brightness MultiEffect brightness before tinting. Default 0.
 //
 // Read-only inspection aliases (for tests):
-//     mouseAreaItem  the MouseArea handling clicks/hover
-//     backgroundItem the background Rectangle
-//     labelItem      the text label
-//     iconItem       the active LogosIcon (left or right per icon.position)
+//     mouseAreaItem     the MouseArea handling clicks/hover
+//     backgroundItem    the background Rectangle
+//     labelItem         the text label
+//     leadingIconItem   the LogosIcon before the label
+//     trailingIconItem  the LogosIcon after the label
 //
 // Example:
 //     LogosButton {
 //         text: "Refresh"
 //         variant: LogosButton.Variant.Primary
-//         icon.source: LogosIcons.refresh
-//         icon.position: LogosButton.IconPosition.Left
+//         leadingIcon.source: LogosIcons.refresh
 //         onClicked: model.refresh()
 //     }
 Control {
     id: root
 
     enum Variant { Primary, Secondary }
-    enum IconPosition { Left, Right }
 
     component IconSpec: QtObject {
         property url source: ""
         property int size: 20
-        property int position: LogosButton.IconPosition.Left
         property real brightness: 0
         property color color: Theme.palette.text
 
         readonly property bool isVisible: source.toString().length > 0
-        readonly property bool isLeft: position === LogosButton.IconPosition.Left
-        readonly property bool isRight: position === LogosButton.IconPosition.Right
     }
 
     property alias text: label.text
-    readonly property IconSpec icon: IconSpec {}
+    readonly property IconSpec leadingIcon: IconSpec {}
+    readonly property IconSpec trailingIcon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
 
@@ -75,9 +73,8 @@ Control {
     readonly property alias mouseAreaItem: mouseArea
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
-    readonly property alias iconLeftItem: iconLeft
-    readonly property alias iconRightItem: iconRight
-    readonly property Item iconItem: root.icon.isRight ? iconRight : iconLeft
+    readonly property alias leadingIconItem: iconLeft
+    readonly property alias trailingIconItem: iconRight
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
     // steady whether or not the button carries a default-sized (20px) icon;
@@ -89,6 +86,9 @@ Control {
     topPadding: Theme.spacing.medium
     bottomPadding: Theme.spacing.medium
     hoverEnabled: true
+    font.family: Theme.typography.publicSans
+    font.pixelSize: Theme.typography.secondaryText
+    font.weight: Theme.typography.weightMedium
 
     background: Rectangle {
         id: bg
@@ -115,21 +115,20 @@ Control {
 
         LogosIcon {
             id: iconLeft
-            source: root.icon.isLeft ? root.icon.source : ""
-            color: root.enabled ? root.icon.color : Theme.palette.textMuted
-            visible: root.icon.isVisible && root.icon.isLeft
-            Layout.preferredWidth: root.icon.size
-            Layout.preferredHeight: root.icon.size
+            source: root.leadingIcon.source
+            color: root.enabled ? root.leadingIcon.color : Theme.palette.textMuted
+            visible: root.leadingIcon.isVisible
+            Layout.preferredWidth: root.leadingIcon.size
+            Layout.preferredHeight: root.leadingIcon.size
             Layout.alignment: Qt.AlignVCenter
-            brightness: root.icon.brightness
+            brightness: root.leadingIcon.brightness
         }
 
         LogosText {
             id: label
             Layout.fillWidth: true
             color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
-            font.pixelSize: Theme.typography.secondaryText
-            font.weight: Theme.typography.weightMedium
+            font: root.font
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             Layout.alignment: Qt.AlignVCenter
@@ -138,13 +137,13 @@ Control {
 
         LogosIcon {
             id: iconRight
-            source: root.icon.isRight ? root.icon.source : ""
-            color: root.enabled ? root.icon.color : Theme.palette.textMuted
-            visible: root.icon.isVisible && root.icon.isRight
-            Layout.preferredWidth: root.icon.size
-            Layout.preferredHeight: root.icon.size
+            source: root.trailingIcon.source
+            color: root.enabled ? root.trailingIcon.color : Theme.palette.textMuted
+            visible: root.trailingIcon.isVisible
+            Layout.preferredWidth: root.trailingIcon.size
+            Layout.preferredHeight: root.trailingIcon.size
             Layout.alignment: Qt.AlignVCenter
-            brightness: root.icon.brightness
+            brightness: root.trailingIcon.brightness
         }
     }
 
