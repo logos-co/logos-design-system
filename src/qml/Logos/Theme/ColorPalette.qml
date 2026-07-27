@@ -52,6 +52,7 @@ QtObject {
     readonly property color orange500: "#F55702"
     readonly property color orange600: "#F57A02"
     readonly property color orange700: "#BF5104"
+    readonly property color orange800: "#8F3C03"
 
     // Peach shades (Soft accents)
     readonly property color peach100: "#FFD5C0"

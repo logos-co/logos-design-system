@@ -89,6 +89,27 @@ TestCase {
         tryCompare(btn.backgroundItem, "color", Theme.palette.primary)
     }
 
+    function test_primary_pressed_uses_primary_pressed_fill() {
+        const primary = LogosButton.Variant.Primary
+        compare(btn._backgroundColor(true, primary, false, false), Theme.palette.primary)
+        compare(btn._backgroundColor(true, primary, false, true), Theme.palette.primaryHover)
+        compare(btn._backgroundColor(true, primary, true, true), Theme.palette.primaryPressed)
+        compare(btn._backgroundColor(true, primary, true, false), Theme.palette.primaryPressed)
+
+        btn.variant = LogosButton.Variant.Primary
+        tryCompare(btn.backgroundItem, "color", Theme.palette.primary)
+    }
+
+    function test_secondary_pressed_uses_background_fill() {
+        const secondary = LogosButton.Variant.Secondary
+        compare(btn._backgroundColor(true, secondary, false, false), Theme.palette.backgroundSecondary)
+        compare(btn._backgroundColor(true, secondary, false, true), Theme.palette.backgroundMuted)
+        compare(btn._backgroundColor(true, secondary, true, true), Theme.palette.background)
+        compare(btn._backgroundColor(true, secondary, true, false), Theme.palette.background)
+
+        tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundSecondary)
+    }
+
     function test_disabled_wins_over_primary() {
         btn.variant = LogosButton.Variant.Primary
         btn.leadingIcon.source = "qrc:/test-icon.png"

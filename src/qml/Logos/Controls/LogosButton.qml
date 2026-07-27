@@ -9,8 +9,9 @@ import Logos.Controls
 // A Control that pairs a centered text label with an optional LogosIcon on
 // either side of it. The implicit size follows the content, so a button left
 // at its natural size fits its own label; a label constrained by an explicit
-// width is elided rather than overflowing the button. Colors, border and
-// cursor react to hover/press and enabled state.
+// width is elided rather than overflowing the button. Colors and border react
+// to hover, press, and enabled state (pressed takes priority over hovered).
+// Cursor reflects enabled state.
 //
 // Public API:
 //     text         button label. Drives the implicit width. Elided with "…"
@@ -22,6 +23,7 @@ import Logos.Controls
 //     variant      LogosButton.Variant.Primary or .Secondary (default). Drives
 //                  the background and border palette.
 //     radius       background corner radius. Default = Theme.spacing.radiusXlarge.
+//     pressed      read-only; true while the mouse is held down on the button.
 //     clicked      signal emitted when an enabled button is clicked.
 //
 // IconSpec fields:
@@ -37,6 +39,7 @@ import Logos.Controls
 //     labelItem         the text label
 //     leadingIconItem   the LogosIcon before the label
 //     trailingIconItem  the LogosIcon after the label
+//     _backgroundColor  d.backgroundColor; not for app use
 //
 // Example:
 //     LogosButton {
@@ -65,7 +68,8 @@ Control {
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
 
-    readonly property bool isActive: mouseArea.pressed || root.hovered
+    readonly property bool pressed: mouseArea.containsPress
+    readonly property bool isActive: root.pressed || root.hovered
 
     signal clicked()
 
@@ -75,6 +79,28 @@ Control {
     readonly property alias labelItem: label
     readonly property alias leadingIconItem: iconLeft
     readonly property alias trailingIconItem: iconRight
+    readonly property var _backgroundColor: d.backgroundColor
+
+    QtObject {
+        id: d
+
+        function backgroundColor(enabled, variant, pressed, hovered) {
+            if (!enabled)
+                return Theme.palette.backgroundMuted
+            if (variant === LogosButton.Variant.Primary) {
+                if (pressed)
+                    return Theme.palette.primaryPressed
+                if (hovered)
+                    return Theme.palette.primaryHover
+                return Theme.palette.primary
+            }
+            if (pressed)
+                return Theme.palette.background
+            if (hovered)
+                return Theme.palette.backgroundMuted
+            return Theme.palette.backgroundSecondary
+        }
+    }
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
     // steady whether or not the button carries a default-sized (20px) icon;
@@ -92,13 +118,7 @@ Control {
 
     background: Rectangle {
         id: bg
-        color: {
-            if (!root.enabled)
-                return Theme.palette.backgroundMuted
-            if (root.variant === LogosButton.Variant.Primary)
-                return root.isActive ? Theme.palette.primaryHover : Theme.palette.primary
-            return root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundSecondary
-        }
+        color: d.backgroundColor(root.enabled, root.variant, root.pressed, root.hovered)
         radius: root.radius
         border.width: 1
         border.color: {
@@ -151,6 +171,7 @@ Control {
         id: mouseArea
         anchors.fill: parent
         enabled: root.enabled
+        hoverEnabled: true
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onClicked: root.clicked()
     }
