@@ -35,7 +35,7 @@ QtObject {
 
     readonly property color primary: colors.orange300
     readonly property color primaryHover: colors.orange500
-    readonly property color primaryPressed: colors.orange600
+    readonly property color primaryPressed: colors.orange800
     readonly property color primarySoft: colors.peach100
 
     readonly property color success: colors.green500
