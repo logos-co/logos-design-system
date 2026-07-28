@@ -69,4 +69,11 @@ TestCase {
         bar.policy = ScrollBar.AlwaysOn
         tryCompare(bar.barItem, "opacity", 1)
     }
+
+    // AlwaysOff is honoured by the style's own `visible` binding rather than by
+    // the handle's opacity, so nothing here may override visible.
+    function test_always_off_hides_the_bar() {
+        bar.policy = ScrollBar.AlwaysOff
+        tryCompare(bar, "visible", false)
+    }
 }
