@@ -9,14 +9,26 @@ TestCase {
     height: 100
     when: windowShown
 
+    // Mid-window anchor: popups can never leave the window, so "above the
+    // parent" is only testable when there is room above the parent.
+    Item {
+        id: midAnchor
+        x: 80
+        y: 60
+        width: 24
+        height: 24
+    }
+
     LogosToolTip {
         id: tip
         text: "Hint"
+        parent: midAnchor
     }
 
     function init() {
         tip.text = "Hint"
         tip.placement = LogosToolTip.Top
+        tip.delay = 200
     }
 
     function test_aliases_resolve() {
@@ -50,6 +62,18 @@ TestCase {
 
     function test_tail_rotated_45() {
         compare(tip.tailItem.rotation, 45)
+    }
+
+    // Regression: position must not depend on laid-out size (0 on the first
+    // open frame), so an instantly-opened tip still floats above its parent.
+    function test_top_placement_floats_above_parent_with_no_delay() {
+        tip.delay = 0
+        tip.open()
+        tryCompare(tip, "opened", true)
+        verify(tip.y <= -tip.implicitHeight,
+               "tip.y (" + tip.y + ") should be above the parent by at least its height")
+        tip.close()
+        tryCompare(tip, "opened", false)
     }
 
     function test_height_matches_figma_20() {
