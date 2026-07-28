@@ -23,7 +23,10 @@ import Logos.Theme
 ToolTip {
     id: root
 
-    // Values aligned with Popup.TransformOrigin — see NOTE above.
+    // Placement values are aligned with Popup.TransformOrigin because
+    // LogosToolTip.Top/Left/Right/Bottom is ambiguous with that inherited
+    // C++ enum. Internals compare against raw values (never the symbolic
+    // names) so a wrong resolution cannot silently break placement.
     enum Placement {
         Top    = 1,
         Left   = 3,
@@ -31,7 +34,9 @@ ToolTip {
         Bottom = 7
     }
 
-    property int placement: 1 // LogosToolTip.Top
+    // Default is Placement.Top (=1). Do not write LogosToolTip.Top here —
+    // see enum NOTE above.
+    property int placement: 1
     property color tipColor: Theme.palette.backgroundSecondary
     property color textColor: Theme.colors.getColor(Theme.palette.text, 0.6)
 

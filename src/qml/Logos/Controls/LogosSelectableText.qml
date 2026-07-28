@@ -28,6 +28,7 @@ TextEdit {
 
     readOnly: true
     selectByMouse: true
+    textFormat: TextEdit.PlainText
     wrapMode: TextEdit.NoWrap
     clip: true
 
