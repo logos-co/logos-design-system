@@ -124,7 +124,7 @@ Rectangle {
                     LogosIconButton {
                         Layout.alignment: Qt.AlignHCenter
                         iconSource: modelData.value
-                        background: Item{}
+                        flat: true
                     }
 
                     LogosText {

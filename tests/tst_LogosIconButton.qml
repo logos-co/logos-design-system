@@ -29,7 +29,17 @@ TestCase {
         btn.iconSource = "qrc:/test-icon.png"
         btn.size = 40
         btn.iconSize = 20
+        btn.flat = false
         btn.focus = false
+    }
+
+    function test_flat_hides_pill_background() {
+        compare(btn.flat, false)
+        // Item.visible reads *effective* visibility, which is false for the
+        // whole TestCase subtree in the offscreen harness — so only the
+        // flat → hidden direction is assertable here.
+        btn.flat = true
+        compare(btn.backgroundItem.visible, false)
     }
 
     function test_iconSource_round_trips() {
@@ -78,10 +88,21 @@ TestCase {
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
     }
 
-    function test_active_colors() {
+    function test_hover_or_focus_uses_muted_fill() {
+        compare(btn._backgroundColor(true, false, false, false), Theme.palette.backgroundButton)
+        compare(btn._backgroundColor(true, false, true, false), Theme.palette.backgroundMuted)
+        compare(btn._backgroundColor(true, false, false, true), Theme.palette.backgroundMuted)
+
         btn.forceActiveFocus()
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
+    }
+
+    function test_pressed_uses_stronger_fill_than_hover() {
+        // Pressed wins over hover/focus, matching LogosButton secondary.
+        compare(btn._backgroundColor(true, true, true, false), Theme.palette.background)
+        compare(btn._backgroundColor(true, true, false, false), Theme.palette.background)
+        compare(btn._backgroundColor(true, false, true, false), Theme.palette.backgroundMuted)
     }
 
     function test_disabled_is_never_active() {
@@ -90,5 +111,6 @@ TestCase {
         verify(!btn.isActive)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundButton)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.borderStrong)
+        compare(btn._backgroundColor(false, true, true, true), Theme.palette.backgroundButton)
     }
 }
