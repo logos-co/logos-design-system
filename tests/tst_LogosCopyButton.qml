@@ -116,4 +116,17 @@ TestCase {
         verify(btn.feedbackTipItem.y < 0,
                "feedback tip should float above the button, y = " + btn.feedbackTipItem.y)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(btn.activeFocusOnTab, true)
+        compare(btn.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_copies_when_focused() {
+        btn.forceActiveFocus()
+        tryCompare(btn, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(copySpy.count, 1)
+        compare(copySpy.signalArguments[0][0], "QmAbc123")
+    }
 }

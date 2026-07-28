@@ -18,10 +18,14 @@ SpinBox {
     implicitHeight: 32
     editable: true
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     background: Rectangle {
         id: bg
         color: root.backgroundColor
-        border.color: root.borderColor
+        border.color: root.visualFocus || input.activeFocus
+                      ? Theme.palette.overlayOrange : root.borderColor
         border.width: 1
         radius: Theme.spacing.radiusSmall
     }
@@ -40,6 +44,7 @@ SpinBox {
         validator: root.validator
         inputMethodHints: Qt.ImhFormattedNumbersOnly
         selectByMouse: true
+        activeFocusOnTab: true
     }
 
     up.indicator: Rectangle {

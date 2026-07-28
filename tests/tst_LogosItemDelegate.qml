@@ -40,4 +40,16 @@ TestCase {
         item.clicked()
         compare(clickedSpy.count, 1)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(item.activeFocusOnTab, true)
+        compare(item.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_emits_clicked_when_focused() {
+        item.forceActiveFocus()
+        tryCompare(item, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(clickedSpy.count, 1)
+    }
 }

@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, color, selectByMouse, wrapMode, selectedText (plus TextEdit selection APIs)"
+                text: "Public API: text, color, selectByMouse, selectByKeyboard, wrapMode, selectedText. No caret — drag or Tab then Shift+arrows / ⌘A to select; ⌘C copies. readOnly — not an editor."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -56,7 +56,7 @@ Rectangle {
             }
 
             LogosText {
-                text: "Default — drag to select"
+                text: "Default — drag or Tab then Shift+arrows / ⌘A to select (no caret)"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
             }

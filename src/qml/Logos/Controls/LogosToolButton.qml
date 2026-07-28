@@ -14,6 +14,9 @@ ToolButton {
     readonly property alias labelItem: label
     readonly property alias backgroundItem: bg
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     contentItem: LogosText {
         id: label
         text: root.text
@@ -29,7 +32,9 @@ ToolButton {
         radius: Theme.spacing.radiusSmall
         color: root.pressed
                ? root.pressedColor
-               : (root.hovered ? root.hoverColor : "transparent")
+               : (root.hovered || root.visualFocus ? root.hoverColor : "transparent")
+        border.width: root.visualFocus ? 1 : 0
+        border.color: Theme.palette.overlayOrange
     }
 
     HoverHandler {

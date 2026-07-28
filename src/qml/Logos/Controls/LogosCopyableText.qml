@@ -54,6 +54,8 @@ Control {
     function copy() { copyButton.copy() }
 
     hoverEnabled: false
+    focusPolicy: Qt.NoFocus
+    activeFocusOnTab: false
     opacity: enabled ? 1.0 : 0.4
 
     implicitWidth: contentItem.implicitWidth

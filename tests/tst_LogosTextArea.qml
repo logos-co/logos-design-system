@@ -35,4 +35,9 @@ TestCase {
     function test_select_by_mouse() {
         compare(area.selectByMouse, true)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(area.activeFocusOnTab, true)
+        compare(area.focusPolicy, Qt.StrongFocus)
+    }
 }

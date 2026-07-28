@@ -69,6 +69,11 @@ Control {
     topPadding: Theme.spacing.small
     bottomPadding: Theme.spacing.small
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+    onActiveFocusChanged: if (activeFocus)
+        field.textInput.forceActiveFocus()
+
     background: Rectangle {
         color: Theme.palette.background
         radius: Theme.spacing.radiusLarge
@@ -113,6 +118,8 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             background: Item {}
             placeholderText: "Search..."
+            activeFocusOnTab: false
+            textInput.activeFocusOnTab: false
         }
 
         Rectangle {

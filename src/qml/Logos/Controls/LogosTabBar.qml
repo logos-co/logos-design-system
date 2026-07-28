@@ -6,9 +6,11 @@ import Logos.Theme
 // Themed TabBar that owns a sliding indicator beneath the active tab.
 //
 // Public API:
-//     indicatorColor      color of the underline (default: Theme.palette.primary)
+//     indicatorColor      color of the selected underline (default: Theme.palette.primary)
 //     indicatorHeight     pixel height of the underline (default: 3)
 //     animationDuration   slide duration in ms (default: 200)
+//     trackColor          full-width baseline under all tabs
+//                         (default: Theme.palette.borderHairline)
 //
 // Use with LogosTabButton.
 //
@@ -36,14 +38,21 @@ TabBar {
     property color indicatorColor: Theme.palette.primary
     property int indicatorHeight: 3
     property int animationDuration: 200
+    property color trackColor: Theme.palette.borderHairline
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias indicatorItem: indicator
+    readonly property alias trackItem: track
 
     background: Item {
+        // Low-opacity baseline under every tab; selected segment uses indicatorColor.
         Rectangle {
-            anchors.fill: parent
-            color: "transparent"
+            id: track
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: Math.max(1, Math.round(root.indicatorHeight / 3))
+            color: root.trackColor
         }
 
         Rectangle {

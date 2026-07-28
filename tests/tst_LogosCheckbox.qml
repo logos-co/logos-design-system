@@ -27,6 +27,7 @@ TestCase {
         cbox.checked = false
         cbox.enabled = true
         cbox.text = "Accept"
+        cbox.focus = false
     }
 
     function test_renders_text() {
@@ -52,10 +53,28 @@ TestCase {
 
     function test_indicator_alias_resolves() {
         verify(cbox.indicatorItem, "indicatorItem alias must resolve")
+        verify(cbox.focusRingItem, "focusRingItem alias must resolve")
     }
 
     function test_label_alias_resolves() {
         verify(cbox.labelItem, "labelItem alias must resolve")
+    }
+
+    function test_focus_ring_visible_when_keyboard_focused() {
+        compare(cbox.focusRingItem.border.width, 0)
+        // Clear any leftover focus so TabFocusReason is applied (forceActiveFocus
+        // is a no-op when the item already has activeFocus).
+        cbox.focus = false
+        tryCompare(cbox, "activeFocus", false)
+        cbox.forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(cbox, "visualFocus", true)
+        compare(cbox.focusRingItem.border.width, 2)
+        compare(cbox.focusRingItem.border.color, Theme.palette.focus)
+
+        // Still visible when checked (primary fill must not hide the ring).
+        cbox.checked = true
+        compare(cbox.focusRingItem.border.width, 2)
+        compare(cbox.focusRingItem.border.color, Theme.palette.focus)
     }
 
     function test_label_color_switches_with_enabled() {
@@ -63,5 +82,26 @@ TestCase {
         tryCompare(cbox.labelItem, "color", Theme.palette.text)
         cbox.enabled = false
         tryCompare(cbox.labelItem, "color", Theme.palette.textMuted)
+    }
+
+    function test_joins_tab_focus_chain() {
+        compare(cbox.activeFocusOnTab, true)
+        compare(cbox.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_toggles_when_focused() {
+        cbox.forceActiveFocus()
+        tryCompare(cbox, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(cbox.checked, true)
+        compare(clickedSpy.count, 1)
+    }
+
+    function test_disabled_ignores_keyboard_activate() {
+        cbox.enabled = false
+        cbox.forceActiveFocus()
+        keyClick(Qt.Key_Space)
+        compare(cbox.checked, false)
+        compare(clickedSpy.count, 0)
     }
 }

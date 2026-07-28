@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, href, linkColor, hoverColor, underline, elide, activate(), activated(href)"
+                text: "Public API: text, href, linkColor, hoverColor, underline, elide, activate(), activated(href). Tab focuses; hold Space/Enter for pressed, release to activate."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText

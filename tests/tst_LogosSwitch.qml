@@ -2,6 +2,7 @@ import QtQuick
 import QtTest
 
 import Logos.Controls
+import Logos.Theme
 
 TestCase {
     name: "LogosSwitch"
@@ -31,7 +32,22 @@ TestCase {
         verify(sw.indicatorItem)
         verify(sw.handleItem)
         verify(sw.labelItem)
+        verify(sw.focusRingItem)
     }
+
+    function test_focus_ring_visible_when_keyboard_focused() {
+        compare(sw.focusRingItem.border.width, 0)
+        sw.forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(sw, "visualFocus", true)
+        compare(sw.focusRingItem.border.width, 2)
+        compare(sw.focusRingItem.border.color, Theme.palette.focus)
+
+        // Still visible when checked (primary track must not hide the ring).
+        sw.checked = true
+        compare(sw.focusRingItem.border.width, 2)
+        compare(sw.focusRingItem.border.color, Theme.palette.focus)
+    }
+
 
     function test_checked_round_trips() {
         sw.checked = true
@@ -53,5 +69,18 @@ TestCase {
         tryVerify(function() { return sw.handleItem.x > 2 })
         sw.checked = false
         tryCompare(sw.handleItem, "x", 2)
+    }
+
+    function test_joins_tab_focus_chain() {
+        compare(sw.activeFocusOnTab, true)
+        compare(sw.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_toggles_when_focused() {
+        sw.forceActiveFocus()
+        tryCompare(sw, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(sw.checked, true)
+        compare(clickedSpy.count, 1)
     }
 }

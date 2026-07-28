@@ -27,6 +27,9 @@ TextArea {
     selectByMouse: true
     wrapMode: TextEdit.Wrap
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     leftPadding: Theme.spacing.medium
     rightPadding: Theme.spacing.medium
     topPadding: Theme.spacing.small
@@ -35,7 +38,7 @@ TextArea {
     background: Rectangle {
         id: bg
         color: root.backgroundColor
-        border.color: root.activeFocus ? root.focusBorderColor : root.borderColor
+        border.color: root.activeFocus || root.visualFocus ? root.focusBorderColor : root.borderColor
         border.width: 1
         radius: Theme.spacing.radiusSmall
     }

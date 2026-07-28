@@ -38,4 +38,9 @@ TestCase {
         slider.value = 0
         compare(slider.visualPosition, 0.0)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(slider.activeFocusOnTab, true)
+        compare(slider.focusPolicy, Qt.StrongFocus)
+    }
 }

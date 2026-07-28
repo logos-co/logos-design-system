@@ -15,6 +15,9 @@ MenuItem {
 
     implicitHeight: 32
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     contentItem: LogosText {
         id: label
         leftPadding: Theme.spacing.medium
@@ -27,7 +30,9 @@ MenuItem {
     background: Rectangle {
         id: bg
         radius: Theme.spacing.radiusSmall
-        color: root.highlighted ? root.highlightColor : "transparent"
+        color: root.highlighted || root.visualFocus ? root.highlightColor : "transparent"
+        border.width: root.visualFocus ? 1 : 0
+        border.color: Theme.palette.overlayOrange
     }
 
     HoverHandler {

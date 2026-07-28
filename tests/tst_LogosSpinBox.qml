@@ -40,4 +40,10 @@ TestCase {
     function test_editable_default() {
         compare(spin.editable, true)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(spin.activeFocusOnTab, true)
+        compare(spin.focusPolicy, Qt.StrongFocus)
+        compare(spin.contentLabel.activeFocusOnTab, true)
+    }
 }
