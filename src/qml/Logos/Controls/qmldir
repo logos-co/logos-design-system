@@ -3,6 +3,10 @@ LogosButton 1.0 LogosButton.qml
 LogosIcon 1.0 LogosIcon.qml
 LogosIconButton 1.0 LogosIconButton.qml
 LogosText 1.0 LogosText.qml
+LogosSelectableText 1.0 LogosSelectableText.qml
+LogosCopyButton 1.0 LogosCopyButton.qml
+LogosCopyableText 1.0 LogosCopyableText.qml
+LogosLink 1.0 LogosLink.qml
 LogosTextField 1.0 LogosTextField.qml
 LogosTabButton 1.0 LogosTabButton.qml
 LogosTabBar 1.0 LogosTabBar.qml
