@@ -142,7 +142,7 @@ TestCase {
 
     function test_default_width_fits_the_label() {
         btn.text = "This is a very long label that will not fit inside 100px"
-        tryVerify(function() { return !btn.labelItem.truncated })
+        tryCompare(btn.labelItem, "truncated", false)
         verify(btn.width >= btn.labelItem.implicitWidth + btn.leftPadding + btn.rightPadding)
     }
 
@@ -152,13 +152,13 @@ TestCase {
     }
 
     function test_icon_adds_a_single_slot_to_the_width() {
-        tryVerify(function() { return !iconSizing.labelItem.truncated })
+        tryCompare(iconSizing.labelItem, "truncated", false)
         compare(iconSizing.implicitWidth,
                 plainSizing.implicitWidth + iconSizing.leadingIcon.size + iconSizing.contentItem.spacing)
     }
 
     function test_both_icons_add_two_slots_to_the_width() {
-        tryVerify(function() { return !bothIconsSizing.labelItem.truncated })
+        tryCompare(bothIconsSizing.labelItem, "truncated", false)
         compare(bothIconsSizing.implicitWidth,
                 iconSizing.implicitWidth + bothIconsSizing.trailingIcon.size + bothIconsSizing.contentItem.spacing)
     }
