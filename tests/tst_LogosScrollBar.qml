@@ -45,20 +45,22 @@ TestCase {
         tryCompare(bar.barItem, "implicitWidth", 10)
     }
 
+    // size comes from the Flickable's visibleArea, which settles a frame after
+    // the scene is shown, so every size assertion below polls for it.
     function test_hidden_when_content_fits() {
-        compare(fittingBar.size, 1)
+        tryCompare(fittingBar, "size", 1)
         tryCompare(fittingBar.barItem, "opacity", 0)
     }
 
     // The overlay bar stays hidden at rest even when the content overflows: it
     // is not tied to ScrollBar.active, which the runtime can leave stuck on.
     function test_hidden_at_rest_when_content_overflows() {
-        verify(bar.size < 1)
+        tryVerify(function() { return bar.size < 1 })
         tryCompare(bar.barItem, "opacity", 0)
     }
 
     function test_shown_after_a_scroll() {
-        verify(bar.size < 1)
+        tryVerify(function() { return bar.size < 1 })
         bar.position = 0.3
         tryCompare(bar.barItem, "opacity", 1)
     }
