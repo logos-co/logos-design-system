@@ -3,7 +3,7 @@
 #
 # IMPORTS Logos.Theme + Logos.Icons — several controls (LogosComboBox,
 # LogosSearchBar, LogosPaginator, LogosTable, LogosWarningDialog,
-# LogosCopyableText) import Logos.Icons; every control transitively depends
+# LogosCopyButton) import Logos.Icons; every control transitively depends
 # on Logos.Theme's palette / typography singletons. Declaring both under
 # IMPORTS lets qmlcachegen resolve their types at build time and AOT-compile
 # the bindings; the target_link_libraries below ensures both plugin
@@ -21,6 +21,10 @@ qt_add_qml_module(logos_controls_qml
         LogosIcon.qml
         LogosIconButton.qml
         LogosText.qml
+        LogosSelectableText.qml
+        LogosCopyButton.qml
+        LogosCopyableText.qml
+        LogosLink.qml
         LogosTextField.qml
         LogosTabButton.qml
         LogosTabBar.qml

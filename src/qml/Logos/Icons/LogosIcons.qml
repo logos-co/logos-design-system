@@ -18,6 +18,7 @@ QtObject {
     readonly property url search:   Qt.resolvedUrl("icons/search.svg")
     readonly property url close:    Qt.resolvedUrl("icons/close.svg")
     readonly property url copy:     Qt.resolvedUrl("icons/copy.svg")
+    readonly property url check:    Qt.resolvedUrl("icons/check.svg")
 
     // View modes
     readonly property url grid:     Qt.resolvedUrl("icons/grid.svg")
