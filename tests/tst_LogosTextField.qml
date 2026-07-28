@@ -94,4 +94,10 @@ TestCase {
         field.forceActiveFocus()
         tryCompare(field.textInput, "activeFocus", true)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(field.activeFocusOnTab, true)
+        compare(field.focusPolicy, Qt.StrongFocus)
+        compare(field.textInput.activeFocusOnTab, true)
+    }
 }

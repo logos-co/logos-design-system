@@ -43,6 +43,9 @@ ComboBox {
 
     implicitHeight: 32
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     contentItem: LogosText {
         id: contentText
 
@@ -93,7 +96,8 @@ ComboBox {
                ? (root.pressed ? Theme.palette.pressed : Theme.palette.backgroundButton)
                : Theme.palette.backgroundSecondary
         radius: Theme.spacing.radiusSmall
-        border.color: root.enabled ? Theme.palette.border : Theme.palette.borderSubtle
+        border.color: root.visualFocus ? Theme.palette.overlayOrange
+                     : (root.enabled ? Theme.palette.border : Theme.palette.borderSubtle)
         border.width: 1
     }
 

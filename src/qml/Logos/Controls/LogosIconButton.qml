@@ -12,9 +12,10 @@ import Logos.Theme
 //     iconSize      icon width/height in px (default 20)
 //     flat          hide the pill background/border — ghost icon button
 //                   (default false)
-//     pressed       read-only; true while the mouse is held down on the button.
-//                   Non-flat pills use a distinct pressed fill (pressed wins
-//                   over hover), matching LogosButton secondary.
+//     pressed       read-only; true while the mouse is held, or while Space/
+//                   Enter is held with keyboard focus. Non-flat pills use a
+//                   distinct pressed fill (pressed wins over hover), matching
+//                   LogosButton secondary.
 //
 // Read-only inspection aliases:
 //     iconImage         the underlying Image element
@@ -23,7 +24,9 @@ import Logos.Theme
 //     _backgroundColor  d.backgroundColor; not for app use
 //
 // Signals:
-//     clicked()
+//     clicked() on mouse click, or on Space/Enter release while focused.
+//
+// Joins the Tab focus chain; Space/Enter show pressed then emit clicked().
 //
 // Example:
 //     LogosIconButton {
@@ -39,7 +42,7 @@ Control {
     property int   iconSize: 20
     property bool  flat: false
 
-    readonly property bool pressed: mouseArea.containsPress
+    readonly property bool pressed: mouseArea.containsPress || d.keyboardPressed
     readonly property bool isActive: enabled && (root.pressed || root.hovered || root.activeFocus)
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
@@ -50,6 +53,8 @@ Control {
 
     QtObject {
         id: d
+        property bool keyboardPressed: false
+
         function backgroundColor(enabled, pressed, hovered, focused) {
             if (!enabled)
                 return Theme.palette.backgroundButton
@@ -59,12 +64,49 @@ Control {
                 return Theme.palette.backgroundMuted
             return Theme.palette.backgroundButton
         }
+
+        function isActivateKey(key) {
+            return key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space
+        }
+
+        function emitClicked() {
+            if (!root.enabled)
+                return
+            root.clicked()
+        }
+    }
+
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            d.keyboardPressed = false
     }
 
     implicitWidth: size
     implicitHeight: size
     hoverEnabled: true
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
     opacity: enabled ? 1.0 : 0.4
+
+    Accessible.role: Accessible.Button
+    Accessible.onPressAction: d.emitClicked()
+
+    Keys.onPressed: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        d.keyboardPressed = root.enabled
+        event.accepted = true
+    }
+
+    Keys.onReleased: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        if (d.keyboardPressed) {
+            d.keyboardPressed = false
+            d.emitClicked()
+        }
+        event.accepted = true
+    }
 
     background: Rectangle {
         id: bg
@@ -105,6 +147,7 @@ Control {
         anchors.fill: parent
         enabled: root.enabled
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onClicked: root.clicked()
+        onPressed: root.forceActiveFocus()
+        onClicked: d.emitClicked()
     }
 }

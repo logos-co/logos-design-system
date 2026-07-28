@@ -211,4 +211,209 @@ TestCase {
         pager._d.requestSize(-1)   // out of range — no emit
         compare(sizeSpy.count, 0)
     }
+
+    // ─── Keyboard / focus ────────────────────────────────────────────────
+
+    function test_wrapper_is_not_a_tab_stop() {
+        compare(pager.activeFocusOnTab, false)
+        compare(pager.focusPolicy, Qt.NoFocus)
+    }
+
+    function test_nav_buttons_join_tab_focus_chain() {
+        compare(pager.nextButton.activeFocusOnTab, true)
+        compare(pager.nextButton.focusPolicy, Qt.StrongFocus)
+        compare(pager.prevButton.activeFocusOnTab, true)
+    }
+
+    function test_focusableNavItems_skips_ellipsis_cells() {
+        pager.totalCount = 30
+        pager.currentPage = 15
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        verify(items.length > 0)
+        for (let i = 0; i < items.length; ++i)
+            verify(!items[i].isEllipsis, "ellipsis cells must not be focusable")
+    }
+
+    function test_focusableNavItems_omits_disabled_prev_on_first_page() {
+        pager.currentPage = 1
+        waitForRendering(pager)
+        compare(pager.prevButton.enabled, false)
+        const items = pager._d.focusableNavItems()
+        // Prev is disabled — moving left from the first focusable must fail.
+        items[0].forceActiveFocus()
+        tryCompare(items[0], "activeFocus", true)
+        compare(pager._d.moveFocus(-1), false)
+    }
+
+    function test_moveFocus_right_and_left() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        verify(items.length >= 2)
+        items[0].forceActiveFocus()
+        tryCompare(items[0], "activeFocus", true)
+        verify(pager._d.moveFocus(1))
+        tryCompare(items[1], "activeFocus", true)
+        verify(pager._d.moveFocus(-1))
+        tryCompare(items[0], "activeFocus", true)
+    }
+
+    function test_moveFocus_stops_at_ends() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        items[0].forceActiveFocus()
+        tryCompare(items[0], "activeFocus", true)
+        compare(pager._d.moveFocus(-1), false)
+        tryCompare(items[0], "activeFocus", true)
+
+        items[items.length - 1].forceActiveFocus()
+        tryCompare(items[items.length - 1], "activeFocus", true)
+        compare(pager._d.moveFocus(1), false)
+        tryCompare(items[items.length - 1], "activeFocus", true)
+    }
+
+    function test_moveFocus_false_when_nothing_focused() {
+        root.forceActiveFocus()
+        compare(pager._d.moveFocus(1), false)
+    }
+
+    function test_moveFocus_between_trailing_nav_buttons() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        verify(items.length >= 2)
+        const nextIdx = items.length - 2
+        const lastIdx = items.length - 1
+        items[nextIdx].forceActiveFocus()
+        tryCompare(items[nextIdx], "activeFocus", true)
+        verify(pager._d.moveFocus(1))
+        tryCompare(items[lastIdx], "activeFocus", true)
+        verify(pager._d.moveFocus(-1))
+        tryCompare(items[nextIdx], "activeFocus", true)
+    }
+
+    function test_arrow_keys_move_focus_between_nav_items() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        verify(items.length >= 2)
+        // Start on a nav IconButton (first) — ←/→ must move focus, not be
+        // swallowed by the button's Space/Enter Keys handler.
+        items[0].forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(items[0], "activeFocus", true)
+        keyClick(Qt.Key_Right)
+        tryCompare(items[1], "activeFocus", true)
+        compare(pager._d.navFocusBorderWidth(items[1]), 2)
+        keyClick(Qt.Key_Left)
+        tryCompare(items[0], "activeFocus", true)
+        compare(pager._d.navFocusBorderWidth(items[0]), 2)
+    }
+
+    function test_arrow_keys_from_page_cell_reach_nav_button() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        // Find first page cell in the focusable list (after first+prev).
+        let cellIdx = -1
+        for (let i = 0; i < items.length; ++i) {
+            if (items[i] !== pager.firstButton && items[i] !== pager.prevButton
+                    && items[i] !== pager.nextButton && items[i] !== pager.lastButton) {
+                cellIdx = i
+                break
+            }
+        }
+        verify(cellIdx >= 0)
+        verify(cellIdx + 1 < items.length)
+        items[cellIdx].forceActiveFocus()
+        tryCompare(items[cellIdx], "activeFocus", true)
+        keyClick(Qt.Key_Right)
+        tryCompare(items[cellIdx + 1], "activeFocus", true)
+    }
+
+    function test_nav_icon_buttons_are_tab_stops_when_enabled() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        compare(pager.firstButton.activeFocusOnTab, true)
+        compare(pager.prevButton.activeFocusOnTab, true)
+        compare(pager.nextButton.activeFocusOnTab, true)
+        compare(pager.lastButton.activeFocusOnTab, true)
+        compare(pager.firstButton.focusPolicy, Qt.StrongFocus)
+        compare(pager.firstButton.enabled, true)
+        compare(pager.nextButton.enabled, true)
+    }
+
+    function test_focus_stays_in_nav_when_reaching_first_page() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        pager.firstButton.forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(pager.firstButton, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(requestedSpy.count, 1)
+        compare(requestedSpy.signalArguments[0][0], 1)
+        // Consumer applies the page — «/‹ disable and cells may rebuild.
+        pager.currentPage = 1
+        waitForRendering(pager)
+        tryVerify(function() {
+            const items = pager._d.focusableNavItems()
+            for (let i = 0; i < items.length; ++i) {
+                if (items[i].activeFocus)
+                    return true
+            }
+            return false
+        })
+        // Prefer the current page cell after landing on page 1.
+        let currentCell = null
+        for (let i = 0; i < pager.pageCells.count; ++i) {
+            const cell = pager.pageCells.itemAt(i)
+            if (cell && cell.isCurrent) {
+                currentCell = cell
+                break
+            }
+        }
+        verify(currentCell !== null)
+        tryCompare(currentCell, "activeFocus", true)
+    }
+
+    function test_left_at_first_nav_item_keeps_focus() {
+        pager.currentPage = 1
+        waitForRendering(pager)
+        const items = pager._d.focusableNavItems()
+        verify(items.length >= 1)
+        items[0].forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(items[0], "activeFocus", true)
+        keyClick(Qt.Key_Left)
+        tryCompare(items[0], "activeFocus", true)
+    }
+
+    function test_space_on_next_requests_next_page() {
+        pager.currentPage = 5
+        waitForRendering(pager)
+        pager.nextButton.forceActiveFocus()
+        tryCompare(pager.nextButton, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(requestedSpy.count, 1)
+        compare(requestedSpy.signalArguments[0][0], 6)
+    }
+
+    function test_page_cell_space_requests_that_page() {
+        pager.totalCount = 5
+        pager.currentPage = 1
+        waitForRendering(pager)
+        let target = null
+        for (let i = 0; i < pager.pageCells.count; ++i) {
+            const cell = pager.pageCells.itemAt(i)
+            if (cell && !cell.isEllipsis && !cell.isCurrent) {
+                target = cell
+                break
+            }
+        }
+        verify(target !== null)
+        target.forceActiveFocus()
+        tryCompare(target, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(requestedSpy.count, 1)
+        verify(requestedSpy.signalArguments[0][0] >= 2)
+    }
 }

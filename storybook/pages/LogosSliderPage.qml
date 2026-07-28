@@ -46,7 +46,7 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 LogosText { text: "Stepped"; color: Theme.palette.text; Layout.preferredWidth: 80 }
-                LogosSlider { Layout.fillWidth: true; from: 0; to: 10; stepSize: 1; value: 4; snapMode: Slider.SnapAlways }
+                LogosSlider { Layout.fillWidth: true; from: 0; to: 10; stepSize: 1; value: 4; snapMode: LogosSlider.SnapAlways }
             }
 
             RowLayout {

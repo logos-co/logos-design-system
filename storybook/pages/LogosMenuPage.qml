@@ -32,7 +32,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: Menu / MenuItem (text, enabled, triggered()). Aliases: backgroundItem, labelItem."
+                text: "Public API: Menu / MenuItem (text, enabled, triggered()). Use popupUnder(button) for button menus (keyboard-safe); popup() for context menus at the cursor. Aliases: backgroundItem, labelItem."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -41,10 +41,11 @@ Rectangle {
         }
 
         LogosButton {
+            id: menuButton
             text: "Open menu"
             implicitWidth: 140
             implicitHeight: 36
-            onClicked: contextMenu.popup()
+            onClicked: contextMenu.popupUnder(menuButton)
         }
 
         Item { Layout.fillHeight: true }

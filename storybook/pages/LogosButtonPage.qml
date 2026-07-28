@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, variant, icon, radius, enabled, pressed, clicked()"
+                text: "Public API: text, variant, icon, radius, enabled, pressed, clicked(). Tab focuses; hold Space/Enter for pressed, release to click."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }

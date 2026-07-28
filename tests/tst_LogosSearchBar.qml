@@ -85,4 +85,14 @@ TestCase {
         bar.textInput.selectAll()
         tryCompare(bar.textInput, "selectedText", "logos")
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(bar.activeFocusOnTab, true)
+        compare(bar.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_focus_forwards_to_text_input() {
+        bar.forceActiveFocus()
+        tryCompare(bar.textInput, "activeFocus", true)
+    }
 }

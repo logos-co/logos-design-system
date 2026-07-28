@@ -15,6 +15,9 @@ Slider {
     readonly property alias fillItem: fill
     readonly property alias handleItem: handle
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     background: Rectangle {
         id: track
         x: root.leftPadding
@@ -43,6 +46,7 @@ Slider {
         implicitHeight: 18
         radius: width / 2
         color: root.pressed ? Theme.palette.primaryPressed : root.handleColor
-        border.color: Theme.palette.border
+        border.color: root.visualFocus ? Theme.palette.overlayOrange : Theme.palette.border
+        border.width: root.visualFocus ? 2 : 1
     }
 }

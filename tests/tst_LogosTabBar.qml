@@ -25,12 +25,23 @@ TestCase {
     function init() {
         bar.indicatorColor = Theme.palette.primary
         bar.indicatorHeight = 3
+        bar.trackColor = Theme.palette.borderHairline
         bar.currentIndex = 0
     }
 
     function test_indicator_exists_after_layout() {
         verify(bar.indicatorItem, "indicatorItem alias must resolve")
         verify(bar.indicatorItem.parent, "indicator must have a parent")
+    }
+
+    function test_track_exists() {
+        verify(bar.trackItem, "trackItem alias must resolve")
+        compare(bar.trackItem.color, Theme.palette.borderHairline)
+    }
+
+    function test_track_color_propagates() {
+        bar.trackColor = "#abcdef"
+        tryCompare(bar.trackItem, "color", "#abcdef")
     }
 
     function test_indicator_height_propagates() {

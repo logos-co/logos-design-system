@@ -27,8 +27,9 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: indicatorColor, indicatorHeight, animationDuration. "
-                      + "Use with LogosTabButton."
+                text: "Public API: indicatorColor, indicatorHeight, animationDuration, trackColor. "
+                      + "Use with LogosTabButton. Selected tab uses the solid indicator; "
+                      + "a low-opacity track runs under all tabs."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }

@@ -10,8 +10,9 @@ import Logos.Controls
 // either side of it. The implicit size follows the content, so a button left
 // at its natural size fits its own label; a label constrained by an explicit
 // width is elided rather than overflowing the button. Colors and border react
-// to hover, press, and enabled state (pressed takes priority over hovered).
-// Cursor reflects enabled state.
+// to hover, press, focus, and enabled state (pressed takes priority over
+// hover/focus). Cursor reflects enabled state. Joins the Tab focus chain;
+// Space/Enter show pressed while held and emit clicked() on release.
 //
 // Public API:
 //     text         button label. Drives the implicit width. Elided with "…"
@@ -23,8 +24,10 @@ import Logos.Controls
 //     variant      LogosButton.Variant.Primary or .Secondary (default). Drives
 //                  the background and border palette.
 //     radius       background corner radius. Default = Theme.spacing.radiusXlarge.
-//     pressed      read-only; true while the mouse is held down on the button.
-//     clicked      signal emitted when an enabled button is clicked.
+//     pressed      read-only; true while the mouse is held, or while Space/
+//                  Enter is held with keyboard focus (pressed chrome).
+//     clicked      signal emitted on mouse click, or on Space/Enter release
+//                  while focused.
 //
 // IconSpec fields:
 //     source     URL of the icon asset. Empty renders nothing.
@@ -68,8 +71,9 @@ Control {
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
 
-    readonly property bool pressed: mouseArea.containsPress
-    readonly property bool isActive: root.pressed || root.hovered
+    readonly property bool pressed: mouseArea.containsPress || d.keyboardPressed
+    readonly property bool isActive: root.enabled
+                                     && (root.pressed || root.hovered || root.activeFocus)
 
     signal clicked()
 
@@ -83,23 +87,40 @@ Control {
 
     QtObject {
         id: d
+        property bool keyboardPressed: false
 
-        function backgroundColor(enabled, variant, pressed, hovered) {
+        // focused is treated like hovered (pressed still wins).
+        function backgroundColor(enabled, variant, pressed, hovered, focused) {
             if (!enabled)
                 return Theme.palette.backgroundMuted
             if (variant === LogosButton.Variant.Primary) {
                 if (pressed)
                     return Theme.palette.primaryPressed
-                if (hovered)
+                if (hovered || focused)
                     return Theme.palette.primaryHover
                 return Theme.palette.primary
             }
             if (pressed)
                 return Theme.palette.background
-            if (hovered)
+            if (hovered || focused)
                 return Theme.palette.backgroundMuted
             return Theme.palette.backgroundSecondary
         }
+
+        function isActivateKey(key) {
+            return key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space
+        }
+
+        function emitClicked() {
+            if (!root.enabled)
+                return
+            root.clicked()
+        }
+    }
+
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            d.keyboardPressed = false
     }
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
@@ -112,13 +133,37 @@ Control {
     topPadding: Theme.spacing.medium
     bottomPadding: Theme.spacing.medium
     hoverEnabled: true
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.secondaryText
     font.weight: Theme.typography.weightMedium
 
+    Accessible.role: Accessible.Button
+    Accessible.name: root.text
+    Accessible.onPressAction: d.emitClicked()
+
+    Keys.onPressed: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        d.keyboardPressed = root.enabled
+        event.accepted = true
+    }
+
+    Keys.onReleased: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        if (d.keyboardPressed) {
+            d.keyboardPressed = false
+            d.emitClicked()
+        }
+        event.accepted = true
+    }
+
     background: Rectangle {
         id: bg
-        color: d.backgroundColor(root.enabled, root.variant, root.pressed, root.hovered)
+        color: d.backgroundColor(root.enabled, root.variant, root.pressed,
+                                 root.hovered, root.activeFocus)
         radius: root.radius
         border.width: 1
         border.color: {
@@ -173,6 +218,7 @@ Control {
         enabled: root.enabled
         hoverEnabled: true
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onClicked: root.clicked()
+        onPressed: root.forceActiveFocus()
+        onClicked: d.emitClicked()
     }
 }

@@ -121,4 +121,11 @@ TestCase {
         copyable.textItem.selectAll()
         compare(copyable.textItem.selectedText, "QmAbc123")
     }
+
+    function test_wrapper_is_not_a_tab_stop() {
+        compare(copyable.activeFocusOnTab, false)
+        compare(copyable.focusPolicy, Qt.NoFocus)
+        compare(copyable.textItem.activeFocusOnTab, true)
+        compare(copyable.copyButtonItem.activeFocusOnTab, true)
+    }
 }

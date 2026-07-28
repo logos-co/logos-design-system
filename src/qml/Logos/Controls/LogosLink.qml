@@ -16,10 +16,12 @@ import Logos.Controls
 //                      underline appears only while hovered/pressed.
 //     elide            Text elide mode (default Text.ElideNone).
 //     activated(url href)  Emitted on every enabled click / activate().
-//     activate()           Imperative activate (same as a click).
+//     activate()           Imperative activate (same as a click / Enter / Space).
 //
 // Read-only inspection aliases (for tests):
 //     labelItem, mouseAreaItem
+//
+// Joins the Tab focus chain; Space/Enter show pressed then call activate().
 //
 // Example:
 //     LogosLink {
@@ -51,6 +53,8 @@ Control {
     function activate() { d.activate() }
 
     hoverEnabled: true
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
     opacity: enabled ? 1.0 : 0.4
 
     implicitWidth: label.implicitWidth
@@ -60,11 +64,40 @@ Control {
     Accessible.name: root.text
     Accessible.onPressAction: d.activate()
 
+    Keys.onPressed: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        d.keyboardPressed = root.enabled
+        event.accepted = true
+    }
+
+    Keys.onReleased: function(event) {
+        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
+            return
+        if (d.keyboardPressed) {
+            d.keyboardPressed = false
+            d.activate()
+        }
+        event.accepted = true
+    }
+
+    onActiveFocusChanged: {
+        if (!activeFocus)
+            d.keyboardPressed = false
+    }
+
     QtObject {
         id: d
+        property bool keyboardPressed: false
+
         readonly property bool isActive: root.enabled
-                                         && (mouseArea.pressed || root.hovered || root.activeFocus)
+                                         && (mouseArea.pressed || d.keyboardPressed
+                                             || root.hovered || root.activeFocus)
         readonly property bool showUnderline: root.underline || isActive
+
+        function isActivateKey(key) {
+            return key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space
+        }
 
         function activate() {
             if (!root.enabled)
@@ -87,6 +120,7 @@ Control {
         anchors.fill: parent
         enabled: root.enabled
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+        onPressed: root.forceActiveFocus()
         onClicked: d.activate()
     }
 }

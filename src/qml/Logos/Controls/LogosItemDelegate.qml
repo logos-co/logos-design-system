@@ -18,6 +18,8 @@ import Logos.Controls
 //
 // Public extension knobs:
 //     hoverColor / pressedColor / highlightColor   surface colors per state
+//                  (hoverColor also used for keyboard visualFocus;
+//                   highlightColor is for highlighted/selected only)
 //     textColor                                    label color when enabled
 //                                                  (disabled falls back to textMuted)
 //     radius                                       background rounding (default 0)
@@ -47,6 +49,9 @@ ItemDelegate {
     font.pixelSize: Theme.typography.primaryText
     font.weight: Theme.typography.weightRegular
 
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
     contentItem: LogosText {
         id: label
         text: root.text
@@ -59,11 +64,14 @@ ItemDelegate {
     background: Rectangle {
         id: bg
         radius: root.radius
+        // highlighted = selected/current row; visualFocus matches hover so
+        // Tab focus does not look like selection.
         color: root.pressed
                ? root.pressedColor
                : (root.highlighted
                     ? root.highlightColor
-                    : (root.hovered ? root.hoverColor : "transparent"))
+                    : (root.hovered || root.visualFocus
+                        ? root.hoverColor : "transparent"))
     }
 
     HoverHandler {

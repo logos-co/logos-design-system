@@ -21,6 +21,7 @@ TabButton {
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias iconItem: iconHolder
     readonly property alias labelItem: labelText
+    readonly property alias underlineItem: underline
 
     implicitHeight: 40
     spacing: 6
@@ -35,7 +36,24 @@ TabButton {
     icon.width: 20
     icon.height: 20
 
-    background: Item {}
+    focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
+
+    // Keyboard focus uses a low-opacity underline (not a focus rectangle).
+    // Selected state is drawn by LogosTabBar's sliding indicator.
+    background: Item {
+        Rectangle {
+            id: underline
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: 2
+            radius: height / 2
+            color: root.visualFocus && !root.checked
+                   ? Theme.palette.overlayOrange
+                   : "transparent"
+        }
+    }
 
     contentItem: Item {
         implicitWidth: contentRow.implicitWidth

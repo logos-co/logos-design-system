@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 
 import Logos.Theme
 import Logos.Controls
@@ -29,6 +30,12 @@ import Logos.Icons
 // Signals:
 //     pageRequested(int page)         user clicked a page entry / arrow
 //     pageSizeRequested(int size)     user picked a different page size
+//
+// Keyboard (nav cluster: first/prev/pages/next/last):
+//     Tab moves between stops; ←/→ move focus among enabled nav controls;
+//     Space/Enter activate (IconButton / page cell). Page-size combo is a
+//     separate Tab stop. Focus stays in the cluster when «/‹ disable or page
+//     cells rebuild after a page change (does not jump back to the window top).
 //
 // Example:
 //     LogosPaginator {
@@ -78,6 +85,11 @@ Control {
     QtObject {
         id: d
 
+        // Keyboard focus retention across page changes (disabled «/‹, rebuilt cells).
+        property bool retainNavFocus: false
+        property bool expectFocusRestore: false
+        property int lastNavIndex: 0
+
         // Computes the array of page entries to render. Numbers are page
         // indices; the string "…" is a non-clickable ellipsis between
         // ranges. Single-page gaps render the page itself instead of an
@@ -114,6 +126,10 @@ Control {
 
         function request(page) {
             const p = Math.max(1, Math.min(page, root.pageCount))
+            // Activating «/‹/page may disable the focused control or rebuild
+            // page cells — keep keyboard focus inside the nav cluster.
+            if (navClusterHasFocus())
+                expectFocusRestore = true
             root.pageRequested(p)
         }
 
@@ -134,9 +150,182 @@ Control {
                 return
             root.pageSizeRequested(opts[index])
         }
+
+        // Enabled first/prev/page cells/next/last — arrow keys move among these.
+        function focusableNavItems() {
+            const items = []
+            if (firstBtn.visible && firstBtn.enabled)
+                items.push(firstBtn)
+            if (prevBtn.visible && prevBtn.enabled)
+                items.push(prevBtn)
+            for (let i = 0; i < cellRepeater.count; ++i) {
+                const cell = cellRepeater.itemAt(i)
+                if (cell && !cell.isEllipsis && cell.enabled)
+                    items.push(cell)
+            }
+            if (nextBtn.visible && nextBtn.enabled)
+                items.push(nextBtn)
+            if (lastBtn.visible && lastBtn.enabled)
+                items.push(lastBtn)
+            return items
+        }
+
+        function navClusterHasFocus() {
+            const items = focusableNavItems()
+            for (let i = 0; i < items.length; ++i) {
+                if (items[i].activeFocus)
+                    return true
+            }
+            // Focus may still be on a nav button that just became disabled
+            // (before Qt clears it), or briefly on a dying page-cell delegate.
+            if (firstBtn.activeFocus || prevBtn.activeFocus
+                    || nextBtn.activeFocus || lastBtn.activeFocus)
+                return true
+            return false
+        }
+
+        function restoreNavFocus() {
+            const items = focusableNavItems()
+            if (items.length === 0)
+                return
+            // Prefer the current page cell so landing on page 1 keeps a clear target.
+            for (let i = 0; i < cellRepeater.count; ++i) {
+                const cell = cellRepeater.itemAt(i)
+                if (cell && cell.isCurrent && !cell.isEllipsis) {
+                    cell.forceActiveFocus(Qt.TabFocusReason)
+                    return
+                }
+            }
+            const idx = Math.max(0, Math.min(lastNavIndex, items.length - 1))
+            items[idx].forceActiveFocus(Qt.TabFocusReason)
+        }
+
+        function isUnderPaginator(item) {
+            let p = item
+            while (p) {
+                if (p === root)
+                    return true
+                p = p.parent
+            }
+            return false
+        }
+
+        function scheduleFocusRestore() {
+            Qt.callLater(function() {
+                if (!expectFocusRestore && !retainNavFocus)
+                    return
+                if (navClusterHasFocus()) {
+                    expectFocusRestore = false
+                    return
+                }
+                if (sizeSelector.activeFocus) {
+                    expectFocusRestore = false
+                    retainNavFocus = false
+                    return
+                }
+                // Page change we initiated (Space on «/‹/cell): always put focus
+                // back. Do not treat "focus cleared to the window" as Tab-away.
+                if (expectFocusRestore) {
+                    expectFocusRestore = false
+                    restoreNavFocus()
+                    return
+                }
+                // Soft retain: only restore if focus evaporated; if it moved to
+                // another control outside this paginator, drop retention.
+                const win = root.Window.window
+                const afi = win ? win.activeFocusItem : null
+                if (afi && !isUnderPaginator(afi)) {
+                    retainNavFocus = false
+                    return
+                }
+                restoreNavFocus()
+            })
+        }
+
+        function trackNavFocus(item, focused) {
+            if (focused) {
+                retainNavFocus = true
+                const items = focusableNavItems()
+                for (let i = 0; i < items.length; ++i) {
+                    if (items[i] === item) {
+                        lastNavIndex = i
+                        break
+                    }
+                }
+                return
+            }
+            // Lost focus from a nav item — restore only when the cluster emptied
+            // because a control disabled / delegate rebuilt (no outside focus).
+            Qt.callLater(function() {
+                if (navClusterHasFocus())
+                    return
+                if (sizeSelector.activeFocus) {
+                    retainNavFocus = false
+                    expectFocusRestore = false
+                    return
+                }
+                const win = root.Window.window
+                const afi = win ? win.activeFocusItem : null
+                if (afi && !isUnderPaginator(afi)) {
+                    retainNavFocus = false
+                    expectFocusRestore = false
+                    return
+                }
+                if (expectFocusRestore || retainNavFocus)
+                    scheduleFocusRestore()
+            })
+        }
+
+        function moveFocus(delta) {
+            const items = focusableNavItems()
+            if (items.length === 0)
+                return false
+            let idx = -1
+            for (let i = 0; i < items.length; ++i) {
+                if (items[i].activeFocus) {
+                    idx = i
+                    break
+                }
+            }
+            if (idx < 0)
+                return false
+            const next = idx + delta
+            if (next < 0 || next >= items.length)
+                return false
+            // TabFocusReason so Control.visualFocus stays true across ←/→.
+            // Bare forceActiveFocus() uses OtherFocusReason and clears the ring.
+            items[next].forceActiveFocus(Qt.TabFocusReason)
+            lastNavIndex = next
+            retainNavFocus = true
+            return true
+        }
+
+        // Shared ←/→ handler for IconButton / page-cell Keys.onLeft/RightPressed.
+        // Always accept so storybook Flickable does not steal ← at the first
+        // item and scroll focus away.
+        function handleNavKey(event) {
+            if (event.key === Qt.Key_Left) {
+                moveFocus(-1)
+                event.accepted = true
+            } else if (event.key === Qt.Key_Right) {
+                moveFocus(1)
+                event.accepted = true
+            }
+        }
+
+        // visualFocus (not activeFocus): keyboard-only ring, consistent with
+        // other controls. moveFocus / restore use TabFocusReason so ←/→ keeps
+        // visualFocus true.
+        function navFocusBorderWidth(button) {
+            return button.visualFocus ? 2 : 0
+        }
     }
 
+    onCurrentPageChanged: d.scheduleFocusRestore()
+
     implicitHeight: 36
+    focusPolicy: Qt.NoFocus
+    activeFocusOnTab: false
 
     background: Item {}
 
@@ -164,10 +353,21 @@ Control {
             iconSource: LogosIcons.arrowLeftDouble
             iconColor: root.iconColor
             size: 36
+            flat: true
+            focusPolicy: Qt.StrongFocus
+            activeFocusOnTab: true
             visible: root.showFirstLast
             enabled: root.currentPage > 1
-            background: Item {}
+            background: Rectangle {
+                color: "transparent"
+                radius: Theme.spacing.radiusLarge
+                border.width: d.navFocusBorderWidth(firstBtn)
+                border.color: Theme.palette.overlayOrange
+            }
             onClicked: d.request(1)
+            Keys.onLeftPressed: function(event) { d.handleNavKey(event) }
+            Keys.onRightPressed: function(event) { d.handleNavKey(event) }
+            onActiveFocusChanged: d.trackNavFocus(firstBtn, activeFocus)
         }
         LogosIconButton {
             id: prevBtn
@@ -177,10 +377,21 @@ Control {
             iconSource: LogosIcons.arrowLeft
             iconColor: root.iconColor
             size: 36
+            flat: true
+            focusPolicy: Qt.StrongFocus
+            activeFocusOnTab: true
             visible: root.showPrevNext
             enabled: root.currentPage > 1
-            background: Item {}
+            background: Rectangle {
+                color: "transparent"
+                radius: Theme.spacing.radiusLarge
+                border.width: d.navFocusBorderWidth(prevBtn)
+                border.color: Theme.palette.overlayOrange
+            }
             onClicked: d.request(root.currentPage - 1)
+            Keys.onLeftPressed: function(event) { d.handleNavKey(event) }
+            Keys.onRightPressed: function(event) { d.handleNavKey(event) }
+            onActiveFocusChanged: d.trackNavFocus(prevBtn, activeFocus)
         }
 
         Row {
@@ -191,44 +402,57 @@ Control {
                 id: cellRepeater
                 model: d.computedPages()
 
-                delegate: Item {
+                delegate: AbstractButton {
+                    id: pageCell
                     width: 36
                     height: 36
 
                     readonly property bool isEllipsis: typeof modelData === "string"
-                    readonly property bool isActive: !isEllipsis && modelData === root.currentPage
+                    readonly property bool isCurrent: !isEllipsis && modelData === root.currentPage
 
-                    // Cell background — only rendered for number entries.
-                    Rectangle {
-                        anchors.fill: parent
-                        visible: !parent.isEllipsis
-                        radius: Theme.spacing.radiusLarge
+                    // Current page is focusable so ←/→ can land on it; ellipsis is not.
+                    focusPolicy: isEllipsis ? Qt.NoFocus : Qt.StrongFocus
+                    activeFocusOnTab: !isEllipsis
+                    enabled: !isEllipsis
+                    checkable: false
 
-                        color: parent.isActive
-                               ? Theme.palette.surfaceContrast
-                               : Theme.palette.surfaceRecessed
-                        border.width: parent.isActive ? 0 : 1
-                        border.color: Theme.palette.borderStrong
-
-                        MouseArea {
-                            id: cellMouse
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            enabled: !parent.parent.isActive
-                            onClicked: d.request(modelData)
-                        }
+                    onClicked: {
+                        if (!isEllipsis && !isCurrent)
+                            d.request(modelData)
                     }
 
-                    LogosText {
-                        anchors.centerIn: parent
+                    Keys.onLeftPressed: function(event) { d.handleNavKey(event) }
+                    Keys.onRightPressed: function(event) { d.handleNavKey(event) }
+                    onActiveFocusChanged: d.trackNavFocus(pageCell, activeFocus)
+
+                    background: Rectangle {
+                        visible: !pageCell.isEllipsis
+                        radius: Theme.spacing.radiusLarge
+                        color: pageCell.isCurrent
+                               ? Theme.palette.surfaceContrast
+                               : (pageCell.pressed
+                                  ? Theme.palette.pressed
+                                  : Theme.palette.surfaceRecessed)
+                        border.width: pageCell.visualFocus ? 2 : (pageCell.isCurrent ? 0 : 1)
+                        border.color: pageCell.visualFocus
+                                      ? Theme.palette.overlayOrange
+                                      : Theme.palette.borderStrong
+                    }
+
+                    contentItem: LogosText {
                         text: modelData
                         font.pixelSize: Theme.typography.primaryText
                         font.weight: Theme.typography.weightMedium
-                        color: parent.isActive
+                        color: pageCell.isCurrent
                                ? Theme.palette.backgroundBlack
                                : Theme.palette.textMuted
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
+                    }
+
+                    HoverHandler {
+                        enabled: !pageCell.isEllipsis && !pageCell.isCurrent
+                        cursorShape: Qt.PointingHandCursor
                     }
                 }
             }
@@ -242,10 +466,21 @@ Control {
             iconSource: LogosIcons.arrowRight
             iconColor: root.iconColor
             size: 36
+            flat: true
+            focusPolicy: Qt.StrongFocus
+            activeFocusOnTab: true
             visible: root.showPrevNext
             enabled: root.currentPage < root.pageCount
-            background: Item {}
+            background: Rectangle {
+                color: "transparent"
+                radius: Theme.spacing.radiusLarge
+                border.width: d.navFocusBorderWidth(nextBtn)
+                border.color: Theme.palette.overlayOrange
+            }
             onClicked: d.request(root.currentPage + 1)
+            Keys.onLeftPressed: function(event) { d.handleNavKey(event) }
+            Keys.onRightPressed: function(event) { d.handleNavKey(event) }
+            onActiveFocusChanged: d.trackNavFocus(nextBtn, activeFocus)
         }
         LogosIconButton {
             id: lastBtn
@@ -255,10 +490,21 @@ Control {
             iconSource: LogosIcons.arrowRightDouble
             iconColor: root.iconColor
             size: 36
+            flat: true
+            focusPolicy: Qt.StrongFocus
+            activeFocusOnTab: true
             visible: root.showFirstLast
             enabled: root.currentPage < root.pageCount
-            background: Item {}
+            background: Rectangle {
+                color: "transparent"
+                radius: Theme.spacing.radiusLarge
+                border.width: d.navFocusBorderWidth(lastBtn)
+                border.color: Theme.palette.overlayOrange
+            }
             onClicked: d.request(root.pageCount)
+            Keys.onLeftPressed: function(event) { d.handleNavKey(event) }
+            Keys.onRightPressed: function(event) { d.handleNavKey(event) }
+            onActiveFocusChanged: d.trackNavFocus(lastBtn, activeFocus)
         }
 
         Item {
@@ -290,6 +536,12 @@ Control {
                           ? root.pageSizeOptions.indexOf(root.pageSize)
                           : -1
             onActivated: function(index) { d.requestSize(index) }
+            onActiveFocusChanged: {
+                if (activeFocus) {
+                    d.retainNavFocus = false
+                    d.expectFocusRestore = false
+                }
+            }
         }
     }
 

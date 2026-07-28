@@ -67,4 +67,23 @@ TestCase {
         verify(btn.iconItem, "iconItem alias must resolve")
         verify(btnWithIcon.iconItem, "iconItem alias must resolve")
     }
+
+    function test_focus_uses_underline_not_rectangle() {
+        verify(btn.underlineItem, "underlineItem alias must resolve")
+        bar.currentIndex = 1
+        verify(!btn.checked)
+        compare(btn.underlineItem.color, "#00000000")
+        btn.forceActiveFocus(Qt.TabFocusReason)
+        tryCompare(btn, "visualFocus", true)
+        compare(btn.underlineItem.color, Theme.palette.overlayOrange)
+        // Selected tab: underline stays transparent — LogosTabBar owns the indicator.
+        bar.currentIndex = 0
+        verify(btn.checked)
+        compare(btn.underlineItem.color, "#00000000")
+    }
+
+    function test_joins_tab_focus_chain() {
+        compare(btn.activeFocusOnTab, true)
+        compare(btn.focusPolicy, Qt.StrongFocus)
+    }
 }

@@ -29,6 +29,7 @@ Control {
     clip: true
 
     focusPolicy: Qt.StrongFocus
+    activeFocusOnTab: true
     // Focus handed to the field (forceActiveFocus, tab, key navigation) lands on
     // the wrapper control; the editor is where it must end up.
     onActiveFocusChanged: if (activeFocus)
@@ -72,6 +73,7 @@ Control {
             color: input.validator && input.text.length > 0 && !input.acceptableInput ? Theme.palette.error : Theme.palette.text
             echoMode: root.echoMode
             enabled: root.enabled
+            activeFocusOnTab: true
         }
     }
 }

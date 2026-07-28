@@ -56,6 +56,7 @@ TestCase {
         btn.trailingIcon.source = ""
         btn.trailingIcon.color = Theme.palette.text
         btn.font.pixelSize = Theme.typography.secondaryText
+        btn.focus = false
     }
 
     function test_renders_text() {
@@ -91,10 +92,12 @@ TestCase {
 
     function test_primary_pressed_uses_primary_pressed_fill() {
         const primary = LogosButton.Variant.Primary
-        compare(btn._backgroundColor(true, primary, false, false), Theme.palette.primary)
-        compare(btn._backgroundColor(true, primary, false, true), Theme.palette.primaryHover)
-        compare(btn._backgroundColor(true, primary, true, true), Theme.palette.primaryPressed)
-        compare(btn._backgroundColor(true, primary, true, false), Theme.palette.primaryPressed)
+        // (enabled, variant, pressed, hovered, focused)
+        compare(btn._backgroundColor(true, primary, false, false, false), Theme.palette.primary)
+        compare(btn._backgroundColor(true, primary, false, true, false), Theme.palette.primaryHover)
+        compare(btn._backgroundColor(true, primary, false, false, true), Theme.palette.primaryHover)
+        compare(btn._backgroundColor(true, primary, true, true, true), Theme.palette.primaryPressed)
+        compare(btn._backgroundColor(true, primary, true, false, false), Theme.palette.primaryPressed)
 
         btn.variant = LogosButton.Variant.Primary
         tryCompare(btn.backgroundItem, "color", Theme.palette.primary)
@@ -102,10 +105,11 @@ TestCase {
 
     function test_secondary_pressed_uses_background_fill() {
         const secondary = LogosButton.Variant.Secondary
-        compare(btn._backgroundColor(true, secondary, false, false), Theme.palette.backgroundSecondary)
-        compare(btn._backgroundColor(true, secondary, false, true), Theme.palette.backgroundMuted)
-        compare(btn._backgroundColor(true, secondary, true, true), Theme.palette.background)
-        compare(btn._backgroundColor(true, secondary, true, false), Theme.palette.background)
+        compare(btn._backgroundColor(true, secondary, false, false, false), Theme.palette.backgroundSecondary)
+        compare(btn._backgroundColor(true, secondary, false, true, false), Theme.palette.backgroundMuted)
+        compare(btn._backgroundColor(true, secondary, false, false, true), Theme.palette.backgroundMuted)
+        compare(btn._backgroundColor(true, secondary, true, true, true), Theme.palette.background)
+        compare(btn._backgroundColor(true, secondary, true, false, false), Theme.palette.background)
 
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundSecondary)
     }
@@ -197,5 +201,49 @@ TestCase {
         btn.height = 60
         tryCompare(btn, "width", 300)
         tryCompare(btn, "height", 60)
+    }
+
+    function test_joins_tab_focus_chain() {
+        compare(btn.activeFocusOnTab, true)
+        compare(btn.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_emits_clicked_when_focused() {
+        btn.forceActiveFocus()
+        tryCompare(btn, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(clickedSpy.count, 1)
+    }
+
+    function test_space_shows_pressed_while_held() {
+        btn.forceActiveFocus()
+        tryCompare(btn, "activeFocus", true)
+        keyPress(Qt.Key_Space)
+        tryCompare(btn, "pressed", true)
+        tryCompare(btn.backgroundItem, "color", Theme.palette.background)
+        keyRelease(Qt.Key_Space)
+        tryCompare(btn, "pressed", false)
+        compare(clickedSpy.count, 1)
+    }
+
+    function test_enter_emits_clicked_when_focused() {
+        btn.forceActiveFocus()
+        tryCompare(btn, "activeFocus", true)
+        keyClick(Qt.Key_Return)
+        compare(clickedSpy.count, 1)
+    }
+
+    function test_disabled_ignores_keyboard_activate() {
+        btn.enabled = false
+        btn.forceActiveFocus()
+        keyClick(Qt.Key_Space)
+        compare(clickedSpy.count, 0)
+    }
+
+    function test_focus_uses_hover_fill() {
+        btn.forceActiveFocus()
+        tryCompare(btn, "activeFocus", true)
+        tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
+        tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
     }
 }

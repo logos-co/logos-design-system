@@ -5,6 +5,7 @@ import Logos.Theme
 import Logos.Controls
 
 TestCase {
+    id: root
     name: "LogosLink"
     width: 400
     height: 200
@@ -30,6 +31,10 @@ TestCase {
         link.linkColor = Theme.palette.primary
         link.hoverColor = Theme.palette.primaryHover
         activatedSpy.clear()
+        // Keyboard tests leave activeFocus on the link; that paints hoverColor
+        // via isActive and would flake color assertions.
+        link.focus = false
+        root.forceActiveFocus()
     }
 
     // ── Aliases ──────────────────────────────────────────────────────────
@@ -83,5 +88,24 @@ TestCase {
         link.activate()
         compare(activatedSpy.count, 1)
         compare(activatedSpy.signalArguments[0][0].toString(), "")
+    }
+
+    function test_joins_tab_focus_chain() {
+        compare(link.activeFocusOnTab, true)
+        compare(link.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_emits_activated_when_focused() {
+        link.forceActiveFocus()
+        tryCompare(link, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        compare(activatedSpy.count, 1)
+    }
+
+    function test_disabled_ignores_keyboard_activate() {
+        link.enabled = false
+        link.forceActiveFocus()
+        keyClick(Qt.Key_Space)
+        compare(activatedSpy.count, 0)
     }
 }

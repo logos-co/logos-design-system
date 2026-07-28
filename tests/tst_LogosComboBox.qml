@@ -93,4 +93,17 @@ TestCase {
         cbox.currentIndex = 1
         tryCompare(cbox, "currentText", "two")
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(cbox.activeFocusOnTab, true)
+        compare(cbox.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_space_opens_popup_when_focused() {
+        cbox.forceActiveFocus()
+        tryCompare(cbox, "activeFocus", true)
+        keyClick(Qt.Key_Space)
+        tryCompare(cbox.popupItem, "opened", true)
+        cbox.popupItem.close()
+    }
 }

@@ -40,4 +40,9 @@ TestCase {
         item.triggered()
         compare(triggeredSpy.count, 1)
     }
+
+    function test_joins_tab_focus_chain() {
+        compare(item.activeFocusOnTab, true)
+        compare(item.focusPolicy, Qt.StrongFocus)
+    }
 }
