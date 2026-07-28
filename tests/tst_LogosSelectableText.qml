@@ -35,6 +35,10 @@ TestCase {
         compare(selectable.readOnly, true)
     }
 
+    function test_textFormat_is_plain() {
+        compare(selectable.textFormat, TextEdit.PlainText)
+    }
+
     function test_selectByMouse_default_true() {
         compare(selectable.selectByMouse, true)
     }

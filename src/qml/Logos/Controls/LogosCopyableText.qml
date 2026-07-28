@@ -44,7 +44,7 @@ Control {
     property int buttonSize: 24
     property int iconSize: 16
     property int feedbackDuration: 1500
-    property string feedbackText: "Copied"
+    property string feedbackText: qsTr("Copied")
 
     readonly property bool recentlyCopied: copyButton.recentlyCopied
     readonly property alias textItem: selectable
@@ -58,8 +58,6 @@ Control {
 
     implicitWidth: contentItem.implicitWidth
     implicitHeight: Math.max(selectable.implicitHeight, root.showCopyButton ? root.buttonSize : 0)
-
-    background: Item {}
 
     contentItem: RowLayout {
         spacing: Theme.spacing.small
