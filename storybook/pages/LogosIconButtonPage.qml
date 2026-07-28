@@ -26,14 +26,14 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: iconSource, iconColor, size, iconSize, enabled, clicked()"
+                text: "Public API: iconSource, iconColor, size, iconSize, flat, pressed, enabled, clicked()"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
             }
             LogosText {
-                text: "Pill-shaped icon-only button. Use for nav arrows, toolbar actions, or any label-less affordance."
+                text: "Pill-shaped icon-only button. Hover/focus softens the fill; press uses a stronger fill so it reads apart from hover (same idea as LogosButton). Set flat for a ghost variant with no pill/border (e.g. LogosCopyButton)."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
                 wrapMode: Text.WordWrap
@@ -118,6 +118,18 @@ Rectangle {
                 ColumnLayout {
                     spacing: Theme.spacing.tiny
                     LogosText {
+                        text: "Flat (ghost)"
+                        font.pixelSize: Theme.typography.secondaryText
+                        color: Theme.palette.textTertiary
+                    }
+                    LogosIconButton {
+                        flat: true
+                        iconSource: LogosIcons.refresh
+                    }
+                }
+                ColumnLayout {
+                    spacing: Theme.spacing.tiny
+                    LogosText {
                         text: "Disabled"
                         font.pixelSize: Theme.typography.secondaryText
                         color: Theme.palette.textTertiary
@@ -153,6 +165,7 @@ Rectangle {
                     id: liveButton
                     iconSource: LogosIcons.refresh
                     enabled: !disableSwitch.checked
+                    flat: flatSwitch.checked
                     size: sizeSpin.value
                     iconSize: iconSizeSpin.value
                     onClicked: clickCount.value++
@@ -178,6 +191,15 @@ Rectangle {
                             color: Theme.palette.textSecondary
                         }
                         SpinBox { id: iconSizeSpin; from: 12; to: 32; value: 20 }
+                    }
+                    RowLayout {
+                        spacing: Theme.spacing.small
+                        Switch { id: flatSwitch }
+                        LogosText {
+                            text: "Flat"
+                            font.pixelSize: Theme.typography.secondaryText
+                            color: Theme.palette.textSecondary
+                        }
                     }
                     RowLayout {
                         spacing: Theme.spacing.small

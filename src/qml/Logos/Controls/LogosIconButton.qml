@@ -10,11 +10,17 @@ import Logos.Theme
 //                   the figma's #969696 chip spec)
 //     size          outer width/height in px (default 40)
 //     iconSize      icon width/height in px (default 20)
+//     flat          hide the pill background/border — ghost icon button
+//                   (default false)
+//     pressed       read-only; true while the mouse is held down on the button.
+//                   Non-flat pills use a distinct pressed fill (pressed wins
+//                   over hover), matching LogosButton secondary.
 //
 // Read-only inspection aliases:
 //     iconImage         the underlying Image element
 //     backgroundItem    the pill Rectangle behind the icon
 //     mouseAreaItem     the click target (used by tests)
+//     _backgroundColor  d.backgroundColor; not for app use
 //
 // Signals:
 //     clicked()
@@ -31,13 +37,29 @@ Control {
     property color iconColor: Theme.palette.textTertiary
     property int   size: 40
     property int   iconSize: 20
+    property bool  flat: false
 
-    readonly property bool isActive: enabled && (mouseArea.pressed || root.hovered || root.activeFocus)
+    readonly property bool pressed: mouseArea.containsPress
+    readonly property bool isActive: enabled && (root.pressed || root.hovered || root.activeFocus)
     readonly property alias iconImage: iconImg
     readonly property alias backgroundItem: bg
     readonly property alias mouseAreaItem: mouseArea
+    readonly property var _backgroundColor: d.backgroundColor
 
     signal clicked()
+
+    QtObject {
+        id: d
+        function backgroundColor(enabled, pressed, hovered, focused) {
+            if (!enabled)
+                return Theme.palette.backgroundButton
+            if (pressed)
+                return Theme.palette.background
+            if (hovered || focused)
+                return Theme.palette.backgroundMuted
+            return Theme.palette.backgroundButton
+        }
+    }
 
     implicitWidth: size
     implicitHeight: size
@@ -46,7 +68,8 @@ Control {
 
     background: Rectangle {
         id: bg
-        color: root.isActive ? Theme.palette.backgroundMuted : Theme.palette.backgroundButton
+        visible: !root.flat
+        color: d.backgroundColor(root.enabled, root.pressed, root.hovered, root.activeFocus)
         radius: Theme.spacing.radiusPill
         border.color: root.isActive ? Theme.palette.overlayOrange : Theme.palette.borderStrong
         border.width: 1
