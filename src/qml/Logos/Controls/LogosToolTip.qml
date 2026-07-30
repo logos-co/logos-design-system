@@ -39,6 +39,8 @@ ToolTip {
     property int placement: 1
     property color tipColor: Theme.palette.backgroundSecondary
     property color textColor: Theme.colors.getColor(Theme.palette.text, 0.6)
+    property var manualX: undefined
+    property var manualY: undefined
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias backgroundItem: bubble
@@ -82,17 +84,20 @@ ToolTip {
         }
     }
 
-    // Declaring plain `x:`/`y:` bindings here does NOT work reliably
-    // Binding elements write through reliably.
+    // Popup's own layout code writes `x`/`y` when the popup opens, which
+    // silently overrides any consumer-set declarative binding. An always-
+    // active Binding element defeats that write (Qt restores bound
+    // properties after external C++ writes). Value picks the consumer's
+    // manual value when set, or the placement-derived value otherwise.
     Binding {
         target: root
         property: "x"
-        value: d.targetX
+        value: root.manualX !== undefined ? root.manualX : d.targetX
     }
     Binding {
         target: root
         property: "y"
-        value: d.targetY
+        value: root.manualY !== undefined ? root.manualY : d.targetY
     }
 
     delay: 200
