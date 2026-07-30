@@ -38,5 +38,6 @@ LogosToolTip 1.0 LogosToolTip.qml
 LogosItemDelegate 1.0 LogosItemDelegate.qml
 LogosDrawer 1.0 LogosDrawer.qml
 LogosStackView 1.0 LogosStackView.qml
+LogosListView 1.0 LogosListView.qml
 LogosMenuSeparator 1.0 LogosMenuSeparator.qml
 LogosToolSeparator 1.0 LogosToolSeparator.qml
