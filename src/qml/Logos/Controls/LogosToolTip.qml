@@ -39,6 +39,9 @@ ToolTip {
     property int placement: 1
     property color tipColor: Theme.palette.backgroundSecondary
     property color textColor: Theme.colors.getColor(Theme.palette.text, 0.6)
+    // Consumer-supplied position in the tooltip's parent coordinate space.
+    // Leave `undefined` for auto placement driven by `placement`; set a
+    // number to pin. Either axis can be manual independently.
     property var manualX: undefined
     property var manualY: undefined
 

@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 
 import Logos.Theme
+import Logos.Controls
 
 // A vertically-oriented list view with the design-system's default scroll
 // behavior baked in: LogosScrollBar attached on the right (with the standard
@@ -28,6 +29,6 @@ ListView {
     ScrollBar.vertical: LogosScrollBar {
         policy: ScrollBar.AsNeeded
         visible: root.contentHeight > root.height
-        rightPadding: 4
+        rightPadding: Theme.spacing.tiny
     }
 }
