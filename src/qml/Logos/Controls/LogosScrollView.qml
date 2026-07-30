@@ -10,6 +10,10 @@ ScrollView {
     clip: true
 
     contentWidth: root.width
+    Component.onCompleted: {
+        if (contentItem && typeof contentItem.boundsBehavior !== "undefined")
+            contentItem.boundsBehavior = Flickable.StopAtBounds
+    }
 
     ScrollBar.vertical: LogosScrollBar {
         id: verticalBar
