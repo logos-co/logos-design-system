@@ -17,6 +17,7 @@ qt_add_qml_module(logos_controls_qml
     OUTPUT_TARGETS logos_controls_extra_targets
     IMPORTS Logos.Theme Logos.Icons
     QML_FILES
+        LogosListView.qml
         LogosButton.qml
         LogosIcon.qml
         LogosIconButton.qml

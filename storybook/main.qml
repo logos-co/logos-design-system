@@ -52,6 +52,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosGroupBox",       file: "LogosGroupBoxPage.qml" },
         { section: "Controls (not designed)", title: "LogosItemDelegate",   file: "LogosItemDelegatePage.qml" },
         { section: "Controls (not designed)", title: "LogosLink",           file: "LogosLinkPage.qml" },
+        { section: "Controls (not designed)", title: "LogosListView",       file: "LogosListViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenu",           file: "LogosMenuPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenuSeparator",  file: "LogosMenuSeparatorPage.qml" },
         { section: "Controls (not designed)", title: "LogosProgressBar",    file: "LogosProgressBarPage.qml" },
