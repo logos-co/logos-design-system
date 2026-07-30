@@ -84,4 +84,37 @@ TestCase {
         tip.close()
         tryCompare(tip, "opened", false)
     }
+
+    // Separate fixture — a tooltip that sets manualX/manualY. Presence of
+    // those values (not `undefined`) opts out of placement-based positioning
+    // and pins the tip at the consumer's coordinates.
+    LogosToolTip {
+        id: manualTip
+        parent: midAnchor
+        text: "Manual"
+        placement: LogosToolTip.Right
+        delay: 0
+        manualX: 42
+        manualY: 7
+    }
+
+    function test_manual_x_and_y_default_undefined() {
+        // Auto mode is the default: consumers that don't set manualX/manualY
+        // get placement-based positioning. `tip` (fixture without manual*)
+        // must have both undefined.
+        compare(tip.manualX, undefined)
+        compare(tip.manualY, undefined)
+    }
+
+    function test_manual_position_honored_when_set() {
+        manualTip.open()
+        tryCompare(manualTip, "opened", true)
+        // Popup's C++ layout writes x/y on open; the Binding on manualX/
+        // manualY reasserts. tryCompare so the write settles.
+        tryCompare(manualTip, "x", 42)
+        tryCompare(manualTip, "y", 7)
+        manualTip.close()
+        tryCompare(manualTip, "opened", false)
+    }
+
 }
