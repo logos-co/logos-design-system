@@ -14,8 +14,14 @@
   nativeBuildInputs = [
     pkgs.cmake
     pkgs.ninja
-    pkgs.qt6.wrapQtAppsHook
-  ];
+  ]
+  # wrapQtAppsHook FAILS TO EVALUATE for a mingw host, and would be useless
+  # anyway: wrap-qt-apps-hook.sh does `isELF || isMachO || continue`, so a PE is
+  # never wrapped. Gating it off is only half the fix -- qtbase's own setup hook
+  # hard-errors in qtPreHook with "depends on qtbase, but no wrapping behavior
+  # was specified" unless `dontWrapQtApps = true` is also set on each
+  # derivation. Both halves are mandatory.
+  ++ pkgs.lib.optional (!pkgs.stdenv.hostPlatform.isWindows) pkgs.qt6.wrapQtAppsHook;
 
   buildInputs = [
     pkgs.qt6.qtbase
@@ -29,5 +35,12 @@
   baseCmakeFlags = [
     "-GNinja"
     "-DCMAKE_BUILD_TYPE=Release"
-  ];
+  ]
+  # Qt splits its host TOOLS (moc, rcc, qmltyperegistrar, qsb) into separate
+  # packages that must run on the BUILD machine; -DQT_HOST_PATH=<qtbase> cannot
+  # reach them. The overlay hoists the required Qt6*Tools_DIR flags into this
+  # attribute, which is empty on native builds. The symptom when it is missing
+  # is misleading -- CMake names the target-side package (e.g. Qt6QmlTools),
+  # which is present; it is the host-tools package that is absent.
+  ++ (pkgs.logosQtCrossCmakeFlags or [ ]);
 }
