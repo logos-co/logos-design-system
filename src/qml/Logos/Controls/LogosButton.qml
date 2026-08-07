@@ -51,7 +51,7 @@ import Logos.Controls
 //         leadingIcon.source: LogosIcons.refresh
 //         onClicked: model.refresh()
 //     }
-Control {
+LogosAbstractButton {
     id: root
 
     enum Variant { Primary, Secondary }
@@ -71,14 +71,7 @@ Control {
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
 
-    readonly property bool pressed: mouseArea.containsPress || d.keyboardPressed
-    readonly property bool isActive: root.enabled
-                                     && (root.pressed || root.hovered || root.activeFocus)
-
-    signal clicked()
-
     // Exposed for inspection (e.g., from tests). Read-only.
-    readonly property alias mouseAreaItem: mouseArea
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
     readonly property alias leadingIconItem: iconLeft
@@ -87,7 +80,6 @@ Control {
 
     QtObject {
         id: d
-        property bool keyboardPressed: false
 
         // focused is treated like hovered (pressed still wins).
         function backgroundColor(enabled, variant, pressed, hovered, focused) {
@@ -106,21 +98,6 @@ Control {
                 return Theme.palette.backgroundMuted
             return Theme.palette.backgroundSecondary
         }
-
-        function isActivateKey(key) {
-            return key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space
-        }
-
-        function emitClicked() {
-            if (!root.enabled)
-                return
-            root.clicked()
-        }
-    }
-
-    onActiveFocusChanged: {
-        if (!activeFocus)
-            d.keyboardPressed = false
     }
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
@@ -132,33 +109,11 @@ Control {
     rightPadding: Theme.spacing.large
     topPadding: Theme.spacing.medium
     bottomPadding: Theme.spacing.medium
-    hoverEnabled: true
-    focusPolicy: Qt.StrongFocus
-    activeFocusOnTab: true
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.secondaryText
     font.weight: Theme.typography.weightMedium
 
-    Accessible.role: Accessible.Button
     Accessible.name: root.text
-    Accessible.onPressAction: d.emitClicked()
-
-    Keys.onPressed: function(event) {
-        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
-            return
-        d.keyboardPressed = root.enabled
-        event.accepted = true
-    }
-
-    Keys.onReleased: function(event) {
-        if (!d.isActivateKey(event.key) || event.isAutoRepeat)
-            return
-        if (d.keyboardPressed) {
-            d.keyboardPressed = false
-            d.emitClicked()
-        }
-        event.accepted = true
-    }
 
     background: Rectangle {
         id: bg
@@ -210,15 +165,5 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             brightness: root.trailingIcon.brightness
         }
-    }
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        enabled: root.enabled
-        hoverEnabled: true
-        cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-        onPressed: root.forceActiveFocus()
-        onClicked: d.emitClicked()
     }
 }

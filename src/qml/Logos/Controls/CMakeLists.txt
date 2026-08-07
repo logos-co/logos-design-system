@@ -18,8 +18,11 @@ qt_add_qml_module(logos_controls_qml
     IMPORTS Logos.Theme Logos.Icons
     QML_FILES
         LogosListView.qml
+        LogosAbstractButton.qml
         LogosButton.qml
         LogosIcon.qml
+        LogosArtwork.qml
+        LogosTile.qml
         LogosIconButton.qml
         LogosText.qml
         LogosSelectableText.qml
