@@ -1,6 +1,9 @@
 module Logos.Controls
+LogosAbstractButton 1.0 LogosAbstractButton.qml
 LogosButton 1.0 LogosButton.qml
 LogosIcon 1.0 LogosIcon.qml
+LogosArtwork 1.0 LogosArtwork.qml
+LogosTile 1.0 LogosTile.qml
 LogosIconButton 1.0 LogosIconButton.qml
 LogosText 1.0 LogosText.qml
 LogosSelectableText 1.0 LogosSelectableText.qml

@@ -32,6 +32,8 @@ ApplicationWindow {
         { section: "Controls", title: "LogosBadge",     file: "LogosBadgePage.qml" },
         { section: "Controls", title: "LogosButton",    file: "LogosButtonPage.qml" },
         { section: "Controls", title: "LogosIcon",       file: "LogosIconPage.qml" },
+        { section: "Controls", title: "LogosArtwork",    file: "LogosArtworkPage.qml" },
+        { section: "Controls", title: "LogosTile",    file: "LogosTilePage.qml" },
         { section: "Controls", title: "LogosIconButton", file: "LogosIconButtonPage.qml" },
         { section: "Controls", title: "LogosCheckbox",  file: "LogosCheckboxPage.qml" },
         { section: "Controls", title: "LogosComboBox",  file: "LogosComboBoxPage.qml" },

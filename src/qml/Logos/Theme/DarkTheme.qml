@@ -13,6 +13,7 @@ QtObject {
     readonly property color backgroundButton: colors.gray340
     readonly property color surface: colors.gray320
     readonly property color surfaceRaised: colors.gray360
+    readonly property color surfaceInteractiveHover: colors.gray300
     readonly property color surfaceRecessed: colors.gray370
     readonly property color surfaceContrast: colors.gray355
 
