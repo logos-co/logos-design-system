@@ -23,6 +23,11 @@ import Logos.Theme
 //     source      URL of the icon (PNG). Empty renders nothing.
 //     radius      corner radius; the icon is masked to it. Default 0.
 //     brightness  MultiEffect brightness, for hover lift. Default 0.
+//     fillMode    Image.PreserveAspectCrop (default) fills the frame, which
+//                 is right for conforming 256x256 artwork. PreserveAspectFit
+//                 letterboxes instead — LogosTile uses it for the small
+//                 legacy glyphs that would otherwise be upscaled past their
+//                 intended size. See LogosTile.insetArtwork.
 //
 // Read-only inspection aliases:
 //     imageItem   the underlying Image
@@ -37,6 +42,7 @@ Item {
     property url  source: ""
     property real radius: 0
     property real brightness: 0
+    property int fillMode: Image.PreserveAspectCrop
 
     readonly property alias imageItem: img
     readonly property alias effectItem: effect
@@ -52,8 +58,7 @@ Item {
         // 2x for hidpi sharpness — matches LogosIcon's approach.
         sourceSize: Qt.size(Math.max(1, parent.width * 2),
                             Math.max(1, parent.height * 2))
-        // Full-bleed: crop, never letterbox.
-        fillMode: Image.PreserveAspectCrop
+        fillMode: root.fillMode
         visible: false
     }
 
