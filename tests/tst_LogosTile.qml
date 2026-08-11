@@ -50,10 +50,9 @@ TestCase {
     }
 
     function test_idle_chrome() {
-        compare(String(tile.plateItem.border.color),
-                String(Theme.palette.borderSubtle))
-        compare(tile.artworkItem.brightness, 0)
-        compare(tile.scale, 1.0)
+        tryCompare(tile.plateItem.border, "color", Theme.palette.borderSubtle)
+        tryCompare(tile.artworkItem, "brightness", 0)
+        tryCompare(tile, "scale", 1.0)
     }
 
     // ── Pressed ─────────────────────────────────────────────────────────
@@ -196,6 +195,7 @@ TestCase {
         tryCompare(tile, "opacity", 0.2)
         tile.enabled = true
         tile.dimOpacity = 1.0
+        tile.insetArtwork = true
     }
 
     // ── Backplate ───────────────────────────────────────────────────────
@@ -247,6 +247,25 @@ TestCase {
         verify(tile.showsMonogram !== tile.showsArtwork)
     }
 
+    // ── Inset vs full-bleed ─────────────────────────────────────────────
+    function test_inset_is_the_default() {
+        compare(tile.insetArtwork, true)
+        tile.source = "qrc:/test-icon.png"
+        tryCompare(tile.artworkItem, "fillMode", Image.PreserveAspectFit)
+        verify(tile.artworkItem.anchors.margins > tile.plateItem.border.width,
+               "inset artwork must not reach the tile edge")
+    }
+
+    function test_full_bleed_when_inset_disabled() {
+        tile.source = "qrc:/test-icon.png"
+        tile.insetArtwork = false
+        tryCompare(tile.artworkItem, "fillMode", Image.PreserveAspectCrop)
+        // Full-bleed still stops inside the stroke — see the fringe test.
+        tryCompare(tile.artworkItem.anchors, "margins",
+                   tile.plateItem.border.width)
+        tile.insetArtwork = true
+    }
+
     // ── Fringe regression ───────────────────────────────────────────────
     // The artwork must stop INSIDE the plate's stroke. Sharing the boundary
     // put two independently-antialiased curves on the same pixels, so a
@@ -254,11 +273,15 @@ TestCase {
     // invisible on a grey icon, obvious on an orange one.
     function test_artwork_is_inset_within_the_border() {
         tile.source = "qrc:/test-icon.png"
+        // The fringe fix applies to full-bleed; restored below so this test
+        // cannot leak state into the next one regardless of init() ordering.
+        tile.insetArtwork = false
         const bw = tile.plateItem.border.width
         verify(bw >= 1)
         compare(tile.artworkItem.width, tile.width - 2 * bw)
         compare(tile.artworkItem.height, tile.height - 2 * bw)
         compare(tile.artworkItem.radius, tile.radius - bw)
+        tile.insetArtwork = true
     }
 
     // ── Monogram ────────────────────────────────────────────────────────

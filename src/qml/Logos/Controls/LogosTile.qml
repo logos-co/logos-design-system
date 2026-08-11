@@ -60,6 +60,8 @@ LogosAbstractButton {
     // tile (basecamp's sidebar marks the active app this way). Pressed still
     // wins over it.
     property bool highlighted: false
+    // Artwork is inset and uncropped rather than bleeding to the tile edge.
+    property bool insetArtwork: true
     property int tileSize: 40
     property real radius: Theme.spacing.radiusMedium
     property real dimOpacity: 1.0
@@ -129,7 +131,11 @@ LogosAbstractButton {
         LogosArtwork {
             id: artwork
             anchors.fill: parent
-            anchors.margins: plate.border.width
+            anchors.margins: root.insetArtwork
+                             ? Math.round(root.tileSize * 0.22)
+                             : plate.border.width
+            fillMode: root.insetArtwork ? Image.PreserveAspectFit
+                                        : Image.PreserveAspectCrop
             source: root.source
             radius: Math.max(0, root.radius - plate.border.width)
             brightness: d.artworkBrightness
