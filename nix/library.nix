@@ -14,6 +14,9 @@ pkgs.stdenv.mkDerivation rec {
 
   cmakeFlags = common.baseCmakeFlags;
 
+  # Required wherever the Qt wrapper hooks are absent (see nix/common.nix).
+  dontWrapQtApps = true;
+
   # Standard configure/build/install — supersedes the previous "just cp -r
   # the source tree into $out/lib/Logos" install path.
   configurePhase = ''
@@ -36,6 +39,6 @@ pkgs.stdenv.mkDerivation rec {
 
   meta = with pkgs.lib; {
     description = "Logos Design System - Qt/QML themes, colors, typography";
-    platforms = platforms.unix;
+    platforms = platforms.unix ++ platforms.windows;
   };
 }

@@ -31,18 +31,25 @@
 
   outputs = { self, logos-nix, nixpkgs, nix-bundle-dir, nix-bundle-appimage, nix-bundle-macos-app }:
     let
-      systems = [ "aarch64-darwin" "x86_64-darwin" "aarch64-linux" "x86_64-linux" ];
-      forAllSystems = f: nixpkgs.lib.genAttrs systems (system: f {
-        inherit system;
-        pkgs = import nixpkgs { inherit system; };
-      });
+      # nix-bundle-dir RUNS on the builder, so on a cross target it comes from
+      # the build system. It is also ELF/Mach-O only (its bundle.sh branches
+      # `file -b` -> Mach-O | ELF with no PE case), so a Windows bundle must not
+      # be produced through it -- see the guard on `storybook-bundle` below.
+      buildSystemFor = target:
+        if target == "x86_64-windows" then "x86_64-linux" else target;
+
+      # Adds the "x86_64-windows" pseudo-system. A cross derivation's `system`
+      # attr is its BUILD platform, so these evaluate anywhere and realise on
+      # x86_64-linux.
+      forAllSystems = f: logos-nix.lib.forAllTargets ({ system, pkgs }:
+        f { inherit system pkgs; });
     in
     {
       packages = forAllSystems ({ pkgs, system, ... }:
         let
           common = import ./nix/common.nix { inherit pkgs; };
           storybookDrv = import ./nix/storybook.nix { inherit pkgs common; };
-          dirBundler = nix-bundle-dir.bundlers.${system}.qtApp;
+          dirBundler = nix-bundle-dir.bundlers.${buildSystemFor system}.qtApp;
         in
         rec {
           default = import ./nix/library.nix { inherit pkgs common; };

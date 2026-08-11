@@ -13,6 +13,9 @@ pkgs.stdenv.mkDerivation rec {
     "-DLOGOS_DS_BUILD_STORYBOOK=ON"
   ];
 
+  # Required wherever the Qt wrapper hooks are absent (see nix/common.nix).
+  dontWrapQtApps = true;
+
   configurePhase = ''
     runHook preConfigure
     cmake -S . -B build $cmakeFlags
@@ -29,7 +32,26 @@ pkgs.stdenv.mkDerivation rec {
     runHook preInstall
 
     mkdir -p $out/bin
-    cp build/storybook/LogosStorybook $out/bin/
+    # Probe both names and FAIL if neither is there. Naming only the unsuffixed
+    # binary meant a mingw build -- which links LogosStorybook.exe -- died with
+    # "cp: cannot stat 'build/storybook/LogosStorybook'" immediately after the
+    # link step had succeeded.
+    # Search the tree rather than hardcoding a directory: on Windows CMake puts
+    # RUNTIME artifacts in the runtime output directory (the build root here) so
+    # that executables and their DLLs end up side by side, while the ARCHIVE
+    # artifact -- libLogosStorybook.dll.a -- stays in build/storybook/. Looking
+    # only in build/storybook/ finds the import library and no binary.
+    _sb=""
+    for _cand in $(find build -maxdepth 3 -type f \
+                     \( -name LogosStorybook -o -name LogosStorybook.exe \) 2>/dev/null); do
+      _sb="$_cand"; break
+    done
+    if [ -z "$_sb" ]; then
+      echo "Error: the LogosStorybook binary was not produced by the build" >&2
+      ls -la build/storybook 2>&1 >&2 || echo "  (no build/storybook directory)" >&2
+      exit 1
+    fi
+    cp "$_sb" $out/bin/
 
     # Storybook pages: installed under lib/ so nix-bundle-dir carries them
     # through. It closure-walks share/ (drops anything the binary doesn't
@@ -52,6 +74,6 @@ pkgs.stdenv.mkDerivation rec {
   meta = with pkgs.lib; {
     description = "Browse and preview Logos Design System components";
     mainProgram = "LogosStorybook";
-    platforms = platforms.unix;
+    platforms = platforms.unix ++ platforms.windows;
   };
 }
