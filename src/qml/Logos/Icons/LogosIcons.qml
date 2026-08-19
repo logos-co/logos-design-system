@@ -27,4 +27,5 @@ QtObject {
 
     // Status
     readonly property url warning:  Qt.resolvedUrl("icons/warning.svg")
+    readonly property url info:     Qt.resolvedUrl("icons/info.svg")
 }

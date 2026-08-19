@@ -45,6 +45,7 @@ QtObject {
     
     // Orange shades (Primary/Accent)
     readonly property color orange300: "#ED7B58"
+    readonly property color orange300Opacity40: getColor(orange300, 0.4)
     readonly property color orange350: "#FF6F42"
     readonly property color orange400: "#FF8800"
     readonly property color orange450: "#FF4911"
@@ -60,17 +61,20 @@ QtObject {
     // Red shades (Error/Notifications)
     readonly property color red400: "#FF736A"
     readonly property color red500: "#FB3748"
+    readonly property color red500Opacity40: getColor(red500, 0.4)
     readonly property color red600: "#F44336"
     readonly property color red700: "#DC2626"
     
     // yellow shades (Warning)
     readonly property color yellow400: "#FEBC2E"
+    readonly property color yellow400Opacity40: getColor(yellow400, 0.4)
     readonly property color yellow500: "#FFA726"
     readonly property color yellow300: "#EEF083"
     
     // Green shades (Success)
     readonly property color green400: "#6CCC93"
     readonly property color green500: "#49F563"
+    readonly property color green500Opacity40: getColor(green500, 0.4)
     readonly property color green600: "#19C332"
     readonly property color green700: "#16A34A"
     readonly property color green800: "#15803D"

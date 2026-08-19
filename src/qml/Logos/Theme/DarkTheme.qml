@@ -42,15 +42,19 @@ QtObject {
     readonly property color success: colors.green500
     readonly property color successHover: colors.green400
     readonly property color successPressed: colors.green600
+    readonly property color successBorder: colors.green500Opacity40
 
     readonly property color error: colors.red500
     readonly property color errorHover: colors.red400
     readonly property color errorPressed: colors.red600
+    readonly property color errorBorder: colors.red500Opacity40
 
     readonly property color warning: colors.yellow400
     readonly property color warningHover: colors.yellow500
+    readonly property color warningBorder: colors.yellow400Opacity40
 
     readonly property color info: colors.blue400
+    readonly property color primaryBorder: colors.orange300Opacity40
 
     readonly property color notification: colors.red500
     readonly property color accentOrange: colors.orange300
