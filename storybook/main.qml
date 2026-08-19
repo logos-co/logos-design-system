@@ -57,6 +57,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosListView",       file: "LogosListViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenu",           file: "LogosMenuPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenuSeparator",  file: "LogosMenuSeparatorPage.qml" },
+        { section: "Controls (not designed)", title: "LogosNotice",         file: "LogosNoticePage.qml" },
         { section: "Controls (not designed)", title: "LogosProgressBar",    file: "LogosProgressBarPage.qml" },
         { section: "Controls (not designed)", title: "LogosRadioButton",    file: "LogosRadioButtonPage.qml" },
         { section: "Controls (not designed)", title: "LogosScrollBar",      file: "LogosScrollBarPage.qml" },
@@ -68,6 +69,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosStackView",      file: "LogosStackViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosSwitch",         file: "LogosSwitchPage.qml" },
         { section: "Controls (not designed)", title: "LogosTextArea",       file: "LogosTextAreaPage.qml" },
+        { section: "Controls (not designed)", title: "LogosToast",          file: "LogosToastPage.qml" },
         { section: "Controls (not designed)", title: "LogosToolBar",        file: "LogosToolBarPage.qml" },
         { section: "Controls (not designed)", title: "LogosToolSeparator",  file: "LogosToolSeparatorPage.qml" }
     ]
