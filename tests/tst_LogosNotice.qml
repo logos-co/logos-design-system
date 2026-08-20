@@ -57,6 +57,23 @@ TestCase {
         compare(notice.messageItem.text, "something happened")
     }
 
+    // Failures get reported here, and the text is often the only copy of a path,
+    // an error code or a backend string the user needs in order to act on it. A
+    // plain Text has no selectByMouse at all, so this fails outright if the
+    // message ever regresses to LogosText.
+    function test_message_is_selectable() {
+        verify(notice.messageItem.selectByMouse)
+        verify(notice.messageItem.selectByKeyboard)
+        notice.messageItem.selectAll()
+        compare(notice.messageItem.selectedText, "something happened")
+    }
+
+    // Selectable, but still not an editor: typing into a notice must not be able
+    // to rewrite what the user was told.
+    function test_message_is_not_editable() {
+        compare(notice.messageItem.readOnly, true)
+    }
+
     function test_title_flows_through() {
         compare(notice.titleItem.text, "")
         notice.title = "Heads up"

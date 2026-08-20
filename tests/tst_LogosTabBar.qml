@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Layouts
 import QtTest
 
 import Logos.Theme
@@ -20,6 +21,51 @@ TestCase {
         LogosTabButton { text: "One" }
         LogosTabButton { text: "Two" }
         LogosTabButton { text: "Three" }
+    }
+
+    // Reproduces the wallet's exact nesting: a StackLayout whose second page is an
+    // Item wrapping an anchors-filled ColumnLayout that holds the bar. The bar is
+    // therefore laid out while its page is not current.
+    Item {
+        id: host
+        width: root.width
+        height: 120
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            LogosTabBar {
+                id: outerBar
+                Layout.fillWidth: true
+                animationDuration: 0
+                LogosTabButton { text: "Transfer" }
+                LogosTabButton { text: "Bridge" }
+            }
+
+            StackLayout {
+                id: pages
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                currentIndex: outerBar.currentIndex
+
+                Item {}
+
+                Item {
+                    ColumnLayout {
+                        anchors.fill: parent
+                        LogosTabBar {
+                            id: nestedBar
+                            Layout.fillWidth: true
+                            animationDuration: 0
+                            spacing: 8
+                            LogosTabButton { text: "Withdraw" }
+                            LogosTabButton { text: "Claim Deposit" }
+                        }
+                        Item { Layout.fillHeight: true }
+                    }
+                }
+            }
+        }
     }
 
     function init() {
@@ -83,5 +129,25 @@ TestCase {
 
     function test_indicator_y_pinned_to_bottom() {
         tryCompare(bar.indicatorItem, "y", bar.height - bar.indicatorItem.height)
+    }
+
+    // The indicator must never paint outside the bar. Before the background was
+    // clipped and refresh() learned to skip un-laid-out items, a bar revealed for
+    // the first time kept a position measured at zero width -- drawing the line
+    // beside the bar, over whatever sat next to it, rather than under a tab.
+    function test_indicator_lands_under_the_tab_when_a_nested_page_is_revealed() {
+        outerBar.currentIndex = 0
+        wait(50)
+        outerBar.currentIndex = 1          // reveal the page holding nestedBar
+        tryVerify(function() { return nestedBar.width > 0 }, 2000)
+        wait(100)
+
+        const ind = nestedBar.indicatorItem
+        const btn = nestedBar.itemAt(nestedBar.currentIndex)
+        verify(btn, "no current tab button")
+
+        verify(ind.width > 0, "indicator has no width -- it was never placed")
+        fuzzyCompare(ind.x, btn.mapToItem(nestedBar, 0, 0).x, 1.0)
+        fuzzyCompare(ind.width, btn.width, 1.0)
     }
 }

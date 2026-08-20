@@ -133,6 +133,62 @@ Rectangle {
             }
         }
 
+        // Nested bar inside a StackLayout page — the case that broke in the wallet.
+        // A bar laid out while its page is hidden measures its current item at zero
+        // width; if it then never gets currentItemChanged or widthChanged when the
+        // page is shown, the indicator keeps that stale position and (before the
+        // background was clipped) painted outside the bar entirely, over whatever
+        // sat beside it. Switch to "Bridge" and the inner indicator must sit under
+        // "Withdraw", inside the bar.
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: Theme.spacing.medium
+
+            LogosText {
+                text: "Nested in a StackLayout (indicator must be correct on first reveal)"
+                color: Theme.palette.textSecondary
+            }
+
+            LogosTabBar {
+                id: outerBar
+                Layout.fillWidth: true
+                LogosTabButton { text: "Transfer" }
+                LogosTabButton { text: "Bridge" }
+            }
+
+            StackLayout {
+                Layout.fillWidth: true
+                currentIndex: outerBar.currentIndex
+
+                ColumnLayout {
+                    LogosTabBar {
+                        Layout.fillWidth: true
+                        LogosTabButton { text: "Public" }
+                        LogosTabButton { text: "Private" }
+                    }
+                    Item { Layout.fillHeight: true }
+                }
+
+                // Mirrors BridgePanel's actual shape in the wallet: a plain Item as
+                // the StackLayout page, with an anchors-filled ColumnLayout inside
+                // it holding the bar. The wrapper is the part that differs from the
+                // sibling page above, and it is where the geometry timing changes.
+                Item {
+                    ColumnLayout {
+                        anchors.fill: parent
+                        LogosTabBar {
+                            id: innerBridgeBar
+                            Layout.fillWidth: true
+                            spacing: Theme.spacing.small
+                            LogosTabButton { text: "Withdraw" }
+                            LogosTabButton { text: "Claim Deposit" }
+                        }
+                        Item { Layout.fillHeight: true }
+                    }
+                }
+            }
+        }
+
         Item { Layout.fillHeight: true }
     }
 }

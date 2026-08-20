@@ -7,7 +7,9 @@ import Logos.Controls
 //
 // Additional public API over LogosNotice:
 //     duration              Auto-close after N ms. 0 disables it, leaving a toast
-//                           that stays until dismissed.
+//                           that stays until dismissed. The countdown is held
+//                           while the pointer is over the toast, so the message
+//                           can be read and selected without it vanishing.
 //     show(title, message)  Open, updating either field if given, and arm the
 //                           timer when duration > 0.
 //
@@ -37,18 +39,28 @@ LogosNotice {
         if (newMessage !== undefined)
             root.message = newMessage
         root.shown = true
-        if (root.duration > 0)
-            d.autoHideTimer.restart()
+        d.rearm()
     }
 
     onDismissed: d.autoHideTimer.stop()
+    onShownChanged: d.rearm()
+    HoverHandler {
+        id: pointerOver
+        onHoveredChanged: d.rearm()
+    }
 
     QtObject {
         id: d
 
+        function rearm() {
+            if (root.shown && root.duration > 0 && !pointerOver.hovered)
+                d.autoHideTimer.restart()
+            else
+                d.autoHideTimer.stop()
+        }
+
         readonly property Timer autoHideTimer: Timer {
             interval: root.duration
-            running: root.shown && root.duration > 0
             repeat: false
             onTriggered: root.hide()
         }
