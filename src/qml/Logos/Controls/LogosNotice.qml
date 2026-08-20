@@ -160,13 +160,13 @@ Control {
                 wrapMode: Text.WordWrap
             }
 
-            LogosText {
+            LogosSelectableText {
                 id: messageLabel
                 Layout.fillWidth: true
                 text: root.message
                 color: d.hasTitle ? Theme.palette.textSecondary : Theme.palette.text
                 font.pixelSize: Theme.typography.secondaryText
-                wrapMode: Text.WordWrap
+                wrapMode: TextEdit.WordWrap
             }
 
             Row {

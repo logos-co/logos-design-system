@@ -62,6 +62,32 @@ TestCase {
         compare(dismissedSpy.count, 0)
     }
 
+    // show() has to restart a countdown that is already running -- same toast,
+    // new message, `shown` never changes. The timer is therefore armed from one
+    // place imperatively rather than by a `running:` binding, which an
+    // imperative restart() would have overwritten the first time it was called.
+    function test_show_restarts_a_running_countdown() {
+        toast.duration = 1000
+        toast.show("First", "one")
+        wait(700)
+        verify(toast.shown)
+        toast.show("Second", "two")
+        wait(700)                 // 1400ms since the first show, 700 since the second
+        verify(toast.shown)       // would already have closed had it not re-armed
+        tryVerify(function() { return !toast.shown }, 2000)
+    }
+
+    // Hiding a toast by assignment, rather than through the close button, still
+    // has to disarm it -- otherwise the countdown outlives what it was counting.
+    function test_hiding_disarms_the_countdown() {
+        toast.duration = 200
+        toast.show("Saved", "ok")
+        toast.shown = false
+        dismissedSpy.clear()
+        wait(500)
+        compare(dismissedSpy.count, 0)
+    }
+
     function test_inherits_notice_surface() {
         toast.severity = LogosNotice.Error
         compare(toast.backgroundItem.border.color.toString(), Theme.palette.errorBorder.toString())

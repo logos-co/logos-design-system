@@ -45,6 +45,8 @@ TabBar {
     readonly property alias trackItem: track
 
     background: Item {
+        clip: true
+
         // Low-opacity baseline under every tab; selected segment uses indicatorColor.
         Rectangle {
             id: track
@@ -79,7 +81,7 @@ TabBar {
             }
 
             function refresh() {
-                if (!root.currentItem)
+                if (!root.currentItem || root.currentItem.width <= 0)
                     return
                 const p = root.currentItem.mapToItem(root, 0, 0)
                 indicator.x = p.x
@@ -90,11 +92,20 @@ TabBar {
 
     onCurrentItemChanged: indicator.refresh()
     onWidthChanged: indicator.refresh()
+    onVisibleChanged: if (visible) Qt.callLater(indicator.refresh)
+    Component.onCompleted: Qt.callLater(indicator.refresh)
 
     Connections {
         target: root.currentItem
         ignoreUnknownSignals: true
         function onXChanged() { indicator.refresh() }
+        function onWidthChanged() { indicator.refresh() }
+    }
+
+    Connections {
+        target: root.contentItem
+        ignoreUnknownSignals: true
+        function onContentXChanged() { indicator.refresh() }
         function onWidthChanged() { indicator.refresh() }
     }
 }
