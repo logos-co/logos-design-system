@@ -66,6 +66,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosSlider",         file: "LogosSliderPage.qml" },
         { section: "Controls (not designed)", title: "LogosSpinBox",        file: "LogosSpinBoxPage.qml" },
         { section: "Controls (not designed)", title: "LogosSpinner",        file: "LogosSpinnerPage.qml" },
+        { section: "Controls (not designed)", title: "LogosDotMatrix",      file: "LogosDotMatrixPage.qml" },
         { section: "Controls (not designed)", title: "LogosStackView",      file: "LogosStackViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosSwitch",         file: "LogosSwitchPage.qml" },
         { section: "Controls (not designed)", title: "LogosTextArea",       file: "LogosTextAreaPage.qml" },
