@@ -39,6 +39,7 @@ qt_add_qml_module(logos_controls_qml
         LogosTable.qml
         LogosTableColumn.qml
         LogosSpinner.qml
+        LogosDotMatrix.qml
         LogosScrollBar.qml
         LogosTextArea.qml
         LogosSwitch.qml

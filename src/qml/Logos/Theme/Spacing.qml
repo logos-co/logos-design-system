@@ -10,6 +10,7 @@ QtObject {
     readonly property int xxlarge: 40
     
     // radius
+    readonly property int radiusTiny: 2
     readonly property int radiusSmall: 4
     readonly property int radiusMedium: 6
     readonly property int radiusLarge: 8
