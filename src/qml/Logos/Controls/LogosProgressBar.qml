@@ -8,6 +8,8 @@ ProgressBar {
 
     property color trackColor: Theme.palette.backgroundSecondary
     property color fillColor: Theme.palette.primary
+    property real trackRadius: height / 2
+    property real fillRadius: height / 2
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias backgroundItem: bg
@@ -20,7 +22,7 @@ ProgressBar {
         id: bg
         implicitWidth: root.implicitWidth
         implicitHeight: root.implicitHeight
-        radius: height / 2
+        radius: root.trackRadius
         color: root.trackColor
     }
 
@@ -29,8 +31,16 @@ ProgressBar {
             id: fill
             width: root.indeterminate ? parent.width * 0.3 : root.visualPosition * parent.width
             height: parent.height
-            radius: height / 2
+            radius: root.fillRadius
             color: root.fillColor
+
+            Binding {
+                target: fill
+                property: "x"
+                value: 0
+                when: !root.indeterminate
+                restoreMode: Binding.RestoreNone
+            }
 
             SequentialAnimation on x {
                 running: root.indeterminate && root.visible
