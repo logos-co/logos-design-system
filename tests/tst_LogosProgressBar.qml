@@ -42,4 +42,17 @@ TestCase {
         bar.indeterminate = true
         compare(bar.indeterminate, true)
     }
+
+    // The indeterminate sweep animates `x` as a property value source. When
+    // it stops, x must return to the left edge — otherwise a bar that goes
+    // indeterminate and then determinate draws its fill at a stale offset.
+    function test_x_returns_to_the_left_edge_after_indeterminate() {
+        bar.indeterminate = true
+        bar.fillItem.x = 40          // where a sweep would have left it
+        bar.indeterminate = false
+        bar.value = 0.5
+        tryCompare(bar.fillItem, "x", 0, 1000,
+                   "determinate fill must start at the left edge")
+    }
+
 }
