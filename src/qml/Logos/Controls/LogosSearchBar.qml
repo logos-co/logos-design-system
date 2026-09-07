@@ -17,11 +17,17 @@ import Logos.Icons
 //                      (e.g. "⌘ K", "Ctrl+K"). Display-only — does not
 //                      bind anything. For platform-aware text, pass the
 //                      `nativeText` of the consumer's own Shortcut.
+//     clearable        show a ✕ while the field has text (default true).
+//                      A search that filters a list is view state and should
+//                      survive navigation, which only works if there is an
+//                      obvious way out of it. Turn off for fields that are
+//                      cleared some other way, or that must not be.
 //
 // Read-only inspection aliases:
 //     textInput        the inner TextInput (cursor, selection, etc.)
 //     fieldItem        the inner LogosTextField
 //     iconItem         the leading icon container
+//     clearItem        the trailing clear button
 //     shortcutItem     the trailing shortcut chip
 //
 // Signal:
@@ -51,12 +57,21 @@ Control {
     property alias echoMode: field.echoMode
     property url iconSource: LogosIcons.search
     property string shortcutHint: ""
+    property bool clearable: true
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias textInput: field.textInput
     readonly property alias fieldItem: field
     readonly property alias iconItem: iconHolder
+    readonly property alias clearItem: clearButton
     readonly property alias shortcutItem: shortcutChip
+
+    QtObject {
+        id: d
+
+        readonly property bool clearVisible:
+            root.clearable && field.text.length > 0
+    }
 
     signal submitted(string text)
 
@@ -120,6 +135,25 @@ Control {
             placeholderText: "Search..."
             activeFocusOnTab: false
             textInput.activeFocusOnTab: false
+        }
+
+        LogosIconButton {
+            id: clearButton
+
+            Layout.alignment: Qt.AlignVCenter
+            visible: d.clearVisible
+            flat: true
+            size: 20
+            iconSize: 14
+            iconSource: LogosIcons.close
+            iconColor: Theme.palette.textSecondary
+            focusPolicy: Qt.NoFocus
+            activeFocusOnTab: false
+            Accessible.name: qsTr("Clear search")
+            onClicked: {
+                field.text = ""
+                field.textInput.forceActiveFocus()
+            }
         }
 
         Rectangle {

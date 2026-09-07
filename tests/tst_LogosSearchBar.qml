@@ -30,6 +30,7 @@ TestCase {
         bar.placeholderText = "Search..."
         bar.shortcutHint = ""
         bar.iconSource = defaultIconSource
+        bar.clearable = true
     }
 
     function test_text_alias_round_trips() {
@@ -76,7 +77,36 @@ TestCase {
         verify(bar.fieldItem, "fieldItem must resolve")
         verify(bar.textInput, "textInput must resolve")
         verify(bar.iconItem, "iconItem must resolve")
+        verify(bar.clearItem, "clearItem must resolve")
         verify(bar.shortcutItem, "shortcutItem must resolve")
+    }
+
+    function test_clearable_defaults_on_and_round_trips() {
+        compare(bar.clearable, true)
+        bar.clearable = false
+        compare(bar.clearable, false)
+    }
+
+    function test_clicking_clear_empties_the_field() {
+        bar.text = "logos"
+        bar.clearItem.clicked()
+        compare(bar.text, "")
+        compare(bar.textInput.text, "")
+    }
+
+    // Clearing is a step in searching, not the end of it — the caret has to
+    // stay put so the user can just type again.
+    function test_clearing_keeps_focus_in_the_field() {
+        bar.text = "logos"
+        bar.clearItem.clicked()
+        tryCompare(bar.textInput, "activeFocus", true)
+    }
+
+    // The button is not a tab stop: it sits between the field and whatever
+    // follows, and landing on it on the way out would be a surprise.
+    function test_clear_button_is_not_in_the_tab_chain() {
+        compare(bar.clearItem.focusPolicy, Qt.NoFocus)
+        compare(bar.clearItem.activeFocusOnTab, false)
     }
 
     function test_textInput_focus_and_select_works_for_consumers() {
