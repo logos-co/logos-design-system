@@ -39,6 +39,7 @@ QtObject {
     readonly property color gray900: "#171717"
     readonly property color gray950: "#0E121B"
     readonly property color gray975: "#101214"
+    readonly property color gray500Opacity35: getColor(gray500, 0.35)
     readonly property color gray550Opacity07: getColor(gray550, 0.07)
     readonly property color gray550Opacity20: getColor(gray550, 0.2)
     readonly property color gray550Opacity30: getColor(gray550, 0.3)

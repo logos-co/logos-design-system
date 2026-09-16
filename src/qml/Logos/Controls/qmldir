@@ -34,6 +34,10 @@ LogosToolBar 1.0 LogosToolBar.qml
 LogosToolButton 1.0 LogosToolButton.qml
 LogosFrame 1.0 LogosFrame.qml
 LogosNotice 1.0 LogosNotice.qml
+LogosStatCard 1.0 LogosStatCard.qml
+LogosInfoButton 1.0 LogosInfoButton.qml
+LogosStage 1.0 LogosStage.qml
+LogosStageLane 1.0 LogosStageLane.qml
 LogosToast 1.0 LogosToast.qml
 LogosGroupBox 1.0 LogosGroupBox.qml
 LogosSpinBox 1.0 LogosSpinBox.qml

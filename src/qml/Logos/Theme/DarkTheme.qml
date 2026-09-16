@@ -30,6 +30,7 @@ QtObject {
     readonly property color borderTertiaryMuted: Qt.rgba(borderTertiary.r, borderTertiary.g, borderTertiary.b, 0.2)
     readonly property color borderSubtle: colors.gray330
     readonly property color borderHairline: colors.gray550Opacity20
+    readonly property color borderGlyph: colors.gray500Opacity35
     readonly property color borderInteractive: colors.gray300
     readonly property color borderDark: colors.gray340
     readonly property color borderStrong: colors.gray350
@@ -54,7 +55,7 @@ QtObject {
     readonly property color warningBorder: colors.yellow400Opacity40
 
     readonly property color info: colors.blue400
-    readonly property color primaryBorder: colors.orange300Opacity40
+    readonly property color primaryBorder: Qt.rgba(primary.r, primary.g, primary.b, 0.4)
 
     readonly property color notification: colors.red500
     readonly property color accentOrange: colors.orange300

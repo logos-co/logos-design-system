@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: text, variant, icon, radius, enabled, pressed, clicked(). Tab focuses; hold Space/Enter for pressed, release to click."
+                text: "Public API: text, variant, compact, icon, radius, enabled, pressed, clicked(). Tab focuses; hold Space/Enter for pressed, release to click."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -106,6 +106,45 @@ Rectangle {
                 LogosButton {
                     text: "This is a very long label that will not fit inside the button width"
                     Layout.preferredWidth: 160
+                }
+            }
+        }
+
+        // Sizes
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: Theme.spacing.medium
+
+            LogosText {
+                text: "Sizes"
+                font.pixelSize: Theme.typography.primaryText
+                font.weight: Theme.typography.weightBold
+                color: Theme.palette.text
+            }
+            Rectangle {
+                Layout.fillWidth: true; height: 1
+                color: Theme.palette.borderHairline
+            }
+            RowLayout {
+                spacing: Theme.spacing.large
+
+                LogosButton {
+                    text: "Regular"
+                }
+                LogosButton {
+                    text: "Compact"
+                    compact: true
+                }
+                LogosButton {
+                    text: "Compact primary"
+                    compact: true
+                    variant: LogosButton.Variant.Primary
+                }
+                LogosButton {
+                    text: "Compact + icon"
+                    compact: true
+                    leadingIcon.source: LogosIcons.refresh
+                    leadingIcon.size: 14
                 }
             }
         }

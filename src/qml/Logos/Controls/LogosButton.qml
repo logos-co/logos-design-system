@@ -21,8 +21,13 @@ import Logos.Controls
 //                  font.pixelSize for a button that carries another step.
 //     leadingIcon  IconSpec for the icon before the label (see below).
 //     trailingIcon IconSpec for the icon after the label. Both may be set.
-//     variant      LogosButton.Variant.Primary or .Secondary (default). Drives
-//                  the background and border palette.
+//     variant      LogosButton.Variant.Primary or .Secondary (default).
+//                  Drives the background and border palette.
+//     compact      drops the 44px touch-target floor to 32px and tightens the
+//                  padding, for dense chrome (headers, toolbars) where a
+//                  full-size button crowds the row. Colors and behaviour are
+//                  unchanged. A bool rather than a size enum, so it does not
+//                  collide with LogosIconButton's pixel-valued `size`.
 //     radius       background corner radius. Default = Theme.spacing.radiusXlarge.
 //     pressed      read-only; true while the mouse is held, or while Space/
 //                  Enter is held with keyboard focus (pressed chrome).
@@ -70,6 +75,7 @@ LogosAbstractButton {
     readonly property IconSpec trailingIcon: IconSpec {}
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
+    property bool compact: false
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias backgroundItem: bg
@@ -102,13 +108,16 @@ LogosAbstractButton {
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
     // steady whether or not the button carries a default-sized (20px) icon;
-    // beyond them the content decides.
-    implicitWidth: Math.max(100, implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(44, implicitContentHeight + topPadding + bottomPadding)
-    leftPadding: Theme.spacing.large
-    rightPadding: Theme.spacing.large
-    topPadding: Theme.spacing.medium
-    bottomPadding: Theme.spacing.medium
+    // beyond them the content decides. Compact lowers both floors — it is for
+    // chrome, where the 44px touch target is the wrong unit.
+    implicitWidth: Math.max(compact ? 72 : 100,
+                            implicitContentWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(compact ? 32 : 44,
+                             implicitContentHeight + topPadding + bottomPadding)
+    leftPadding: compact ? Theme.spacing.medium : Theme.spacing.large
+    rightPadding: compact ? Theme.spacing.medium : Theme.spacing.large
+    topPadding: compact ? Theme.spacing.small : Theme.spacing.medium
+    bottomPadding: compact ? Theme.spacing.small : Theme.spacing.medium
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.secondaryText
     font.weight: Theme.typography.weightMedium
