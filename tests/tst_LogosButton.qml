@@ -51,6 +51,7 @@ TestCase {
         btn.height = undefined
         btn.text = "Click me"
         btn.variant = LogosButton.Variant.Secondary
+        btn.compact = false
         btn.leadingIcon.source = ""
         btn.leadingIcon.color = Theme.palette.text
         btn.trailingIcon.source = ""
@@ -194,6 +195,27 @@ TestCase {
 
     function test_height_is_the_same_with_and_without_an_icon() {
         compare(iconSizing.implicitHeight, plainSizing.implicitHeight)
+    }
+
+    function test_compact_lowers_both_floors() {
+        btn.text = "OK"
+        btn.compact = true
+        tryCompare(btn, "implicitWidth", 72)
+        tryCompare(btn, "implicitHeight", 32)
+    }
+
+    function test_compact_still_clears_its_label() {
+        btn.compact = true
+        btn.text = "A label long enough to clear the compact minimum width"
+        tryCompare(btn.labelItem, "truncated", false)
+        verify(btn.implicitWidth > 72)
+        verify(btn.implicitHeight >= btn.labelItem.implicitHeight + btn.topPadding + btn.bottomPadding)
+    }
+
+    function test_compact_does_not_change_the_palette() {
+        const regular = btn._backgroundColor
+        btn.compact = true
+        compare(btn._backgroundColor, regular)
     }
 
     function test_explicit_size_wins() {

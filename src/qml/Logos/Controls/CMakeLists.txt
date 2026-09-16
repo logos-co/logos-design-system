@@ -54,6 +54,10 @@ qt_add_qml_module(logos_controls_qml
         LogosToolButton.qml
         LogosFrame.qml
         LogosNotice.qml
+        LogosStatCard.qml
+        LogosInfoButton.qml
+        LogosStage.qml
+        LogosStageLane.qml
         LogosToast.qml
         LogosGroupBox.qml
         LogosSpinBox.qml
