@@ -36,7 +36,16 @@ import Logos.Icons
 //                  override `contentItem`: the surface, padding and radius
 //                  stay, the layout is yours.
 //     severity     LogosStatCard.None (default) / Info / Success / Warning /
-//                  Error. Colors the value and reveals a severity icon
+//                  Error. A *verdict about the value* — it colors the value and
+//                  reveals a severity icon, so the meaning survives without
+//                  color. Use it when something is being flagged: a figure that
+//                  is incomplete, stale or wrong. Do not use it to recolor a
+//                  value that is merely a fact — that is `valueColor`, and
+//                  reaching for `severity` instead lands an icon next to the
+//                  label that has nothing to say (and, for Info, one that is
+//                  indistinguishable from a LogosInfoButton beside it)
+//     valueColor   plain tint for the value, no icon and no verdict implied.
+//                  Default = Theme.palette.text. `severity` outranks it
 //     interactive  hover chrome + clicked(). Default false
 //     flashOnChange  pulse the value when it changes. Default false
 //     flashColor   the pulse color. Default = primary, i.e. "look here" with
@@ -84,6 +93,9 @@ LogosAbstractButton {
     property list<Item> labelTrailing
     property list<Item> captionTrailing
     property int severity: LogosStatCard.None
+    // Tint without a verdict. `severity` outranks it: a card that is flagging
+    // something must not have its flag colour quietly overridden.
+    property color valueColor: Theme.palette.text
 
     property bool flashOnChange: false
     property color flashColor: Theme.palette.primary
@@ -115,7 +127,7 @@ LogosAbstractButton {
             case LogosStatCard.Success: return Theme.palette.success
             case LogosStatCard.Warning: return Theme.palette.warning
             case LogosStatCard.Error:   return Theme.palette.error
-            default:                    return Theme.palette.text
+            default:                    return root.valueColor
             }
         }
 

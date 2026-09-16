@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: label, value, caption, labelTrailing, captionTrailing, severity, interactive, flashOnChange, flashColor, clicked(). A labelled metric — not a general container; for that use LogosFrame."
+                text: "Public API: label, value, caption, labelTrailing, captionTrailing, severity, valueColor, interactive, flashOnChange, flashColor, clicked(). A labelled metric — not a general container; for that use LogosFrame."
                 Layout.maximumWidth: 720
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -147,6 +147,49 @@ Rectangle {
                 text: "Opt into a stronger signal with borderColor: Theme.palette.warningBorder — flat is the default, not a rule."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
+            }
+
+            LogosText {
+                text: "valueColor — tint without a verdict"
+                font.pixelSize: Theme.typography.subtitleText
+                font.weight: Theme.typography.weightBold
+                color: Theme.palette.text
+            }
+            LogosText {
+                text: "severity flags something; valueColor just colours. Reach for severity only when the figure is incomplete, stale or wrong — it adds an icon so the meaning survives without colour, and beside an info button that icon reads as a second, broken one."
+                font.pixelSize: Theme.typography.secondaryText
+                color: Theme.palette.textTertiary
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+            RowLayout {
+                spacing: Theme.spacing.large
+
+                LogosStatCard {
+                    Layout.preferredWidth: 220
+                    label: "Blend"; value: "Core"
+                    valueColor: Theme.palette.info
+                    labelTrailing: [
+                        LogosInfoButton { text: "One icon: the role is a fact, not a flag." }
+                    ]
+                }
+                LogosStatCard {
+                    Layout.preferredWidth: 220
+                    label: "Blend (severity: Info)"; value: "Core"
+                    severity: LogosStatCard.Info
+                    labelTrailing: [
+                        LogosInfoButton { text: "Two icons, one of them inert. This is what valueColor exists to avoid." }
+                    ]
+                }
+                LogosStatCard {
+                    Layout.preferredWidth: 220
+                    label: "Total Balance"; value: "1 530"
+                    caption: "3 of 6 accounts reported"
+                    severity: LogosStatCard.Warning
+                    labelTrailing: [
+                        LogosInfoButton { text: "Severity earns its icon here: the figure really is incomplete." }
+                    ]
+                }
             }
             RowLayout {
                 spacing: Theme.spacing.large
