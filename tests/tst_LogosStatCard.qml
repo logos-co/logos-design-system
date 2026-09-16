@@ -100,6 +100,7 @@ TestCase {
         card.value = "151548"
         card.caption = ""
         card.severity = LogosStatCard.None
+        card.valueColor = Theme.palette.text
         card.interactive = false
         card.flashColor = Theme.palette.primary
         card.flashDuration = 1260
@@ -164,6 +165,35 @@ TestCase {
     function test_severity_colors_the_value(data) {
         card.severity = data.severity
         tryCompare(card.valueItem, "color", data.color)
+    }
+
+    function test_valueColor_tints_without_a_verdict() {
+        // A value can be worth colouring without anything being flagged — a
+        // role, a category, a brand accent. That must not drag an icon along:
+        // an icon beside the label reads as "something needs your attention",
+        // and for Info it is indistinguishable from a LogosInfoButton next to
+        // it, which is what made this property necessary.
+        // Asserted on `source`, not `visible`: `visible` is effective
+        // visibility, and nothing in a headless TestCase has a visible
+        // ancestor, so it reads false regardless of the binding.
+        card.severity = LogosStatCard.None
+        card.valueColor = Theme.palette.info
+        tryCompare(card.valueItem, "color", Theme.palette.info)
+        tryCompare(card.severityIconItem, "source", Qt.url(""))
+    }
+
+    function test_severity_outranks_valueColor() {
+        // A card that is flagging something must not have its flag colour
+        // quietly overridden by a decorative tint.
+        card.valueColor = Theme.palette.info
+        card.severity = LogosStatCard.Warning
+        tryCompare(card.valueItem, "color", Theme.palette.warning)
+        verify(card.severityIconItem.source.toString().length > 0)
+    }
+
+    function test_valueColor_defaults_to_plain_text() {
+        compare(card.valueColor, Theme.palette.text)
+        tryCompare(card.valueItem, "color", Theme.palette.text)
     }
 
     function test_severity_does_not_tint_the_surface() {
