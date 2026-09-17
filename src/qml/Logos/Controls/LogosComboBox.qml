@@ -22,6 +22,9 @@ import Logos.Icons
 //     popupListView    the ListView inside the popup (delegate model is owned
 //                      by ComboBox via root.delegateModel)
 //
+// The closed control keeps whatever width it is given; the dropdown widens to
+// fit its widest entry, up to maxPopupWidthFactor times the control.
+//
 // Example:
 //     LogosComboBox {
 //         model: ["alpha", "beta", "gamma"]
@@ -34,6 +37,8 @@ ComboBox {
     property string placeholderText: ""
     property color textColor: Theme.palette.text
     property color indicatorColor: textColor
+    // How far the dropdown may outgrow the control to fit its entries.
+    property real maxPopupWidthFactor: 3
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias contentLabel: contentText
@@ -101,6 +106,26 @@ ComboBox {
         border.width: 1
     }
 
+    // Qt's own implicitContentWidthPolicy measures the widest entry, but only
+    // when contentItem is a TextInput, and it resizes the closed control too.
+    TextMetrics {
+        id: entryMetrics
+        font: contentText.font
+    }
+
+    function fittedPopupWidth() {
+        var widest = 0
+        for (var i = 0; i < root.count; ++i) {
+            entryMetrics.text = root.textAt(i) || ""
+            widest = Math.max(widest, entryMetrics.advanceWidth)
+        }
+        if (widest <= 0) return root.width
+        const needed = Math.ceil(widest) + 2 * Theme.spacing.medium
+                       + 2 * dropdownPopup.padding
+        return Math.max(root.width,
+                        Math.min(needed, root.width * root.maxPopupWidthFactor))
+    }
+
     popup: Popup {
         id: dropdownPopup
 
@@ -108,6 +133,8 @@ ComboBox {
         width: root.width
         implicitHeight: contentItem.implicitHeight
         padding: 1
+
+        onAboutToShow: width = root.fittedPopupWidth()
 
         contentItem: ListView {
             id: popupList
@@ -127,7 +154,9 @@ ComboBox {
 
     delegate: ItemDelegate {
         id: comboItem
-        width: root.width
+        width: ListView.view ? ListView.view.width : root.width
+        leftPadding: Theme.spacing.medium
+        rightPadding: Theme.spacing.medium
         highlighted: root.highlightedIndex === index
 
         contentItem: LogosText {
