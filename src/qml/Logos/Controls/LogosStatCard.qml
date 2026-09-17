@@ -283,6 +283,12 @@ LogosAbstractButton {
             Layout.fillWidth: true
             spacing: Theme.spacing.small
 
+            TextMetrics {
+                id: captionMetrics
+                font: captionText.font
+                text: root.caption
+            }
+
             LogosText {
                 id: captionText
                 // Grows to fit its text but no further, so the slot sits
@@ -290,7 +296,7 @@ LogosAbstractButton {
                 // the card's edge — and still shrinks and elides when the card
                 // is too narrow for both.
                 Layout.fillWidth: true
-                Layout.maximumWidth: implicitWidth
+                Layout.maximumWidth: Math.ceil(captionMetrics.advanceWidth)
                 text: root.caption
                 color: Theme.palette.textTertiary
                 font.pixelSize: Theme.typography.secondaryText
