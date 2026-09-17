@@ -39,6 +39,8 @@ ComboBox {
     property color indicatorColor: textColor
     // How far the dropdown may outgrow the control to fit its entries.
     property real maxPopupWidthFactor: 3
+    // Horizontal inset of a dropdown entry; also what the width allows for.
+    readonly property real entryPadding: Theme.spacing.medium
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias contentLabel: contentText
@@ -108,38 +110,36 @@ ComboBox {
 
     // Qt's own implicitContentWidthPolicy measures the widest entry, but only
     // when contentItem is a TextInput, and it resizes the closed control too.
-    TextMetrics {
-        id: entryMetrics
+    FontMetrics {
+        id: entryFont
         font: contentText.font
     }
 
-    function fittedPopupWidth() {
+    readonly property real widestEntryWidth: {
+        // The guard's reads are this binding's dependencies: textAt() notifies
+        // nothing, and resolves only while the popup holds the delegate model.
+        if (!dropdownPopup.visible || !root.model || root.textRole === undefined)
+            return 0
         var widest = 0
-        for (var i = 0; i < root.count; ++i) {
-            entryMetrics.text = root.textAt(i) || ""
-            widest = Math.max(widest, entryMetrics.advanceWidth)
-        }
-        if (widest <= 0) return root.width
-        const needed = Math.ceil(widest) + 2 * Theme.spacing.medium
-                       + 2 * dropdownPopup.padding
-        return Math.max(root.width,
-                        Math.min(needed, root.width * root.maxPopupWidthFactor))
+        for (var i = 0; i < root.count; ++i)
+            widest = Math.max(widest, entryFont.advanceWidth(root.textAt(i) || ""))
+        return widest
     }
 
     popup: Popup {
         id: dropdownPopup
 
         y: root.height + 2
-        width: root.width
+        width: Math.max(root.width,
+                        Math.min(implicitWidth, root.width * root.maxPopupWidthFactor))
         implicitHeight: contentItem.implicitHeight
         padding: 1
-
-        onAboutToShow: width = root.fittedPopupWidth()
 
         contentItem: ListView {
             id: popupList
 
             clip: true
+            implicitWidth: root.widestEntryWidth + 2 * root.entryPadding
             implicitHeight: contentHeight
             model: root.popup.visible ? root.delegateModel : null
             currentIndex: root.highlightedIndex
@@ -155,8 +155,8 @@ ComboBox {
     delegate: ItemDelegate {
         id: comboItem
         width: ListView.view ? ListView.view.width : root.width
-        leftPadding: Theme.spacing.medium
-        rightPadding: Theme.spacing.medium
+        leftPadding: root.entryPadding
+        rightPadding: root.entryPadding
         highlighted: root.highlightedIndex === index
 
         contentItem: LogosText {

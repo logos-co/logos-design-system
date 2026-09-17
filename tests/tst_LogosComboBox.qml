@@ -29,6 +29,7 @@ TestCase {
         cbox.model = ["alpha", "beta", "gamma"]
         cbox.currentIndex = 0
         cbox.placeholderText = ""
+        cbox.textRole = ""
         cbox.enabled = true
     }
 
@@ -112,6 +113,24 @@ TestCase {
         tryVerify(function() { return cbox.popupListView.itemAtIndex(1) !== null })
         compare(cbox.popupListView.itemAtIndex(1).contentItem.truncated, false,
                 "the widest entry is not elided")
+    }
+
+    // Swapping the model for one with the same number of longer entries still
+    // re-measures: nothing here is keyed on the count alone.
+    function test_width_tracks_a_replaced_model() {
+        cbox.width = 94
+        cbox.model = ["1.0.0", "1.0.1"]
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        const short_ = cbox.popupItem.width
+        cbox.popupItem.close()
+        tryCompare(cbox.popupItem, "opened", false)
+
+        cbox.model = ["2.0.0-32.gf8ab37c1", "2.0.0-31.gaa11bb22"]
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        tryVerify(function() { return cbox.popupItem.width > short_ }, 2000,
+                  "popup stuck at " + short_ + " for the longer model")
     }
 
     function test_dropdown_never_narrower_than_the_control() {
