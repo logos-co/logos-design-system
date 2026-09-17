@@ -115,7 +115,18 @@ ComboBox {
         font: contentText.font
     }
 
+    // Bumped when a row's text changes in place: textAt() has no notifier of
+    // its own, so the width binding reads this to re-measure.
+    property int entryRevision: 0
+
+    Connections {
+        target: (root.model && root.model.dataChanged !== undefined) ? root.model : null
+        ignoreUnknownSignals: true
+        function onDataChanged() { root.entryRevision += 1 }
+    }
+
     readonly property real widestEntryWidth: {
+        const revision = root.entryRevision
         // The guard's reads are this binding's dependencies: textAt() notifies
         // nothing, and resolves only while the popup holds the delegate model.
         if (!dropdownPopup.visible || !root.model || root.textRole === undefined)

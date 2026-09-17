@@ -133,6 +133,23 @@ TestCase {
                   "popup stuck at " + short_ + " for the longer model")
     }
 
+    // A row edited in place has no textAt() notification behind it, so the
+    // width has to follow the model's dataChanged.
+    function test_width_tracks_a_row_edited_in_place() {
+        var rows = Qt.createQmlObject(
+            'import QtQml.Models; ListModel { ListElement { label: "1.0.0" } }', root)
+        cbox.width = 94
+        cbox.model = rows
+        cbox.textRole = "label"
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        const before = cbox.popupItem.width
+
+        rows.setProperty(0, "label", "2.0.0-32.gf8ab37c1")
+        tryVerify(function() { return cbox.popupItem.width > before }, 2000,
+                  "popup stuck at " + before + " after the row was edited")
+    }
+
     function test_dropdown_never_narrower_than_the_control() {
         cbox.width = 300
         cbox.model = ["a", "b"]
