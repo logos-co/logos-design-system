@@ -22,6 +22,9 @@ TestCase {
     }
 
     function init() {
+        cbox.popupItem.close()
+        tryCompare(cbox.popupItem, "opened", false)
+        cbox.maxPopupWidthFactor = 3
         activatedSpy.clear()
         cbox.model = ["alpha", "beta", "gamma"]
         cbox.currentIndex = 0
@@ -97,6 +100,35 @@ TestCase {
     function test_joins_tab_focus_chain() {
         compare(cbox.activeFocusOnTab, true)
         compare(cbox.focusPolicy, Qt.StrongFocus)
+    }
+
+    function test_dropdown_widens_to_fit_its_entries() {
+        cbox.width = 94
+        cbox.model = ["1.0.0", "2.0.0-32.gf8ab37c1 and then some"]
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        verify(cbox.popupItem.width > cbox.width,
+               "popup " + cbox.popupItem.width + " should outgrow the control " + cbox.width)
+        tryVerify(function() { return cbox.popupListView.itemAtIndex(1) !== null })
+        compare(cbox.popupListView.itemAtIndex(1).contentItem.truncated, false,
+                "the widest entry is not elided")
+    }
+
+    function test_dropdown_never_narrower_than_the_control() {
+        cbox.width = 300
+        cbox.model = ["a", "b"]
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        compare(cbox.popupItem.width, 300)
+    }
+
+    function test_dropdown_width_is_capped() {
+        cbox.width = 60
+        cbox.maxPopupWidthFactor = 2
+        cbox.model = ["x".repeat(200)]
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        compare(cbox.popupItem.width, 120, "capped at the factor, not the text")
     }
 
     function test_space_opens_popup_when_focused() {
