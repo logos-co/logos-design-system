@@ -56,6 +56,18 @@ TestCase {
         caption: "12 slots behind"
     }
 
+    // A caption whose natural width has a fraction that rounds *down*.
+    // TextMetrics.width is whole-pixel, so for this string it lands a pixel
+    // below what the text needs — "12 slots behind" above rounds up and so
+    // cannot catch a cap that measures with `width` instead of `advanceWidth`.
+    LogosStatCard {
+        id: withRoundsDownCaption
+        width: 220
+        label: "Mining Rewards"
+        value: "1234"
+        caption: "Mining"
+    }
+
     LogosStatCard {
         id: withoutCaption
         width: 220
@@ -174,6 +186,47 @@ TestCase {
     }
 
     // ---- Grid rhythm ----
+
+    function test_caption_is_not_elided_when_the_card_has_room_data() {
+        return [
+            { tag: "rounds up", card: withCaption },
+            { tag: "rounds down", card: withRoundsDownCaption },
+        ]
+    }
+
+    function test_caption_is_not_elided_when_the_card_has_room(data) {
+        // Regression, in two layers. The cap was first bound to the caption's
+        // own implicitWidth: with elide active that reports the *elided*
+        // layout, so the cap fed back into the constraint that produced it —
+        // one sub-pixel round-down elided a character, which shrank
+        // implicitWidth, which tightened the cap, and a short caption stayed
+        // truncated in a card with obvious room to spare. Measuring with
+        // TextMetrics broke that loop but swapped in a second, quieter fault:
+        // TextMetrics.width is whole-pixel and rounds down as often as up, so
+        // for half the strings the cap still landed under what the text needed.
+        // advanceWidth is the unrounded figure, and matches Text's own
+        // implicitWidth exactly. The value text never had either bug because
+        // nothing reads its implicit width.
+        const item = data.card.captionItem
+        verify(item.width > 0)
+        // truncated is the direct question: is what is painted the whole string?
+        verify(!item.truncated)
+        // And the card really is wider than the caption needs, so an elision
+        // here could only come from the cap, not from a genuine shortage.
+        verify(data.card.width > item.contentWidth)
+    }
+
+    function test_caption_still_elides_when_the_card_is_too_narrow() {
+        // The cap must not defeat the shrink: widen nothing, just starve the
+        // card and check the caption gives way rather than overflowing.
+        const card = withRoundsDownCaption
+        const restore = card.width
+        card.width = 60
+        wait(0)
+        verify(card.captionItem.truncated)
+        card.width = restore
+        wait(0)
+    }
 
     function test_caption_does_not_change_the_height() {
         // The whole point of reserving the caption line: a row of cards where
