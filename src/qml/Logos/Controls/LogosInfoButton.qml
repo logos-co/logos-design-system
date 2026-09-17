@@ -42,9 +42,10 @@ import Logos.Controls
 // The ring and glyph are light grey at rest and go white while hovered or while
 // the dialog is open, so an open dialog keeps its trigger lit.
 //
-// For richer content than a paragraph — sections, a copyable docs link — leave
-// `text` empty and drive your own LogosDialog from clicked(); the trigger does
-// not insist on owning what it opens.
+// For richer content than a paragraph — sections, a state table, a copyable
+// docs link — set `dialogContentItem` to your own Item. It replaces the body of
+// the dialog the trigger already owns, so there is no second dialog to stand up
+// and no clicked() to re-wire.
 //
 // Example:
 //     LogosInfoButton {
@@ -65,6 +66,9 @@ LogosAbstractButton {
     property Item dialogParent: null
 
     readonly property bool opened: dialog.visible
+
+    // The dialog's body.
+    property alias dialogContentItem: dialog.contentItem
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias ringItem: ring

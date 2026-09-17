@@ -76,6 +76,61 @@ TestCase {
         ]
     }
 
+    // The same tile with the copy affordance where it belongs: beside the value
+    // it actually copies, carrying the full hash rather than the shortened one
+    // on screen.
+    LogosStatCard {
+        id: cardWithValueSlot
+        width: 220
+        label: "LiB"
+        value: "0x71bd…9e4a"
+        caption: "slot 151548"
+        valueTrailing: [
+            LogosCopyButton { id: valueCopy; value: "0x71bd000000009e4a" }
+        ]
+    }
+
+    // The eliding/shrinking pair again, both carrying a value slot this time:
+    // the fit has to go on working in whatever width the slot leaves it, not
+    // only in a bare card.
+    LogosStatCard {
+        id: elidingCardWithSlot
+        width: 220
+        label: "Total Balance"
+        value: "5,999,999,986,578"
+        valueTrailing: [
+            LogosCopyButton { value: "5999999986578" }
+        ]
+    }
+
+    LogosStatCard {
+        id: shrinkingCardWithSlot
+        width: 220
+        label: "Total Balance"
+        value: "5,999,999,986,578"
+        valueFontSizeMode: Text.HorizontalFit
+        valueTrailing: [
+            LogosCopyButton { id: shrinkingCopy; value: "5999999986578" }
+        ]
+    }
+
+    // A pair sharing one width and one over-long value, so the only variable
+    // between them is how they react to not fitting.
+    LogosStatCard {
+        id: elidingCard
+        width: 194
+        label: "Total Balance"
+        value: "5,999,999,986,578"
+    }
+
+    LogosStatCard {
+        id: shrinkingCard
+        width: 194
+        label: "Total Balance"
+        value: "5,999,999,986,578"
+        valueFontSizeMode: Text.HorizontalFit
+    }
+
     SignalSpy {
         id: clickedSpy
         target: card
@@ -105,6 +160,8 @@ TestCase {
         card.flashColor = Theme.palette.primary
         card.flashDuration = 1260
         card.borderColor = "transparent"
+        card.valueFontSizeMode = Text.FixedSize
+        card.valueMinimumPixelSize = Theme.typography.subtitleText
     }
 
     // ---- Content ----
@@ -148,6 +205,43 @@ TestCase {
         tryVerify(function () { return withoutCaption.implicitHeight < 108 })
         withoutCaption.minimumHeight = 108
         tryCompare(withoutCaption, "implicitHeight", 108)
+    }
+
+    // ---- Long values ----
+
+    function test_value_elides_by_default() {
+        // Also the precondition for the test below: if this card stops
+        // overflowing — a font metric shifts, the fixture width changes — the
+        // shrink test would pass without proving anything, so it must fail
+        // here first and loudly.
+        compare(elidingCard.valueFontSizeMode, Text.FixedSize)
+        tryCompare(elidingCard.valueItem, "truncated", true)
+    }
+
+    function test_horizontal_fit_shrinks_instead_of_eliding() {
+        // Same width, same digits, no ellipsis: every digit of a balance is
+        // meaning, so the type gives way rather than the number.
+        tryCompare(shrinkingCard.valueItem, "truncated", false)
+    }
+
+    function test_shrinking_stops_at_the_floor() {
+        // A floor, not a licence to shrink to nothing: past it the value
+        // elides like any other, and the card stays readable at a glance.
+        compare(shrinkingCard.valueMinimumPixelSize,
+                Theme.typography.subtitleText)
+        shrinkingCard.value = "5,999,999,986,578,000,000,000,000,000,000"
+        tryCompare(shrinkingCard.valueItem, "truncated", true)
+        shrinkingCard.value = "5,999,999,986,578"
+        tryCompare(shrinkingCard.valueItem, "truncated", false)
+    }
+
+    function test_font_size_mode_reaches_the_value() {
+        compare(card.valueItem.fontSizeMode, Text.FixedSize)
+        card.valueFontSizeMode = Text.HorizontalFit
+        tryCompare(card.valueItem, "fontSizeMode", Text.HorizontalFit)
+        card.valueMinimumPixelSize = Theme.typography.primaryText
+        tryCompare(card.valueItem, "minimumPixelSize",
+                   Theme.typography.primaryText)
     }
 
     // ---- Severity ----
@@ -275,6 +369,136 @@ TestCase {
                                                  trailingInfo.width, 0).x
         fuzzyCompare(cardWithTrailing.width - rightEdge,
                      cardWithTrailing.padding, 1)
+    }
+
+    function test_value_slot_is_reparented_into_the_value_row() {
+        compare(cardWithValueSlot.valueTrailing.length, 1)
+        verify(valueCopy.parent !== null)
+        verify(valueCopy.parent !== root)
+    }
+
+    function test_value_slot_is_on_the_value_line() {
+        const copyCentre = valueCopy.mapToItem(
+            cardWithValueSlot, 0, valueCopy.height / 2).y
+        const value = cardWithValueSlot.valueItem
+        const valueCentre = value.mapToItem(
+            cardWithValueSlot, 0, value.height / 2).y
+        fuzzyCompare(copyCentre, valueCentre, 2)
+    }
+
+    function test_value_slot_sits_at_the_card_edge_not_beside_the_value() {
+        // Deliberately the opposite of captionTrailing. The value is the line
+        // that changes while you are looking at it, so the affordance holds
+        // still at the edge instead of sliding with the digits — and it lands
+        // under labelTrailing's slot rather than somewhere in between.
+        const rightEdge = valueCopy.mapToItem(cardWithValueSlot,
+                                              valueCopy.width, 0).x
+        fuzzyCompare(cardWithValueSlot.width - rightEdge,
+                     cardWithValueSlot.padding, 1)
+    }
+
+    function test_value_slot_does_not_change_the_height() {
+        // One grid rhythm: a slot on the value line must not make this card
+        // taller than a captioned neighbour without one.
+        compare(cardWithValueSlot.implicitHeight, withCaption.implicitHeight)
+    }
+
+    function test_value_still_shrinks_to_fit_beside_a_slot() {
+        // The regression this layout exists to avoid: the slot must leave the
+        // value a real width to fit into, not consume it or feed back into it.
+        // Same width, same value, same slot — only the fit mode differs.
+        tryCompare(elidingCardWithSlot.valueItem, "truncated", true)
+        tryCompare(shrinkingCardWithSlot.valueItem, "truncated", false)
+        // And the value stops short of the slot rather than running under it.
+        const valueRight = shrinkingCardWithSlot.valueItem.mapToItem(
+            shrinkingCardWithSlot, shrinkingCardWithSlot.valueItem.width, 0).x
+        const copyLeft = shrinkingCopy.mapToItem(shrinkingCardWithSlot, 0, 0).x
+        verify(copyLeft >= valueRight)
+    }
+
+    function test_value_slot_takes_fitting_width_from_the_value() {
+        // Worth pinning down, because it is the cost of putting the affordance
+        // on the value's line: the slot spends width the fit would otherwise
+        // have used, so a figure that just fits without one can drop to the
+        // floor and elide with one. The right trade — an elided figure is
+        // exactly when the copy button earns its place — but a real one.
+        verify(shrinkingCardWithSlot.valueItem.width < shrinkingCardWithSlot.width
+                                                       - 2 * shrinkingCardWithSlot.padding)
+        verify(shrinkingCard.valueItem.width > shrinkingCardWithSlot.valueItem.width
+                                               - (shrinkingCardWithSlot.width - shrinkingCard.width))
+    }
+
+    function test_empty_value_slot_leaves_the_value_full_width() {
+        // The row is unconditional, so an empty slot must cost nothing: a card
+        // without one still elides at exactly the same width.
+        fuzzyCompare(elidingCard.valueItem.width,
+                     elidingCard.width - 2 * elidingCard.padding, 1)
+    }
+
+    LogosStatCard {
+        id: sweepCard
+        width: 210                       // the dashboard's minimum tile width
+        label: "Total Balance"
+        valueFontSizeMode: Text.HorizontalFit
+        valueTrailing: [ LogosCopyButton { id: sweepCopy; value: "x" } ]
+    }
+
+    function group(s) {
+        let out = ""
+        for (let i = 0; i < s.length; i++) {
+            if (i > 0 && (s.length - i) % 3 === 0) out += ","
+            out += s.charAt(i)
+        }
+        return out
+    }
+
+    function test_value_and_slot_stay_aligned_at_every_value_length() {
+        // The bug was length-dependent, which is why it survived review: below
+        // the width where HorizontalFit starts shrinking, the glyphs fill their
+        // box and AlignTop is indistinguishable from AlignVCenter. Measured on
+        // this 210px tile the error was 0px to 9 digits, then ramped — 2.0 at
+        // 10, 4.5 at 13 — and pinned at 5.0px from 14 on, where the font hits
+        // valueMinimumPixelSize and elides instead of shrinking further. So
+        // sweep the whole range rather than sampling one length.
+        let digits = ""
+        let sawShrink = false
+        for (let n = 1; n <= 24; n++) {
+            digits += String(n % 10)
+            sweepCard.value = group(digits)
+            wait(0)
+            const v = sweepCard.valueItem
+            tryVerify(function () { return v.contentHeight > 0 })
+            if (v.contentHeight < v.height)
+                sawShrink = true
+            const vCentre = v.mapToItem(sweepCard, 0, v.height / 2).y
+            const bCentre = sweepCopy.mapToItem(sweepCard, 0, sweepCopy.height / 2).y
+            fuzzyCompare(bCentre, vCentre, 1)
+        }
+        // The sweep has to actually reach the shrinking regime, or it proves
+        // nothing about the case that was broken.
+        verify(sawShrink)
+    }
+
+    function test_value_is_centred_in_its_own_box_not_pinned_to_the_top() {
+        // The bug this guards: a layout row stretches the value to the row's
+        // height, and a fitted value's box is sized from the UNSHRUNK font — so
+        // the glyphs are shorter than their box. Left at the default AlignTop
+        // they pin to the top of it and the slot beside them reads as having
+        // sunk (measured 5.5px out on a 24px value before this was set).
+        const v = shrinkingCardWithSlot.valueItem
+        // The scenario has to be real, or the assertion below proves nothing.
+        tryVerify(function () { return v.contentHeight < v.height })
+        compare(v.verticalAlignment, Text.AlignVCenter)
+        compare(card.valueItem.verticalAlignment, Text.AlignVCenter)
+    }
+
+    function test_value_slot_is_centred_on_a_fitted_value() {
+        const s = shrinkingCardWithSlot
+        const v = s.valueItem
+        const vTop = v.mapToItem(s, 0, 0).y
+        const bTop = shrinkingCopy.mapToItem(s, 0, 0).y
+        // Centred glyphs mean the item's centre IS the optical centre.
+        fuzzyCompare(bTop + shrinkingCopy.height / 2, vTop + v.height / 2, 1)
     }
 
     function test_caption_slot_is_reparented_into_the_caption_row() {

@@ -28,7 +28,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: label, value, caption, labelTrailing, captionTrailing, severity, valueColor, interactive, flashOnChange, flashColor, clicked(). A labelled metric — not a general container; for that use LogosFrame."
+                text: "Public API: label, value, caption, labelTrailing, valueTrailing, captionTrailing, severity, valueColor, valueFontSizeMode, valueMinimumPixelSize, interactive, flashOnChange, flashColor, clicked(). A labelled metric — not a general container; for that use LogosFrame."
                 Layout.maximumWidth: 720
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -78,8 +78,12 @@ Rectangle {
                     ]
                 }
 
-                // The two slots do different jobs: labelTrailing annotates the
-                // card, captionTrailing acts on the value.
+                // Three slots, three jobs: labelTrailing annotates the card,
+                // valueTrailing acts on the figure, captionTrailing on the
+                // caption's own text. Note that neither copy button carries
+                // what is on screen — the value is a shortened hash and the
+                // caption a formatted slot, which is exactly why these are
+                // buttons with their own strings rather than selectable text.
                 LogosStatCard {
                     Layout.preferredWidth: 210
                     label: "LiB"
@@ -91,8 +95,11 @@ Rectangle {
                             text: "Header id of the last irreversible block."
                         }
                     ]
-                    captionTrailing: [
+                    valueTrailing: [
                         LogosCopyButton { value: "0x71bd000000009e4a" }
+                    ]
+                    captionTrailing: [
+                        LogosCopyButton { value: "151548" }
                     ]
                 }
             }
@@ -198,6 +205,74 @@ Rectangle {
                     label: "Bordered"; value: "-98"
                     severity: LogosStatCard.Warning
                     borderColor: Theme.palette.warningBorder
+                }
+            }
+        }
+
+        // Long values
+        ColumnLayout {
+            Layout.fillWidth: true
+            spacing: Theme.spacing.medium
+
+            LogosText {
+                text: "Long values — elide, or shrink to fit"
+                font.pixelSize: Theme.typography.primaryText
+                font.weight: Theme.typography.weightBold
+                color: Theme.palette.text
+            }
+            Rectangle {
+                Layout.fillWidth: true; height: 1
+                color: Theme.palette.borderHairline
+            }
+            LogosText {
+                text: "Same width, same digits. Elide is right when the value is long because it is an identifier — half a hash still reads as a hash. Shrink is right when every digit is meaning, which is most numbers. Drag the width to watch both."
+                font.pixelSize: Theme.typography.secondaryText
+                color: Theme.palette.textTertiary
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+            }
+            RowLayout {
+                spacing: Theme.spacing.large
+
+                LogosStatCard {
+                    Layout.preferredWidth: widthKnob.value
+                    label: "Total Balance (default)"
+                    value: "5,999,999,986,578"
+                    caption: "Text.FixedSize"
+                }
+                LogosStatCard {
+                    Layout.preferredWidth: widthKnob.value
+                    label: "Total Balance"
+                    value: "5,999,999,986,578"
+                    caption: "Text.HorizontalFit"
+                    valueFontSizeMode: Text.HorizontalFit
+                    valueTrailing: [
+                        LogosCopyButton { value: "5999999986578" }
+                    ]
+                }
+                // Past the floor even shrinking gives up and elides — which is
+                // why the exact figure belongs on a copy button, not on the
+                // hope that it fits.
+                LogosStatCard {
+                    Layout.preferredWidth: widthKnob.value
+                    label: "Past the floor"
+                    value: "5,999,999,986,578,000,000,000"
+                    caption: "shrinks to " + Theme.typography.subtitleText + "px, then elides"
+                    valueFontSizeMode: Text.HorizontalFit
+                }
+            }
+            RowLayout {
+                spacing: Theme.spacing.small
+                Slider {
+                    id: widthKnob
+                    from: 120
+                    to: 420
+                    value: 194
+                }
+                LogosText {
+                    text: "width: " + Math.round(widthKnob.value) + "px"
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textSecondary
                 }
             }
         }

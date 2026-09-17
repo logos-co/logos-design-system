@@ -26,11 +26,19 @@ import Logos.Icons
 //     caption      optional third line under the value, for the sentence that
 //                  explains the number ("12 slots behind")
 //     labelTrailing    slot beside the label, top-right
+//     valueTrailing    slot on the value's line, at the card's right edge. For
+//                      an affordance that belongs to the figure itself — and in
+//                      practice that means a copy button, because `value` is a
+//                      *rendering* of the datum and not the datum: a shortened
+//                      hash, digits with separators in them. Selecting the text
+//                      would hand over the rendering; the button carries the
+//                      real string. Right-aligned rather than hugging the value
+//                      so it does not slide about as a live figure changes
+//                      width, and so it cannot feed back into valueFontSizeMode
 //     captionTrailing  slot beside the caption, for an affordance that belongs
-//                      to the value rather than to the card — a copy button
-//                      next to a hash, say
+//                      to the caption's own text
 //
-//                  Both take any Items — an icon, a badge, a spinner, a menu.
+//                  All three take any Items — an icon, a badge, a spinner, a menu.
 //                  The card does not type their content, it only gives it a
 //                  home. For content that does not fit three rows at all,
 //                  override `contentItem`: the surface, padding and radius
@@ -46,6 +54,18 @@ import Logos.Icons
 //                  indistinguishable from a LogosInfoButton beside it)
 //     valueColor   plain tint for the value, no icon and no verdict implied.
 //                  Default = Theme.palette.text. `severity` outranks it
+//     valueFontSizeMode  how the value reacts when it is too wide for the card.
+//                  Default Text.FixedSize — hold the type size and elide, which
+//                  is right for a figure that is long because it is a hash or a
+//                  name. Set Text.HorizontalFit for one that is long because it
+//                  is genuinely big (a balance, a supply): the digits shrink to
+//                  fit rather than disappearing behind an ellipsis. Not
+//                  Text.Fit — that scales against the height too, and the
+//                  value's height is derived from its font size inside the
+//                  card's ColumnLayout, so there is nothing to fit against
+//     valueMinimumPixelSize  the floor for the above. Default subtitleText:
+//                  below that a stat card is no longer legible at a glance, so
+//                  the value stops shrinking and elides instead
 //     interactive  hover chrome + clicked(). Default false
 //     flashOnChange  pulse the value when it changes. Default false
 //     flashColor   the pulse color. Default = primary, i.e. "look here" with
@@ -91,11 +111,18 @@ LogosAbstractButton {
     // Same idiom as LogosNotice.actions: the caller builds the Items, the
     // control reparents them into the slot.
     property list<Item> labelTrailing
+    property list<Item> valueTrailing
     property list<Item> captionTrailing
     property int severity: LogosStatCard.None
     // Tint without a verdict. `severity` outranks it: a card that is flagging
     // something must not have its flag colour quietly overridden.
     property color valueColor: Theme.palette.text
+
+    // Elide by default: most long values are long because they are identifiers,
+    // and shrinking a hash buys nothing. Opt into shrinking for the values
+    // where every digit is meaning.
+    property int valueFontSizeMode: Text.FixedSize
+    property int valueMinimumPixelSize: Theme.typography.subtitleText
 
     property bool flashOnChange: false
     property color flashColor: Theme.palette.primary
@@ -200,6 +227,7 @@ LogosAbstractButton {
                 color: Theme.palette.textSecondary
                 font.pixelSize: Theme.typography.secondaryText
                 elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
             }
 
             LogosIcon {
@@ -222,14 +250,30 @@ LogosAbstractButton {
             }
         }
 
-        LogosText {
-            id: valueText
+        RowLayout {
             Layout.fillWidth: true
-            text: root.value
-            color: d.accent
-            font.pixelSize: Theme.typography.panelTitleText
-            font.weight: Theme.typography.weightBold
-            elide: Text.ElideRight
+            spacing: Theme.spacing.small
+
+            LogosText {
+                id: valueText
+                Layout.fillWidth: true
+                text: root.value
+                color: d.accent
+                font.pixelSize: Theme.typography.panelTitleText
+                font.weight: Theme.typography.weightBold
+                elide: Text.ElideRight
+                fontSizeMode: root.valueFontSizeMode
+                verticalAlignment: Text.AlignVCenter
+                minimumPixelSize: root.valueMinimumPixelSize
+            }
+
+            Row {
+                id: valueSlot
+                Layout.alignment: Qt.AlignVCenter
+                visible: root.valueTrailing.length > 0
+                spacing: Theme.spacing.tiny
+                children: root.valueTrailing
+            }
         }
 
         // The row is kept even when the caption is empty: collapsing it would
@@ -251,6 +295,7 @@ LogosAbstractButton {
                 color: Theme.palette.textTertiary
                 font.pixelSize: Theme.typography.secondaryText
                 elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
             }
 
             Row {

@@ -36,9 +36,23 @@ TestCase {
         }
     }
 
+    // A rich-body trigger: the case that previously forced callers to stand up
+    // their own dialog and re-wire clicked() to it.
+    LogosInfoButton {
+        id: rich
+        title: "Status"
+        dialogContentItem: Column {
+            objectName: "richBody"
+            spacing: 4
+            Text { objectName: "richHeading"; text: "STATES" }
+            Text { text: "Online — following the chain." }
+        }
+    }
+
     function init() {
         info.close()
         nested.close()
+        rich.close()
         info.title = "Slot"
         info.text = "Slots the chain tip trails the consensus clock by."
         info.dialogWidth = 560
@@ -197,5 +211,36 @@ TestCase {
         info.dialogWidth = 400
         info.open()
         tryCompare(info.dialogItem, "width", 400)
+    }
+
+    // ---- Rich body ----
+
+    function test_dialog_body_defaults_to_the_text_paragraph() {
+        compare(info.dialogItem.contentItem, info.textItem)
+    }
+
+    function test_dialog_content_item_replaces_the_body() {
+        // One dialog, owned by the trigger: no parallel LogosDialog, so no
+        // clicked() to re-wire and no empty dialog left behind it.
+        compare(rich.dialogContentItem.objectName, "richBody")
+        compare(rich.dialogItem.contentItem, rich.dialogContentItem)
+    }
+
+    function test_click_opens_the_rich_dialog() {
+        compare(rich.opened, false)
+        rich.mouseAreaItem.clicked(null)
+        tryCompare(rich, "opened", true)
+        rich.close()
+        tryCompare(rich, "opened", false)
+    }
+
+    function test_default_paragraph_still_renders() {
+        // Regression guard: opening the body up must not have cost the
+        // plain-text case every other caller uses.
+        info.open()
+        compare(info.textItem.text,
+                "Slots the chain tip trails the consensus clock by.")
+        verify(info.textItem.visible)
+        info.close()
     }
 }
