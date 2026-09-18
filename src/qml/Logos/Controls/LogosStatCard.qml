@@ -281,7 +281,7 @@ LogosAbstractButton {
         // rhythm. An empty LogosText still occupies its line box.
         RowLayout {
             Layout.fillWidth: true
-            spacing: Theme.spacing.small
+            spacing: root.caption.length > 0 ? Theme.spacing.small : 0
 
             TextMetrics {
                 id: captionMetrics

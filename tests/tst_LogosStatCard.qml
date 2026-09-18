@@ -88,6 +88,42 @@ TestCase {
         ]
     }
 
+    // The same slot with nothing to sit beside. A peer-id tile has no second
+    // line to write, so the glyph is alone on the caption row — which is the
+    // case every other captionTrailing fixture here happens to avoid.
+    LogosStatCard {
+        id: cardWithCaptionSlotOnly
+        width: 220
+        label: "Peer ID"
+        value: "12D3Ko…EwLz"
+        captionTrailing: [
+            LogosCopyButton { id: lonelyCopy; value: "12D3KooWFullPeerIdEwLz" }
+        ]
+    }
+
+    // The other two lines, each carrying a slot with no text to sit beside.
+    // Same shape as the pair they are compared against, so the only variable is
+    // whether the line has text on it.
+    LogosStatCard {
+        id: cardWithLabelSlotOnly
+        width: 220
+        value: "151548"
+        interactive: true
+        labelTrailing: [
+            LogosInfoButton { id: lonelyInfo; text: "Explanation." }
+        ]
+    }
+
+    LogosStatCard {
+        id: cardWithValueSlotOnly
+        width: 220
+        label: "LiB"
+        caption: "slot 151548"
+        valueTrailing: [
+            LogosCopyButton { id: lonelyValueCopy; value: "0x71bd000000009e4a" }
+        ]
+    }
+
     // The same tile with the copy affordance where it belongs: beside the value
     // it actually copies, carrying the full hash rather than the shortened one
     // on screen.
@@ -571,6 +607,38 @@ TestCase {
         // Within a small gap of the text, nowhere near the far edge.
         verify(copyLeft - captionRight <= Theme.spacing.large)
         verify(copyLeft < cardWithCaptionSlot.width / 2)
+    }
+
+    function test_caption_slot_has_no_gap_in_front_of_it_without_a_caption() {
+        const caption = cardWithCaptionSlotOnly.captionItem
+        compare(caption.width, 0, "fixture must have no caption text")
+
+        const captionLeft = caption.mapToItem(cardWithCaptionSlotOnly, 0, 0).x
+        const copyLeft = lonelyCopy.mapToItem(cardWithCaptionSlotOnly, 0, 0).x
+        fuzzyCompare(copyLeft, captionLeft, 1)
+    }
+
+    // The same question asked of the other two lines. They are built the other
+    // way round — their text fills the row, so the slot is pinned to the right
+    // edge and empty text cannot open a gap in front of it. These lock that in:
+    // capping either text to its own string, the way the caption row does,
+    // would drag the slot inward and fail here.
+    function test_label_slot_does_not_move_when_the_label_is_empty() {
+        compare(cardWithLabelSlotOnly.labelItem.text, "")
+        const withText = trailingInfo.mapToItem(cardWithTrailing, 0, 0).x
+        const without = lonelyInfo.mapToItem(cardWithLabelSlotOnly, 0, 0).x
+        fuzzyCompare(without, withText, 1)
+    }
+
+    function test_value_slot_does_not_move_when_the_value_is_empty() {
+        compare(cardWithValueSlotOnly.valueItem.text, "")
+        const withText = valueCopy.mapToItem(cardWithValueSlot, 0, 0).x
+        const without = lonelyValueCopy.mapToItem(cardWithValueSlotOnly, 0, 0).x
+        fuzzyCompare(without, withText, 1)
+    }
+
+    function test_caption_slot_alone_still_reserves_the_caption_line() {
+        compare(cardWithCaptionSlotOnly.height, cardWithCaptionSlot.height)
     }
 
     function test_caption_slot_is_on_the_caption_line() {
