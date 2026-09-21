@@ -33,6 +33,7 @@ qt_add_qml_module(logos_icons_qml
         icons/triangle_up.svg
         icons/warning.svg
         icons/info.svg
+        icons/onboarding-tents.jpg
 )
 
 set(logos_icons_extra_targets ${logos_icons_extra_targets} PARENT_SCOPE)

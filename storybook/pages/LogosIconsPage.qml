@@ -82,6 +82,50 @@ Rectangle {
                 ]
             }
 
+            // Not a glyph, and deliberately shown apart from the grid above —
+            // the grid tints every entry to a single colour, which is exactly
+            // what must not happen to a photograph.
+            ColumnLayout {
+                Layout.leftMargin: Theme.spacing.xxlarge
+                Layout.rightMargin: Theme.spacing.xxlarge
+                Layout.fillWidth: true
+                spacing: Theme.spacing.small
+
+                LogosText {
+                    text: "Artwork"
+                    font.pixelSize: Theme.typography.panelTitleText
+                    font.weight: Theme.typography.weightMedium
+                    color: Theme.palette.text
+                }
+
+                LogosText {
+                    Layout.fillWidth: true
+                    text: "LogosIcons.onboardingBackdrop — the shared onboarding scene. "
+                        + "1920x1280 JPEG. Place it with a plain Image and "
+                        + "PreserveAspectCrop; do not put it through LogosIcon, which "
+                        + "colorizes its source to a single colour."
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textSecondary
+                    wrapMode: Text.WordWrap
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 300
+                    color: Theme.palette.background
+                    border.color: Theme.palette.border
+                    border.width: 1
+                    clip: true
+
+                    Image {
+                        anchors.fill: parent
+                        source: LogosIcons.onboardingBackdrop
+                        fillMode: Image.PreserveAspectCrop
+                        mipmap: true
+                    }
+                }
+            }
+
             Item { Layout.preferredHeight: Theme.spacing.xxlarge }
         }
     }

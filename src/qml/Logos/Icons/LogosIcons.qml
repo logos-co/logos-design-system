@@ -28,4 +28,13 @@ QtObject {
     // Status
     readonly property url warning:  Qt.resolvedUrl("icons/warning.svg")
     readonly property url info:     Qt.resolvedUrl("icons/info.svg")
+
+    // Artwork
+    //
+    // Shipped PLAIN — the photograph as delivered, no grading, no tint. How
+    // dark it wants to be depends on what is laid over it, which is the
+    // consuming app's decision: blockchain-ui tints it for its setup screen,
+    // and a future consumer may want it untouched. Baking a tint in here would
+    // have made one app's choice everybody's.
+    readonly property url onboardingBackdrop: Qt.resolvedUrl("icons/onboarding-tents.jpg")
 }
