@@ -34,6 +34,7 @@ CheckBox {
     spacing: Theme.spacing.small
     padding: Theme.spacing.tiny
 
+    font.pixelSize: Theme.typography.primaryText
     opacity: enabled ? 1.0 : 0.5
 
     focusPolicy: Qt.StrongFocus
@@ -99,7 +100,7 @@ CheckBox {
         id: labelText
 
         text: root.text
-        font.pixelSize: Theme.typography.primaryText
+        font: root.font
         color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
         verticalAlignment: Text.AlignVCenter
         leftPadding: root.indicator ? root.indicator.width + root.spacing : 0

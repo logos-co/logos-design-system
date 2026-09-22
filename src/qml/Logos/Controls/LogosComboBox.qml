@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Effects
+import QtQuick.Window
 
 import Logos.Theme
 import Logos.Controls
@@ -23,7 +24,10 @@ import Logos.Icons
 //                      by ComboBox via root.delegateModel)
 //
 // The closed control keeps whatever width it is given; the dropdown widens to
-// fit its widest entry, up to maxPopupWidthFactor times the control.
+// fit its widest entry, up to maxPopupWidthFactor times the control and never
+// past the width of the window, and is kept inside the window when the control
+// sits near an edge. It is as tall as its rows up to the height of the window,
+// and scrolls past that.
 //
 // Example:
 //     LogosComboBox {
@@ -47,6 +51,59 @@ ComboBox {
     readonly property alias backgroundItem: bg
     readonly property alias popupItem: dropdownPopup
     readonly property alias popupListView: popupList
+
+    QtObject {
+        id: d
+
+        // Bumped when a row's text changes in place, by the Connections below.
+        property int entryRevision: 0
+
+        // textAt() notifies nothing, so every read of it is paired with reads
+        // of what it does depend on: the model it indexes, the role it picks
+        // out of a row, and entryRevision for a row edited in place.
+        function entryText(index) {
+            void d.entryRevision
+            void root.model
+            void root.textRole
+            return root.textAt(index) || ""
+        }
+
+        // Widest of the probes below, in whole pixels.
+        readonly property real widestEntryWidth: {
+            var widest = 0
+            for (var i = 0; i < entryProbes.count; ++i) {
+                var probe = entryProbes.itemAt(i)
+                if (probe)
+                    widest = Math.max(widest, probe.implicitWidth)
+            }
+            return Math.ceil(widest)
+        }
+    }
+
+    component EntryText: LogosText {
+        font.pixelSize: Theme.typography.secondaryText
+    }
+
+    // A hidden copy of every entry, laid out but never drawn, is what sizes the
+    // dropdown
+    Repeater {
+        id: entryProbes
+
+        model: dropdownPopup.visible && root.model ? root.count : 0
+
+        EntryText {
+            required property int index
+
+            visible: false
+            text: d.entryText(index)
+        }
+    }
+
+    Connections {
+        target: (root.model && root.model.dataChanged !== undefined) ? root.model : null
+        ignoreUnknownSignals: true
+        function onDataChanged() { d.entryRevision += 1 }
+    }
 
     implicitHeight: 32
 
@@ -108,52 +165,41 @@ ComboBox {
         border.width: 1
     }
 
-    // Qt's own implicitContentWidthPolicy measures the widest entry, but only
-    // when contentItem is a TextInput, and it resizes the closed control too.
-    FontMetrics {
-        id: entryFont
-        font: contentText.font
-    }
-
-    // Bumped when a row's text changes in place: textAt() has no notifier of
-    // its own, so the width binding reads this to re-measure.
-    property int entryRevision: 0
-
-    Connections {
-        target: (root.model && root.model.dataChanged !== undefined) ? root.model : null
-        ignoreUnknownSignals: true
-        function onDataChanged() { root.entryRevision += 1 }
-    }
-
-    readonly property real widestEntryWidth: {
-        const revision = root.entryRevision
-        // The guard's reads are this binding's dependencies: textAt() notifies
-        // nothing, and resolves only while the popup holds the delegate model.
-        if (!dropdownPopup.visible || !root.model || root.textRole === undefined)
-            return 0
-        var widest = 0
-        for (var i = 0; i < root.count; ++i)
-            widest = Math.max(widest, entryFont.advanceWidth(root.textAt(i) || ""))
-        return widest
-    }
-
     popup: Popup {
         id: dropdownPopup
 
         y: root.height + 2
-        width: Math.max(root.width,
-                        Math.min(implicitWidth, root.width * root.maxPopupWidthFactor))
-        implicitHeight: contentItem.implicitHeight
+        width: {
+            var wanted = Math.max(root.width,
+                                  Math.min(implicitWidth, root.width * root.maxPopupWidthFactor))
+            return root.Window.window
+                   ? Math.min(wanted, root.Window.width - leftMargin - rightMargin)
+                   : wanted
+        }
+        implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
+        height: root.Window.window
+                ? Math.min(implicitHeight, root.Window.height - topMargin - bottomMargin)
+                : implicitHeight
         padding: 1
+        margins: Theme.spacing.small
 
         contentItem: ListView {
             id: popupList
 
             clip: true
-            implicitWidth: root.widestEntryWidth + 2 * root.entryPadding
+            implicitWidth: d.widestEntryWidth + 2 * root.entryPadding
             implicitHeight: contentHeight
             model: root.popup.visible ? root.delegateModel : null
             currentIndex: root.highlightedIndex
+            highlightRangeMode: ListView.ApplyRange
+            highlightMoveDuration: 0
+            boundsBehavior: Flickable.StopAtBounds
+
+            ScrollBar.vertical: LogosScrollBar {
+                policy: ScrollBar.AsNeeded
+                visible: popupList.contentHeight > popupList.height
+                rightPadding: Theme.spacing.tiny
+            }
         }
 
         background: Rectangle {
@@ -170,10 +216,9 @@ ComboBox {
         rightPadding: root.entryPadding
         highlighted: root.highlightedIndex === index
 
-        contentItem: LogosText {
-            text: root.textAt(index)
+        contentItem: EntryText {
+            text: d.entryText(index)
             color: Theme.palette.text
-            font.pixelSize: Theme.typography.secondaryText
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
         }
