@@ -13,8 +13,9 @@ pkgs.stdenv.mkDerivation rec {
     "-DLOGOS_DS_BUILD_STORYBOOK=ON"
   ];
 
-  # Required wherever the Qt wrapper hooks are absent (see nix/common.nix).
-  dontWrapQtApps = true;
+  # Only Windows lacks the Qt wrapper hooks (see nix/common.nix). Elsewhere the
+  # wrapper is what lets `nix run` find Qt's QML modules and plugins.
+  dontWrapQtApps = pkgs.stdenv.hostPlatform.isWindows;
 
   configurePhase = ''
     runHook preConfigure
