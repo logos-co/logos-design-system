@@ -36,6 +36,9 @@ jobs:
       - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
 
+      - name: Launch the default app offscreen (what nix run does)
+        run: nix build .#checks.x86_64-linux.storybook-launch --print-build-logs
+
       - name: Build AppImage
         run: nix build .#bin-appimage --print-build-logs -o result-appimage
 
@@ -75,6 +78,9 @@ jobs:
 
       - name: Build storybook (nix)
         run: nix build .#storybook --print-build-logs
+
+      - name: Launch the default app offscreen (what nix run does)
+        run: nix build ".#checks.$(nix eval --impure --raw --expr builtins.currentSystem).storybook-launch" --print-build-logs
 
       - name: Build .app bundle
         run: nix build .#bin-macos-app --print-build-logs -o result

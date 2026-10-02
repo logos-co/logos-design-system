@@ -105,7 +105,7 @@ For dev-time override (work on the design system + your app in parallel), set `L
 nix build                    # QML library only — drops .qml files into result/lib/Logos/
 nix build .#storybook        # storybook host app
 nix build .#tests            # build + run unit tests via doCheck
-nix flake check              # same as `nix build .#tests`
+nix flake check              # .#tests, plus an offscreen launch of what `nix run` runs
 ```
 
 For a non-nix CMake build:
