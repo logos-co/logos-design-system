@@ -94,8 +94,14 @@
         default = storybook;
       });
 
-      checks = forAllSystems ({ system, ... }: {
+      checks = forAllSystems ({ system, pkgs, ... }: {
         tests = self.packages.${system}.tests;
+      } // pkgs.lib.optionalAttrs (!pkgs.stdenv.hostPlatform.isWindows) {
+        # Runs the default app the way `nix run` does; see nix/launch-check.nix.
+        storybook-launch = import ./nix/launch-check.nix {
+          inherit pkgs;
+          inherit (self.apps.${system}.default) program;
+        };
       });
 
       devShells = forAllSystems ({ pkgs, ... }: {
