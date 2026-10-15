@@ -100,4 +100,10 @@ TestCase {
         compare(field.focusPolicy, Qt.StrongFocus)
         compare(field.textInput.activeFocusOnTab, true)
     }
+
+    function test_input_uses_theme_font_family() {
+        // The TextInput set no family, so it rendered in the system sans
+        // instead of Public Sans.
+        compare(field.textInput.font.family, Theme.typography.publicSans)
+    }
 }
