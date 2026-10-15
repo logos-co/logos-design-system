@@ -34,6 +34,7 @@ CheckBox {
     spacing: Theme.spacing.small
     padding: Theme.spacing.tiny
 
+    font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
     opacity: enabled ? 1.0 : 0.5
 

@@ -30,6 +30,7 @@ TabButton {
     topPadding: 4
     bottomPadding: 4
 
+    font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
     font.weight: Theme.typography.weightMedium
 
