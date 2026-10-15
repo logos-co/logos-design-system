@@ -1,6 +1,7 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
 
 TestCase {
@@ -51,5 +52,11 @@ TestCase {
         tryCompare(item, "activeFocus", true)
         keyClick(Qt.Key_Space)
         compare(clickedSpy.count, 1)
+    }
+
+    function test_label_uses_theme_font_family() {
+        // `font: root.font` used to replace the label's family with the
+        // Control default (system sans) instead of Public Sans.
+        compare(item.labelItem.font.family, Theme.typography.publicSans)
     }
 }

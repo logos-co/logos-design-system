@@ -46,6 +46,7 @@ ItemDelegate {
     leftPadding: Theme.spacing.medium
     rightPadding: Theme.spacing.medium
 
+    font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
     font.weight: Theme.typography.weightRegular
 

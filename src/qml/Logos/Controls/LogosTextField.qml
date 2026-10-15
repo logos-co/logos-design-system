@@ -69,6 +69,7 @@ Control {
             clip: true
             anchors.fill: parent
             verticalAlignment: Text.AlignVCenter
+            font.family: Theme.typography.publicSans
             font.pixelSize: Theme.typography.secondaryText
             color: input.validator && input.text.length > 0 && !input.acceptableInput ? Theme.palette.error : Theme.palette.text
             echoMode: root.echoMode
