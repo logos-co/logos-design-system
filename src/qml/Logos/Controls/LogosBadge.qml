@@ -56,7 +56,7 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             text: root.text
             font.weight: Theme.typography.weightMedium
-            font.pixelSize: 11
+            font.pixelSize: Theme.typography.scaled(11)
             font.letterSpacing: 0.22
             font.capitalization: Font.AllUppercase
             color: root.color

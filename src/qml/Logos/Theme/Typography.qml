@@ -27,13 +27,17 @@ QtObject {
     readonly property int weightMedium: 500
     readonly property int weightBold: 700
 
-    // Text font sizes (descending hierarchy)
-    readonly property int mainTitleText: 256   // splash / marketing
-    readonly property int pageTitleText: 36    // page-level headline
-    readonly property int titleText: 30        // section / dialog title
-    readonly property int panelTitleText: 24   // panel / table title
-    readonly property int subtitleText: 16     // page subtitle / lead body
-    readonly property int primaryText: 14      // default body text
-    readonly property int secondaryText: 12    // caption / small text
-    readonly property int badgeText: 8         // badge / tiny text
+    // Text size multiplier, from the person's setting (Theme.setTextScale).
+    property real scale: 1.0
+    function scaled(size) { return Math.round(size * scale) }
+
+    // Text font sizes (descending hierarchy), scaled
+    readonly property int mainTitleText: scaled(256)   // splash / marketing
+    readonly property int pageTitleText: scaled(36)    // page-level headline
+    readonly property int titleText: scaled(30)        // section / dialog title
+    readonly property int panelTitleText: scaled(24)   // panel / table title
+    readonly property int subtitleText: scaled(16)     // page subtitle / lead body
+    readonly property int primaryText: scaled(14)      // default body text
+    readonly property int secondaryText: scaled(12)    // caption / small text
+    readonly property int badgeText: scaled(8)         // badge / tiny text
 }
