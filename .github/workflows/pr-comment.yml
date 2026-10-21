@@ -1,0 +1,72 @@
+name: PR comment
+
+# Posts the Storybook artifact links on the PR once CI has finished.
+#
+# A separate workflow because CI runs on fork PRs with a read-only token, so
+# it cannot comment there. workflow_run runs in this repository's context with
+# a write token. It never checks out or runs the PR's code; it only reads the
+# finished run's metadata, which is what makes the write token safe here.
+#
+# GitHub only runs workflow_run workflows from the default branch, so changes
+# to this file take effect once merged.
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  storybook-links:
+    # Same condition as before: a PR run whose Storybook builds all passed.
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Find the PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          # The branch name comes from the PR author: pass it through env,
+          # never interpolate it into the script.
+          HEAD_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # workflow_run.pull_requests is empty for fork PRs, so look the PR
+          # up by its head branch, and only if that head is still this run's.
+          number=$(gh api -X GET "repos/$REPO/pulls" \
+                     -f state=open -f head="$HEAD_OWNER:$HEAD_BRANCH" \
+                     --jq "map(select(.head.sha == \"$HEAD_SHA\")) | .[0].number // empty")
+          if [ -z "$number" ]; then
+            echo "No open PR at $HEAD_SHA (pushed again, or closed); nothing to comment on."
+          fi
+          echo "number=$number" >> "$GITHUB_OUTPUT"
+
+      - name: Post storybook build links on PR
+        if: steps.pr.outputs.number != ''
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          number: ${{ steps.pr.outputs.number }}
+          header: storybook-builds
+          message: |
+            ### Storybook CI builds
+
+            Artifacts are available on the [workflow run](${{ github.event.workflow_run.html_url }}#artifacts) (requires GitHub login).
+
+            | Platform | How to get it |
+            |----------|---------------|
+            | Linux    | `LogosStorybook-linux-x86_64.AppImage` (uploaded artifact) |
+            | macOS    | `LogosStorybook-macos-unsigned.app.tar.gz` (uploaded artifact) |
+            | Windows  | `LogosStorybook-windows-x86_64.zip` (uploaded artifact) |
+
+            **macOS**: extract via Terminal, not Finder, so `com.apple.quarantine` doesn't propagate to the `.app`:
+            ```
+            tar -xzf LogosStorybook-macos-unsigned.app.tar.gz
+            open LogosStorybook.app
+            ```
+            First launch still shows *"cannot verify developer"* (no Apple Developer ID yet) — right-click → **Open** → **Open** once and macOS remembers.
