@@ -86,4 +86,10 @@ TestCase {
         compare(btn.activeFocusOnTab, true)
         compare(btn.focusPolicy, Qt.StrongFocus)
     }
+
+    function test_label_uses_theme_font_family() {
+        // `font: root.font` used to replace the label's family with the
+        // Control default (system sans) instead of Public Sans.
+        compare(btn.labelItem.font.family, Theme.typography.publicSans)
+    }
 }
