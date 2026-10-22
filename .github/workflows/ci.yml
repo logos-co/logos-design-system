@@ -192,34 +192,8 @@ jobs:
           path: LogosStorybook-windows-x86_64.zip
           if-no-files-found: error
 
-  pr-comment:
-    if: github.event_name == 'pull_request'
-    needs: [storybook-linux, storybook-macos, storybook-windows]
-    runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-    steps:
-      - name: Post storybook build links on PR
-        uses: marocchino/sticky-pull-request-comment@v2
-        with:
-          header: storybook-builds
-          message: |
-            ### Storybook CI builds
-
-            Artifacts are available on the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}#artifacts) (requires GitHub login).
-
-            | Platform | How to get it |
-            |----------|---------------|
-            | Linux    | `LogosStorybook-linux-x86_64.AppImage` (uploaded artifact) |
-            | macOS    | `LogosStorybook-macos-unsigned.app.tar.gz` (uploaded artifact) |
-            | Windows  | `LogosStorybook-windows-x86_64.zip` (uploaded artifact) |
-
-            **macOS**: extract via Terminal, not Finder, so `com.apple.quarantine` doesn't propagate to the `.app`:
-            ```
-            tar -xzf LogosStorybook-macos-unsigned.app.tar.gz
-            open LogosStorybook.app
-            ```
-            First launch still shows *"cannot verify developer"* (no Apple Developer ID yet) — right-click → **Open** → **Open** once and macOS remembers.
+  # The PR comment with these artifacts is posted by pr-comment.yml, which
+  # runs after this workflow with a token that can write to fork PRs too.
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
