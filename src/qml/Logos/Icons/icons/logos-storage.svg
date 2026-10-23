@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="14 14 92 92">
+  <!-- Source: Storage repo. Colored glyph of the Storage logo: solid folder, flap + triangle cut out. -->
+  <defs>
+    <radialGradient id="storageGrad" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(40.78 72.89) rotate(12.35) scale(81.1)">
+      <stop offset="0.18" stop-color="#FF2200"/>
+      <stop offset="0.65" stop-color="#ED7B58"/>
+      <stop offset="1" stop-color="#FFBD5B"/>
+    </radialGradient>
+  </defs>
+  <path fill="url(#storageGrad)" fill-rule="evenodd" d="M33.43 22.9H49.2C53.2 22.9 57.3 24.4 59.4 27.6L63.01 33.64H86.52A13.74 13.74 0 0 1 100.26 47.38V82.51A14.53 14.53 0 0 1 85.73 97.04H34.22A14.53 14.53 0 0 1 19.69 82.51V36.64A13.74 13.74 0 0 1 33.43 22.9Z M28.85 45.8 52 45.8 58.4 56.54 91.1 56.54 91.1 65.7 53.2 65.7 46.8 54.96 28.85 54.96Z M46.17 66.86 53.48 79.44 50.9 83.88 36.36 83.9 33.79 79.46 41.07 66.87Z"/>
+</svg>

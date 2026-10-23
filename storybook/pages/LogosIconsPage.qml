@@ -82,6 +82,36 @@ Rectangle {
                 ]
             }
 
+            Section {
+                title: "Download Sources"
+                items: [
+                    { name: "github", value: LogosIcons.github }
+                ]
+            }
+
+            // The Logos Storage logo keeps its own colours, so it is shown
+            // apart from the grid above, which tints every entry.
+            RowLayout {
+                Layout.leftMargin: Theme.spacing.xxlarge
+                Layout.rightMargin: Theme.spacing.xxlarge
+                Layout.fillWidth: true
+                spacing: Theme.spacing.medium
+
+                Image {
+                    source: LogosIcons.logosStorage
+                    sourceSize: Qt.size(24, 24)
+                }
+
+                LogosText {
+                    Layout.fillWidth: true
+                    text: "LogosIcons.logosStorage — place it with a plain Image, not "
+                        + "LogosIcon, which would flatten its colours."
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textSecondary
+                    wrapMode: Text.WordWrap
+                }
+            }
+
             // Not a glyph, and deliberately shown apart from the grid above —
             // the grid tints every entry to a single colour, which is exactly
             // what must not happen to a photograph.
