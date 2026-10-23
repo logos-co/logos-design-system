@@ -33,6 +33,8 @@ qt_add_qml_module(logos_icons_qml
         icons/triangle_up.svg
         icons/warning.svg
         icons/info.svg
+        icons/logos-storage.svg
+        icons/github.svg
         icons/onboarding-tents.jpg
 )
 

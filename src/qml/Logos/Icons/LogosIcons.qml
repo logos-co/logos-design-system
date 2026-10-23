@@ -29,6 +29,10 @@ QtObject {
     readonly property url warning:  Qt.resolvedUrl("icons/warning.svg")
     readonly property url info:     Qt.resolvedUrl("icons/info.svg")
 
+    // Download sources
+    readonly property url logosStorage: Qt.resolvedUrl("icons/logos-storage.svg")
+    readonly property url github:       Qt.resolvedUrl("icons/github.svg")
+
     // Artwork
     //
     // Shipped PLAIN — the photograph as delivered, no grading, no tint. How
