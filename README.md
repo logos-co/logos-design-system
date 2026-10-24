@@ -15,11 +15,13 @@ nix flake check              # CI: build + test
 
 | File | Provides |
 |---|---|
-| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, theme switching |
+| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, theme switching (`setTheme("dark" \| "light" \| "high-contrast")`) and text size (`setTextScale`, `biggerText`, `smallerText`, `actualSizeText`). Both are kept in one settings file (`<GenericConfigLocation>/Logos/design-system.ini`) that every Theme instance re-reads each second, so a change in one window or process reaches all of them |
 | `ColorPalette.qml` | Raw color values (gray, orange, red, green, …) — single source of truth |
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
+| `LightTheme.qml` | "Day": the same names for a light theme: paper-white content on a sand frame, near-black ink, one accent (Logos orange darkened to `#C8460F`, 4.9:1 on white) |
+| `HighContrastTheme.qml` | The dark theme with near-white text and light borders on black |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
-| `Typography.qml` | Public Sans font loaders, weights, type sizes |
+| `Typography.qml` | Public Sans font loaders, weights, type sizes (scaled by the text size; `scaled(n)` scales a one-off size) |
 
 ### `Logos.Controls` — themed components
 

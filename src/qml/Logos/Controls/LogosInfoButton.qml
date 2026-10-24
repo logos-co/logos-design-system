@@ -108,7 +108,7 @@ LogosAbstractButton {
         text: "i"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.pixelSize: 9
+        font.pixelSize: Theme.typography.scaled(9)
         color: d.lit ? Theme.palette.text : Theme.palette.textMuted
         Behavior on color { ColorAnimation { duration: 120 } }
     }
