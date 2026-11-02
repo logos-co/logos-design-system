@@ -29,6 +29,8 @@ Components are split into two groups. **Designed** controls have their final sty
 
 **Placeholder**: `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
 
+Text is plain by default: `LogosText`, and every control that draws its text with it, shows markup as written rather than rendering it, and so does `LogosToolTip`. Opt in with `textFormat: Text.StyledText` (bold, links, line breaks) where the text is your own; never for names, messages or anything else from outside the app.
+
 Open the storybook to see public API, props, and live examples for each. Internal items exposed via `*Item` aliases (e.g. `indicatorItem`, `labelItem`) are for inspection by tests and tooling — read-only handles.
 
 #### Designed vs placeholder

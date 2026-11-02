@@ -42,6 +42,15 @@ TestCase {
         tryCompare(tip.labelItem, "text", "Updated")
     }
 
+    // Plain like LogosText: a tip often repeats text from outside the app.
+    function test_text_is_plain_unless_opted_in() {
+        compare(tip.textFormat, Text.PlainText)
+        compare(tip.labelItem.textFormat, Text.PlainText)
+        tip.textFormat = Text.StyledText
+        compare(tip.labelItem.textFormat, Text.StyledText)
+        tip.textFormat = Text.PlainText
+    }
+
     function test_default_placement_top() {
         compare(tip.placement, LogosToolTip.Top)
     }

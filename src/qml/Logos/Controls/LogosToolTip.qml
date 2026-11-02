@@ -20,6 +20,9 @@ import Logos.Theme
 //         }
 //     }
 //
+// The text is plain, as LogosText's is; set `textFormat: Text.StyledText` for
+// markup of your own.
+//
 ToolTip {
     id: root
 
@@ -39,6 +42,7 @@ ToolTip {
     property int placement: 1
     property color tipColor: Theme.palette.backgroundSecondary
     property color textColor: Theme.colors.getColor(Theme.palette.text, 0.6)
+    property int textFormat: Text.PlainText
     // Consumer-supplied position in the tooltip's parent coordinate space.
     // Leave `undefined` for auto placement driven by `placement`; set a
     // number to pin. Either axis can be manual independently.
@@ -150,6 +154,7 @@ ToolTip {
     contentItem: Text {
         id: label
         text: root.text
+        textFormat: root.textFormat
         color: root.textColor
         font.family: Theme.typography.publicSans
         font.weight: Theme.typography.weightBold
