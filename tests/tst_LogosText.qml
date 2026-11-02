@@ -31,4 +31,16 @@ TestCase {
     function test_default_weight_is_regular() {
         compare(txt.font.weight, Theme.typography.weightRegular)
     }
+
+    LogosText { id: markup; text: "<b>Bold</b>" }
+    LogosText { id: plainMarkupText; text: "<b>Bold</b>"; textFormat: Text.PlainText; font: markup.font }
+    LogosText { id: styled; text: "<b>Bold</b>"; textFormat: Text.StyledText }
+
+    // Text that looks like HTML is shown as written unless the caller opts in:
+    // a name from outside the app cannot restyle itself.
+    function test_markup_is_shown_as_written_by_default() {
+        compare(markup.textFormat, Text.PlainText)
+        compare(markup.implicitWidth, plainMarkupText.implicitWidth)
+        verify(styled.implicitWidth < markup.implicitWidth, "StyledText renders the tags away")
+    }
 }
