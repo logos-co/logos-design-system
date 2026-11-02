@@ -12,6 +12,8 @@
 #include <QSet>
 #include <QSettings>
 
+#include <cmath>
+
 Q_LOGGING_CATEGORY(lcTheme, "logos.theme")
 
 namespace {
@@ -89,7 +91,9 @@ QVariantMap readIdentity(const QJsonObject& doc, QStringList& errors, QStringLis
 {
     // A newer format still loads, reading only the keys this one knows.
     const QJsonValue fv = doc.value("formatVersion");
-    const int version = fv.isDouble() ? qRound(fv.toDouble()) : 0;
+    const double raw = fv.toDouble();
+    const int version = fv.isDouble() && raw >= 1 && raw <= 1000 && raw == std::floor(raw)
+                        ? int(raw) : 0;
     if (version < 1)
         errors << QStringLiteral("'formatVersion' must be an integer >= 1");
     else if (version > kFormatVersion)
@@ -112,8 +116,11 @@ QVariantMap readIdentity(const QJsonObject& doc, QStringList& errors, QStringLis
     return { { "id", id }, { "name", name }, { "author", author }, { "mode", mode } };
 }
 
-// Valid colours by token, plus derived ones. Bad entries are dropped with a warning.
-QVariantMap readPalette(const QJsonObject& doc, QStringList& warnings)
+// Valid colours by token, plus derived ones. A bad value for a known colour is
+// an error when strict (installing), else dropped with a warning; unknown
+// names are always warnings, so a newer theme still installs.
+QVariantMap readPalette(const QJsonObject& doc, bool strict, QStringList& errors,
+                        QStringList& warnings)
 {
     QVariantMap palette;
     const QJsonValue pv = doc.value("palette");
@@ -128,7 +135,8 @@ QVariantMap readPalette(const QJsonObject& doc, QStringList& warnings)
         }
         QColor c;
         if (!it.value().isString() || !parseColor(it.value().toString(), &c)) {
-            warnings << QStringLiteral("'palette.%1' is not #RRGGBB or #RRGGBBAA; ignored").arg(it.key());
+            const QString msg = QStringLiteral("'palette.%1' is not #RRGGBB or #RRGGBBAA").arg(it.key());
+            (strict ? errors : warnings) << (strict ? msg : msg + QStringLiteral("; ignored"));
             continue;
         }
         palette.insert(it.key(), c);
@@ -169,7 +177,7 @@ Logos::ThemeStore* Logos::ThemeStore::instance()
 }
 
 Logos::ThemeStore::ThemeStore()
-    : m_current(QSettings().value(kSettingsKey, QStringLiteral("dark")).toString())
+    : m_saved(QSettings().value(kSettingsKey, QStringLiteral("dark")).toString())
 {
 }
 
@@ -186,6 +194,16 @@ void Logos::ThemeStore::addDirectory(const QString& dir)
     rescan();
 }
 
+QString Logos::ThemeStore::current() const
+{
+    return hasTheme(m_saved) ? m_saved : QStringLiteral("dark");
+}
+
+QString Logos::ThemeStore::directoryOf(const QString& id) const
+{
+    return m_sources.value(id);
+}
+
 bool Logos::ThemeStore::hasTheme(const QString& id) const
 {
     if (kBuiltinIds.contains(id))
@@ -196,19 +214,23 @@ bool Logos::ThemeStore::hasTheme(const QString& id) const
     return false;
 }
 
-void Logos::ThemeStore::setCurrent(const QString& id)
+bool Logos::ThemeStore::setCurrent(const QString& id)
 {
-    if (id == m_current || !hasTheme(id))
-        return;
-    m_current = id;
+    if (!hasTheme(id))
+        return false;
+    const QString shownBefore = current();
+    m_saved = id;
     QSettings().setValue(kSettingsKey, id);
-    emit currentChanged();
+    if (current() != shownBefore)
+        emit currentChanged();
+    return true;
 }
 
 void Logos::ThemeStore::rescan()
 {
+    const QString shownBefore = current();
     QVariantList found;
-    QSet<QString> seen;
+    QHash<QString, QString> sources;
     for (const QString& root : std::as_const(m_dirs)) {
         const QDir dir(root);
         if (!dir.exists())
@@ -233,21 +255,24 @@ void Logos::ThemeStore::rescan()
             }
             const QVariantMap theme = result.value("theme").toMap();
             const QString id = theme.value("id").toString();
-            if (seen.contains(id)) {
+            if (sources.contains(id)) {
                 qCWarning(lcTheme, "duplicate theme id '%s' at %s ignored",
                          qPrintable(id), qPrintable(doc.absoluteFilePath()));
                 continue;
             }
-            seen.insert(id);
+            sources.insert(id, root);
             found << theme;
         }
     }
 
     m_themes = found;
+    m_sources = sources;
     emit themesChanged();
+    if (current() != shownBefore)
+        emit currentChanged();
 }
 
-QVariantMap Logos::ThemeStore::parseDocument(const QByteArray& data)
+QVariantMap Logos::ThemeStore::parseDocument(const QByteArray& data, Validation validation)
 {
     QStringList errors, warnings;
     auto result = [&](const QVariantMap& theme = {}) {
@@ -273,6 +298,18 @@ QVariantMap Logos::ThemeStore::parseDocument(const QByteArray& data)
     const QJsonObject doc = jd.object();
     QVariantMap theme = readIdentity(doc, errors, warnings);
     warnUnknownKeys(doc, warnings);
-    theme.insert("palette", readPalette(doc, warnings));
+    const QVariantMap palette = readPalette(doc, validation == Validation::Strict,
+                                            errors, warnings);
+    // Gaps are filled from Dark, which would be unreadable in a light theme.
+    if (theme.value("mode") == QLatin1String("light")) {
+        QStringList missing;
+        for (const QString& token : paletteTokenList())
+            if (!palette.contains(token))
+                missing << token;
+        if (!missing.isEmpty())
+            errors << QStringLiteral("a light theme must set every colour; missing: %1")
+                          .arg(missing.join(QStringLiteral(", ")));
+    }
+    theme.insert("palette", palette);
     return result(theme);
 }

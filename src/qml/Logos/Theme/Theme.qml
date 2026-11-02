@@ -61,28 +61,6 @@ QtObject {
     readonly property bool isDark: themeInfo[currentTheme].mode === "dark"
     readonly property var themeNames: Object.keys(availableThemes)
 
-    // ===== METHODS =====
-    function switchTheme() {
-        // Cycle through available themes
-        var themes = Object.keys(availableThemes)
-        var currentIndex = themes.indexOf(currentTheme)
-        var nextIndex = (currentIndex + 1) % themes.length
-        setTheme(themes[nextIndex])
-    }
-    
-    function setTheme(themeName) {
-        if (!availableThemes[themeName]) {
-            console.warn("Invalid theme:", themeName, ". Available themes:", Object.keys(availableThemes))
-            return
-        }
-        ThemeRegistry.current = themeName
-        console.log("Theme set to:", themeName)
-    }
-    
-    function setDark() {
-        setTheme("dark")
-    }
-    
     // Helper to check if a theme is available
     function isThemeAvailable(themeName) {
         return availableThemes.hasOwnProperty(themeName)

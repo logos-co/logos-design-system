@@ -20,7 +20,7 @@ nix flake check              # CI: build + test
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
-| `ThemeStore`, `ThemeInstaller` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses; `ThemeRegistry` is QML's read-and-switch view. See [docs/themes.md](docs/themes.md) |
+| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
 

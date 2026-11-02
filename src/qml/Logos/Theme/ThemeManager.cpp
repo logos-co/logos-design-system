@@ -1,4 +1,4 @@
-#include "ThemeInstaller.h"
+#include "ThemeManager.h"
 #include "ThemeStore.h"
 
 #include <QDir>
@@ -6,13 +6,17 @@
 #include <QFileInfo>
 #include <QSaveFile>
 
-Logos::ThemeInstaller::ThemeInstaller(const QString& dir, QObject* parent)
+Logos::ThemeManager::ThemeManager(const QString& dir, QObject* parent)
     : QObject(parent)
-    , m_dir(QDir::cleanPath(dir))
+    , m_dir(QDir::isAbsolutePath(dir) ? QDir::cleanPath(dir) : QString())
 {
+    if (m_dir.isEmpty())
+        qWarning("ThemeManager: themes directory must be absolute: %s", qPrintable(dir));
+    else
+        ThemeStore::instance()->addDirectory(m_dir);
 }
 
-QVariantMap Logos::ThemeInstaller::install(const QUrl& file) const
+QVariantMap Logos::ThemeManager::install(const QUrl& file) const
 {
     QVariantMap out{ { "ok", false }, { "errors", QStringList{} }, { "warnings", QStringList{} } };
     auto fail = [&](const QString& why) {
@@ -33,7 +37,7 @@ QVariantMap Logos::ThemeInstaller::install(const QUrl& file) const
     // At most one byte past the limit; parseDocument refuses the rest.
     const QByteArray data = in.read(ThemeStore::maxDocumentBytes + 1);
 
-    const QVariantMap parsed = ThemeStore::parseDocument(data);
+    const QVariantMap parsed = ThemeStore::parseDocument(data, ThemeStore::Validation::Strict);
     out.insert("warnings", parsed.value("warnings"));
     if (!parsed.value("ok").toBool()) {
         out.insert("errors", parsed.value("errors"));
@@ -44,6 +48,10 @@ QVariantMap Logos::ThemeInstaller::install(const QUrl& file) const
 
     if (m_dir.isEmpty())
         return fail(tr("No themes directory."));
+    // A copy in another directory would keep being shown instead of this one.
+    const QString owner = ThemeStore::instance()->directoryOf(id);
+    if (!owner.isEmpty() && owner != m_dir)
+        return fail(tr("Another theme folder already provides the id \u201c%1\u201d.").arg(id));
     const QString dir = m_dir + QLatin1Char('/') + id;
     if (QFileInfo(dir).isSymLink() || !QDir().mkpath(dir))
         return fail(tr("Can't create %1").arg(dir));
@@ -59,4 +67,9 @@ QVariantMap Logos::ThemeInstaller::install(const QUrl& file) const
     out.insert("id", id);
     out.insert("name", theme.value("name"));
     return out;
+}
+
+bool Logos::ThemeManager::select(const QString& id) const
+{
+    return ThemeStore::instance()->setCurrent(id);
 }

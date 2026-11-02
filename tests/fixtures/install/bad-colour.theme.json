@@ -1,0 +1,10 @@
+{
+  "formatVersion": 1,
+  "id": "test.badcolour",
+  "name": "Bad colour",
+  "author": "tests",
+  "mode": "dark",
+  "palette": {
+    "surface": "red"
+  }
+}

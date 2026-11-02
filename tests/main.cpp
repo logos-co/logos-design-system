@@ -9,7 +9,10 @@
 #include <QTemporaryDir>
 #include <QtQml/qqml.h>
 
-#include <ThemeInstaller.h>
+#include <QDebug>
+#include <QQmlComponent>
+#include <QQmlEngine>
+#include <ThemeManager.h>
 #include <ThemeStore.h>
 
 #ifndef QUICK_TEST_SOURCE_DIR
@@ -23,9 +26,10 @@ class ThemeTestHelper : public QObject
 public:
     explicit ThemeTestHelper(const QString& installDir) : m_installDir(installDir) {}
 
-    Q_INVOKABLE QVariantMap parse(const QString& json) const
+    Q_INVOKABLE QVariantMap parse(const QString& json, bool strict = false) const
     {
-        return Logos::ThemeStore::parseDocument(json.toUtf8());
+        return Logos::ThemeStore::parseDocument(json.toUtf8(), strict
+            ? Logos::ThemeStore::Validation::Strict : Logos::ThemeStore::Validation::Lenient);
     }
     Q_INVOKABLE void clearInstalled() const
     {
@@ -37,8 +41,37 @@ public:
         return QSettings().value("LogosDesignSystem/theme").toString();
     }
 
+    // `property` of Theme as seen from a second, independent QQmlEngine, the
+    // way Basecamp has one engine per view.
+    Q_INVOKABLE QVariant fromOtherEngine(const QString& property)
+    {
+        if (!m_otherView) {
+            m_otherEngine = new QQmlEngine;
+            QQmlComponent c(m_otherEngine);
+            c.setData("import QtQuick\nimport Logos.Theme\nQtObject {\n"
+                      "    property string current: Theme.currentTheme\n"
+                      "    property color background: Theme.palette.background\n}\n",
+                      QUrl());
+            m_otherView = c.create();
+            if (!m_otherView)
+                qWarning() << c.errors();
+        }
+        return m_otherView ? m_otherView->property(property.toUtf8()) : QVariant();
+    }
+
+    // Must run before the app goes away; this helper is static.
+    Q_INVOKABLE void closeOtherEngine()
+    {
+        delete m_otherView;
+        m_otherView = nullptr;
+        delete m_otherEngine;
+        m_otherEngine = nullptr;
+    }
+
 private:
     QString m_installDir;
+    QQmlEngine* m_otherEngine = nullptr;
+    QObject* m_otherView = nullptr;
 };
 
 // First existing directory from `candidates`, else empty.
@@ -85,9 +118,9 @@ int main(int argc, char* argv[])
     QLoggingCategory::setFilterRules(QStringLiteral("logos.theme.warning=false"));
     static QTemporaryDir installDir;
     Logos::ThemeStore::instance()->addDirectory(sourceDir + "/fixtures/themes");
-    static Logos::ThemeInstaller themeInstaller(installDir.path());
+    static Logos::ThemeManager themeManager(installDir.path());
     static ThemeTestHelper themeTestHelper(installDir.path());
-    qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeInstaller", &themeInstaller);
+    qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeManager", &themeManager);
     qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeTestHelper", &themeTestHelper);
 
     const QByteArray sourceDirBytes = sourceDir.toUtf8();

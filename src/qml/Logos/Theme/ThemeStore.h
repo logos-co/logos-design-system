@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QHash>
 #include <QObject>
 #include <QStringList>
 #include <QVariantList>
@@ -9,7 +10,8 @@ namespace Logos {
 
 // The installed themes and the current one, once for the whole process.
 // Every QML engine's Theme reads it through ThemeRegistry, so a switch or an
-// install shows in every view at once.
+// install shows in every view at once. Only the host switches (ThemeManager).
+// Link the design system once per process: a second copy has its own store.
 class ThemeStore : public QObject
 {
     Q_OBJECT
@@ -22,10 +24,16 @@ public:
     static QStringList paletteTokens();
     void addDirectory(const QString& dir);
     void rescan();
-    QString current() const { return m_current; }
-    void setCurrent(const QString& id);
+    // The saved choice, or "dark" while that theme isn't installed.
+    QString current() const;
+    bool setCurrent(const QString& id);
     bool hasTheme(const QString& id) const;
-    static QVariantMap parseDocument(const QByteArray& data);
+    QString directoryOf(const QString& id) const;
+
+    // Strict (installing): a bad colour value is an error, not a warning.
+    enum class Validation { Lenient, Strict };
+    static QVariantMap parseDocument(const QByteArray& data,
+                                     Validation validation = Validation::Lenient);
 
 signals:
     void themesChanged();
@@ -36,7 +44,8 @@ private:
 
     QStringList m_dirs;
     QVariantList m_themes;
-    QString m_current;
+    QHash<QString, QString> m_sources;   // id -> directory
+    QString m_saved;
 };
 
 } // namespace Logos

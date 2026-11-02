@@ -1,65 +1,75 @@
 # Theme files
 
 A theme is one JSON file, `theme.json`, that recolours anything drawn with
-`Theme.palette.*`. It is data only: `ThemeRegistry` parses it in C++ against a
+`Theme.palette.*`. It is data only: `ThemeStore` parses it in C++ against a
 whitelist, and nothing in it is ever evaluated as QML or JavaScript.
 
 ```json
 {
   "formatVersion": 1,
-  "id": "yourname.sunset",
-  "name": "Sunset",
+  "id": "yourname.ocean",
+  "name": "Ocean",
   "author": "yourname",
-  "mode": "light",
+  "mode": "dark",
   "palette": {
-    "background": "#FAF7F2",
-    "text": "#1F1A15",
-    "primary": "#C9512C"
+    "background": "#0B1E2D",
+    "text": "#E6F1FA",
+    "primary": "#14786E"
   }
 }
 ```
 
 | Field | Rule |
 |---|---|
-| `formatVersion` | Required. `1`. A newer version still loads, reading the keys this one knows. |
-| `id` | Required. `<author>.<name>`, lowercase `a-z 0-9 _ -`, at least one dot, up to 64 characters. `dark` is reserved. Installing a file with an existing `id` replaces it. |
+| `formatVersion` | Required. The whole number `1`. A newer version still loads, reading the keys this one knows. |
+| `id` | Required. `<author>.<name>`, lowercase `a-z 0-9 _ -`, at least one dot, up to 64 characters. `dark` is reserved. |
 | `name`, `author` | Required. 1 to 40 characters, without `<`, `>`, `&` or control characters. |
 | `mode` | Required. `"dark"` or `"light"`; read by `Theme.isDark`. |
-| `palette` | Optional. Any of the names in `DarkTheme.qml` (`ThemeRegistry.paletteTokens`), each `"#RRGGBB"` or `"#RRGGBBAA"` (alpha last). |
+| `palette` | Any of the names in `DarkTheme.qml` (`ThemeRegistry.paletteTokens`), each `"#RRGGBB"` or `"#RRGGBBAA"` (alpha last). |
 
-- A colour the theme leaves out, or gets wrong, comes from Dark. Only a bad
-  required field rejects the whole file.
-- `primaryBorder` and `borderTertiaryMuted` follow `primary` and
-  `borderTertiary` unless the theme sets them.
-- `spacing`, `radius` and `typography` are accepted but not applied yet.
-  Other unknown keys are ignored with a warning.
+- A dark theme may set only some colours; the rest come from Dark.
+- A light theme must set every colour, since Dark's would not fit it.
+  `primaryBorder` and `borderTertiaryMuted` can be left out: unless set, they
+  follow `primary` and `borderTertiary`.
+- Installing is strict: a bad value for a known colour fails it. A file that
+  is already installed loads leniently: such a colour is dropped with a
+  warning and comes from Dark.
+- Unknown colour names and keys are ignored with a warning, so a theme made
+  for a newer format still installs. `spacing`, `radius` and `typography` are
+  accepted but not applied yet.
 - Files are limited to 64 KiB.
 
-## Where themes live
+## Hosting themes
 
-The host decides. At startup it hands its themes directory to the
-process-wide store; nothing is read until it does:
+Themes are the host's business; QML can read them but not change them. The
+host creates one `Logos::ThemeManager` with its themes directory and gives it
+to its own UI only. Basecamp sets it as a context property on its Settings
+view; apps' views import `Logos.Theme` too, but never get it.
 
 ```cpp
-#include <ThemeStore.h>
-#include <ThemeInstaller.h>
+#include <ThemeManager.h>
 
-const QString dir = /* e.g. <app data>/themes */;
-Logos::ThemeStore::instance()->addDirectory(dir);
-auto* installer = new Logos::ThemeInstaller(dir, this);
+auto* themes = new Logos::ThemeManager(/* absolute, e.g. <app data>/themes */, this);
+view->rootContext()->setContextProperty("themeManager", themes);
 ```
 
-The store reads `<dir>/<any-name>/theme.json`, skipping symlinked folders and
-files; for a repeated `id` the directory added first wins.
+- `themes->install(url)` validates a local file and copies it to
+  `<dir>/<id>/theme.json`, replacing a theme with that id installed there.
+  It refuses an id another theme directory already provides, since that copy
+  would keep being shown. The theme is listed at once.
+- `themes->select(id)` switches every QML engine in the process and saves the
+  choice in the `LogosDesignSystem/theme` setting.
 
-`installer->install(url)` validates a local file and copies it to
-`<dir>/<id>/theme.json`; the store lists it at once. The installer is not a
-QML type: the host hands it to its own UI only (Basecamp sets it as a context
-property on its Settings view), so apps can read and switch themes but can't
-install one.
+`Logos::ThemeStore` holds the themes and the current one once per process.
+More directories can be added with `ThemeStore::instance()->addDirectory()`;
+for a repeated id the directory added first wins. Symlinked theme folders and
+files are skipped. Link the design system once per process: a second copy has
+its own store.
 
-## Switching
+## Reading the theme in QML
 
-`Theme.setTheme(id)` switches every QML engine in the process; the store
-saves the choice in the `LogosDesignSystem/theme` setting. `Theme.themeNames` lists Dark plus every installed theme, and
-`Theme.themeInfo[id]` gives its `name`, `author` and `mode`.
+- `Theme.palette` is the current theme's colours; `Theme.currentTheme` its id.
+- `Theme.themeNames` lists Dark plus every installed theme, and
+  `Theme.themeInfo[id]` gives its `name`, `author` and `mode`.
+- If the saved theme is no longer installed, Dark is shown; the choice is
+  kept, so the theme comes back with its file.

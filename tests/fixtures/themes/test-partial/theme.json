@@ -3,7 +3,7 @@
   "id": "test.partial",
   "name": "Test Partial",
   "author": "tests",
-  "mode": "light",
+  "mode": "dark",
   "palette": {
     "background": "#FFFFFF",
     "text": "#112233",

@@ -8,6 +8,9 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QObject>
+#include <QStandardPaths>
+
+#include <ThemeManager.h>
 
 #ifndef STORYBOOK_PAGES_DIR
 #define STORYBOOK_PAGES_DIR ""
@@ -132,6 +135,11 @@ int main(int argc, char* argv[])
     // path went away — editing a control now needs a rebuild + relaunch.
     HotReloader hot(&engine, pagesDir, /*extraDirs=*/{});
     engine.rootContext()->setContextProperty("Hot", &hot);
+
+    // Themes dropped into <app data>/themes can be previewed here.
+    Logos::ThemeManager themeManager(
+        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/themes");
+    engine.rootContext()->setContextProperty("themeManager", &themeManager);
 
     const QUrl url("qrc:/main.qml");
     QObject::connect(

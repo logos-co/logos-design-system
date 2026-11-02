@@ -4,8 +4,9 @@ import QtTest
 import Logos.Theme
 import LogosTests
 
-// main.cpp gives the store tests/fixtures/themes, and registers
-// ThemeInstaller (into a throwaway directory) and ThemeTestHelper.
+// main.cpp gives the store tests/fixtures/themes, and registers ThemeManager
+// (the host's object, installing into a throwaway directory) and
+// ThemeTestHelper.
 TestCase {
     name: "ThemeRegistry"
 
@@ -14,7 +15,7 @@ TestCase {
     }
 
     function cleanupTestCase() {
-        Theme.setTheme("dark")
+        ThemeManager.select("dark")
         ThemeTestHelper.clearInstalled()
     }
 
@@ -35,11 +36,16 @@ TestCase {
 
     // ----- colour names -----
 
+    // Both ways: a colour added to DarkTheme.qml must be added to the list too.
     function test_palette_tokens_match_dark_theme() {
         var tokens = ThemeRegistry.paletteTokens
-        compare(tokens.length, 62)
-        for (var i = 0; i < tokens.length; ++i)
-            verify(Theme.darkTheme[tokens[i]] !== undefined, "DarkTheme lacks " + tokens[i])
+        var darkColours = []
+        for (var key in Theme.darkTheme) {
+            var v = Theme.darkTheme[key]
+            if (v !== null && typeof v === "object" && v.hslHue !== undefined)
+                darkColours.push(key)
+        }
+        compare(darkColours.slice().sort(), tokens.slice().sort())
     }
 
     // ----- parsing -----
@@ -114,6 +120,39 @@ TestCase {
         verify(!r.ok)
     }
 
+    function test_format_version_must_be_whole() {
+        verify(!ThemeTestHelper.parse(minimalDoc({ formatVersion: 1.2 })).ok)
+        verify(!ThemeTestHelper.parse(minimalDoc({ formatVersion: "1" })).ok)
+        verify(!ThemeTestHelper.parse(minimalDoc({ formatVersion: 0 })).ok)
+    }
+
+    function test_strict_refuses_bad_colour_values() {
+        var doc = minimalDoc({ palette: { surface: "red", notAToken: "#000000" } })
+        var strict = ThemeTestHelper.parse(doc, true)
+        verify(!strict.ok)
+        verify(strict.errors.join(" ").indexOf("palette.surface") >= 0)
+        // Unknown names stay warnings, so a theme for a newer format installs.
+        verify(strict.errors.join(" ").indexOf("notAToken") < 0)
+        verify(ThemeTestHelper.parse(doc).ok)
+    }
+
+    // Gaps are filled from Dark, which would be unreadable in a light theme.
+    function test_light_theme_must_set_every_colour() {
+        var partial = ThemeTestHelper.parse(minimalDoc({ mode: "light",
+                                                         palette: { background: "#FFFFFF" } }))
+        verify(!partial.ok)
+        verify(partial.errors.join(" ").indexOf("missing") >= 0)
+
+        var full = {}
+        var tokens = ThemeRegistry.paletteTokens
+        for (var i = 0; i < tokens.length; ++i)
+            full[tokens[i]] = "#EEEEEE"
+        delete full.primaryBorder          // derived from primary
+        delete full.borderTertiaryMuted    // derived from borderTertiary
+        var r = ThemeTestHelper.parse(minimalDoc({ mode: "light", palette: full }))
+        verify(r.ok, r.errors.join("; "))
+    }
+
     function test_newer_format_still_loads() {
         var r = ThemeTestHelper.parse(minimalDoc({ formatVersion: 2, palette: { text: "#000000" } }))
         verify(r.ok)
@@ -134,69 +173,54 @@ TestCase {
     // ----- Theme.qml -----
 
     function test_dark_is_the_default() {
-        Theme.setTheme("dark")
+        ThemeManager.select("dark")
         compare(Theme.currentTheme, "dark")
         verify(Theme.isDark)
         compare(Theme.palette, Theme.darkTheme)
     }
 
-    function test_set_installed_theme() {
-        Theme.setTheme("test.partial")
-        compare(Theme.currentTheme, "test.partial")
+    function test_select_installed_theme() {
+        verify(ThemeManager.select("test.light"))
+        compare(Theme.currentTheme, "test.light")
         verify(!Theme.isDark)
-        compare(Theme.palette.background.toString(), "#ffffff")
-        compare(Theme.themeInfo["test.partial"].author, "tests")
-        verify(Theme.themeNames.indexOf("test.partial") >= 0)
-        Theme.setTheme("dark")
+        compare(Theme.palette.background.toString(), "#fafafa")
+        compare(Theme.themeInfo["test.light"].author, "tests")
+        verify(Theme.themeNames.indexOf("test.light") >= 0)
+        ThemeManager.select("dark")
     }
 
     function test_partial_theme_falls_back_per_colour() {
-        Theme.setTheme("test.partial")
+        ThemeManager.select("test.partial")
         compare(Theme.palette.text.toString(), "#112233")
-        // "surface": "red" was rejected, so it comes from dark.
+        // "surface": "red" was dropped while loading, so it comes from dark.
         compare(Theme.palette.surface, Theme.darkTheme.surface)
         compare(Theme.palette.info, Theme.darkTheme.info)
-        Theme.setTheme("dark")
+        ThemeManager.select("dark")
     }
 
     function test_unknown_theme_is_refused() {
-        Theme.setTheme("dark")
-        Theme.setTheme("nobody.nothing")
+        ThemeManager.select("dark")
+        verify(!ThemeManager.select("nobody.nothing"))
         compare(Theme.currentTheme, "dark")
-        compare(Theme.palette, Theme.darkTheme)
-    }
-
-    function test_switch_theme_cycles_through_installed() {
-        Theme.setTheme("dark")
-        var seen = {}
-        for (var i = 0; i < Theme.themeNames.length; ++i) {
-            seen[Theme.currentTheme] = true
-            Theme.switchTheme()
-        }
-        compare(Object.keys(seen).length, Theme.themeNames.length)
-        compare(Theme.currentTheme, "dark")
+        compare(ThemeTestHelper.savedTheme(), "dark")
     }
 
     function test_choice_is_saved() {
-        Theme.setTheme("test.partial")
+        ThemeManager.select("test.partial")
         compare(ThemeTestHelper.savedTheme(), "test.partial")
-        Theme.setTheme("dark")
+        ThemeManager.select("dark")
         compare(ThemeTestHelper.savedTheme(), "dark")
     }
 
-    function test_store_ignores_unknown_ids() {
-        ThemeRegistry.current = "nobody.nothing"
-        compare(ThemeRegistry.current, "dark")
-        compare(ThemeTestHelper.savedTheme(), "dark")
-    }
-
-    function test_current_is_shared_state() {
-        // Another engine's setTheme writes the shared state; this engine's
-        // Theme must follow it.
-        ThemeRegistry.current = "test.partial"
-        compare(Theme.currentTheme, "test.partial")
-        ThemeRegistry.current = "dark"
-        compare(Theme.palette, Theme.darkTheme)
+    // Basecamp has one QML engine per view; all of them must follow a switch.
+    function test_other_engine_follows_a_switch() {
+        compare(ThemeTestHelper.fromOtherEngine("current"), "dark")
+        ThemeManager.select("test.partial")
+        compare(ThemeTestHelper.fromOtherEngine("current"), "test.partial")
+        compare(ThemeTestHelper.fromOtherEngine("background").toString(), "#ffffff")
+        ThemeManager.select("dark")
+        compare(ThemeTestHelper.fromOtherEngine("current"), "dark")
+        ThemeTestHelper.closeOtherEngine()
     }
 
     // ----- install -----
@@ -206,36 +230,81 @@ TestCase {
     }
 
     function test_install_valid_file_is_listed_at_once() {
-        var r = ThemeInstaller.install(installPath("good.theme.json"))
+        var r = ThemeManager.install(installPath("good.theme.json"))
         verify(r.ok, r.errors.join("; "))
         compare(r.id, "test.installed")
         compare(r.name, "Installed")
-        // No reload step: the installer tells every registry itself.
         verify(findTheme("test.installed"))
-        Theme.setTheme("test.installed")
+        ThemeManager.select("test.installed")
         compare(Theme.palette.background.toString(), "#204060")
-        Theme.setTheme("dark")
+        ThemeManager.select("dark")
+    }
+
+    function test_reinstall_replaces_the_theme() {
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        ThemeManager.select("test.installed")
+        verify(ThemeManager.install(installPath("good-v2.theme.json")).ok)
+        compare(Theme.palette.background.toString(), "#406080")
+        compare(Theme.themeInfo["test.installed"].name, "Installed v2")
+        ThemeManager.select("dark")
+    }
+
+    // The saved choice survives, so the theme comes back if its file does.
+    function test_removed_theme_shows_dark_until_it_returns() {
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        ThemeManager.select("test.installed")
+        ThemeTestHelper.clearInstalled()
+        compare(ThemeRegistry.current, "dark")
+        compare(Theme.currentTheme, "dark")
+        compare(ThemeTestHelper.savedTheme(), "test.installed")
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        compare(ThemeRegistry.current, "test.installed")
+        ThemeManager.select("dark")
     }
 
     function test_install_refuses_invalid_file() {
-        var r = ThemeInstaller.install(installPath("bad.theme.json"))
+        var r = ThemeManager.install(installPath("bad.theme.json"))
         verify(!r.ok)
         verify(r.errors.length > 0)
         verify(!findTheme("test.bad"))
     }
 
+    function test_install_refuses_bad_colour_values() {
+        var r = ThemeManager.install(installPath("bad-colour.theme.json"))
+        verify(!r.ok)
+        verify(r.errors.join(" ").indexOf("palette.surface") >= 0)
+        verify(!findTheme("test.badcolour"))
+    }
+
+    // test.partial comes from the fixtures folder; a copy installed elsewhere
+    // would never be shown.
+    function test_install_refuses_an_id_from_another_folder() {
+        var r = ThemeManager.install(installPath("shadowed.theme.json"))
+        verify(!r.ok)
+        verify(r.errors.join(" ").indexOf("test.partial") >= 0)
+        compare(Theme.themeInfo["test.partial"].name, "Test Partial")
+    }
+
     function test_install_refuses_missing_and_remote_files() {
-        verify(!ThemeInstaller.install(installPath("nope.json")).ok)
-        verify(!ThemeInstaller.install("https://example.com/theme.json").ok)
+        verify(!ThemeManager.install(installPath("nope.json")).ok)
+        verify(!ThemeManager.install("https://example.com/theme.json").ok)
     }
 
     // ----- what apps' QML can reach -----
 
-    function test_registry_is_read_and_switch_only() {
-        // Apps' views import Logos.Theme too; parsing and rescanning are the
-        // host's business.
-        compare(typeof ThemeRegistry.parse, "undefined")
-        compare(typeof ThemeRegistry.reload, "undefined")
+    // Apps' views import Logos.Theme too: they can read the theme, not change it.
+    function test_qml_can_read_but_not_switch() {
+        var threw = false
+        try {
+            ThemeRegistry.current = "test.partial"
+        } catch (e) {
+            threw = true
+        }
+        verify(threw, "ThemeRegistry.current must be read-only")
+        compare(Theme.currentTheme, "dark")
+        compare(typeof Theme.setTheme, "undefined")
+        compare(typeof Theme.switchTheme, "undefined")
         compare(typeof ThemeRegistry.install, "undefined")
+        compare(typeof ThemeRegistry.parse, "undefined")
     }
 }

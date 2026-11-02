@@ -23,8 +23,3 @@ QString ThemeRegistry::current() const
 {
     return Logos::ThemeStore::instance()->current();
 }
-
-void ThemeRegistry::setCurrent(const QString& id)
-{
-    Logos::ThemeStore::instance()->setCurrent(id);
-}
