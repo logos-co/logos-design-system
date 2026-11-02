@@ -2,13 +2,44 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QLoggingCategory>
 #include <QQuickStyle>
 #include <QSettings>
 #include <QStandardPaths>
+#include <QTemporaryDir>
+#include <QtQml/qqml.h>
+
+#include <ThemeInstaller.h>
+#include <ThemeStore.h>
 
 #ifndef QUICK_TEST_SOURCE_DIR
 #define QUICK_TEST_SOURCE_DIR ""
 #endif
+
+// C++-only theme API for tst_ThemeRegistry.qml.
+class ThemeTestHelper : public QObject
+{
+    Q_OBJECT
+public:
+    explicit ThemeTestHelper(const QString& installDir) : m_installDir(installDir) {}
+
+    Q_INVOKABLE QVariantMap parse(const QString& json) const
+    {
+        return Logos::ThemeStore::parseDocument(json.toUtf8());
+    }
+    Q_INVOKABLE void clearInstalled() const
+    {
+        QDir(m_installDir).removeRecursively();
+        Logos::ThemeStore::instance()->rescan();
+    }
+    Q_INVOKABLE QString savedTheme() const
+    {
+        return QSettings().value("LogosDesignSystem/theme").toString();
+    }
+
+private:
+    QString m_installDir;
+};
 
 // First existing directory from `candidates`, else empty.
 static QString firstExisting(const QStringList& candidates)
@@ -49,6 +80,16 @@ int main(int argc, char* argv[])
         binDir + "/../share/logos-design-system-tests",
     });
 
+    // tst_ThemeRegistry: themes from tests/fixtures/themes, installs into a
+    // throwaway directory. The broken fixtures' warnings are muted.
+    QLoggingCategory::setFilterRules(QStringLiteral("logos.theme.warning=false"));
+    static QTemporaryDir installDir;
+    Logos::ThemeStore::instance()->addDirectory(sourceDir + "/fixtures/themes");
+    static Logos::ThemeInstaller themeInstaller(installDir.path());
+    static ThemeTestHelper themeTestHelper(installDir.path());
+    qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeInstaller", &themeInstaller);
+    qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeTestHelper", &themeTestHelper);
+
     const QByteArray sourceDirBytes = sourceDir.toUtf8();
     const char* sourceDirPtr = sourceDirBytes.isEmpty()
         ? nullptr : sourceDirBytes.constData();
@@ -56,3 +97,5 @@ int main(int argc, char* argv[])
     return quick_test_main(
         argc, argv, "LogosDesignSystemTests", sourceDirPtr);
 }
+
+#include "main.moc"

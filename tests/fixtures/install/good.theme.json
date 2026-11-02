@@ -1,0 +1,8 @@
+{
+  "formatVersion": 1,
+  "id": "test.installed",
+  "name": "Installed",
+  "author": "tests",
+  "mode": "dark",
+  "palette": { "background": "#204060" }
+}

@@ -1,0 +1,17 @@
+{
+  "formatVersion": 1,
+  "id": "test.partial",
+  "name": "Test Partial",
+  "author": "tests",
+  "mode": "light",
+  "palette": {
+    "background": "#FFFFFF",
+    "text": "#112233",
+    "primary": "#C9512C",
+    "scrim": "#11223380",
+    "surface": "red",
+    "notAToken": "#000000"
+  },
+  "radius": { "scale": 0 },
+  "somethingNew": true
+}

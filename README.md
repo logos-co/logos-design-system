@@ -20,6 +20,7 @@ nix flake check              # CI: build + test
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
+| `ThemeStore`, `ThemeInstaller` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses; `ThemeRegistry` is QML's read-and-switch view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
 
@@ -199,7 +200,7 @@ The storybook's **Colors / Spacing / Typography** pages show the full set with n
 
 ## Contributing
 
-1. **Add colors to `ColorPalette.qml` first**, then map to a semantic name in `DarkTheme.qml`. The semantic name is what consumers should reference (`Theme.palette.surfaceRaised`, not `Theme.colors.gray360`).
+1. **Add colors to `ColorPalette.qml` first**, then map to a semantic name in `DarkTheme.qml` and add it to the list in `ThemeStore.cpp` so theme files can set it. The semantic name is what consumers should reference (`Theme.palette.surfaceRaised`, not `Theme.colors.gray360`).
 2. **For new controls**: extend the right Qt Quick Controls base (`Control`, `TabButton`, etc.), expose only what consumers actually need, and add a `readonly property alias <name>Item: <id>` for any internal item that tests / tooling need to inspect.
 3. **Decide designed vs placeholder.** If the Figma spec is final, ship as a designed control: register under `"Controls"` in `storybook/main.qml` and either omit `designed` on the page (defaults to true) or set it to `true` explicitly. If the spec is pending, ship as a placeholder: theme it minimally with `Theme.palette.*` / `Theme.spacing.*`, register under `"Controls (not designed)"`, and set `property bool designed: false` on the page. Both kinds get the same testing + storybook treatment so promotions are mechanical.
 4. **Add a storybook page** for any new control (`storybook/pages/Logos<X>Page.qml`) and a unit test (`tests/tst_Logos<X>.qml`).
