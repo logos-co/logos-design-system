@@ -84,6 +84,80 @@ QString requireLabel(const QJsonObject& doc, const char* key, QStringList& error
     return s;
 }
 
+// Required fields: { id, name, author, mode }. Problems go to `errors`.
+QVariantMap readIdentity(const QJsonObject& doc, QStringList& errors, QStringList& warnings)
+{
+    // A newer format still loads, reading only the keys this one knows.
+    const QJsonValue fv = doc.value("formatVersion");
+    const int version = fv.isDouble() ? qRound(fv.toDouble()) : 0;
+    if (version < 1)
+        errors << QStringLiteral("'formatVersion' must be an integer >= 1");
+    else if (version > kFormatVersion)
+        warnings << QStringLiteral("made for a newer format (v%1); unknown keys ignored").arg(version);
+
+    static const QRegularExpression idRe(QStringLiteral("^[a-z0-9_-]+(\\.[a-z0-9_-]+)+$"));
+    const QString id = doc.value("id").toString();
+    if (!idRe.match(id).hasMatch() || id.size() > kMaxIdLength)
+        errors << QStringLiteral("'id' must look like <author>.<name> using [a-z0-9_-], max %1 chars").arg(kMaxIdLength);
+    else if (kBuiltinIds.contains(id))
+        errors << QStringLiteral("'id' %1 is reserved").arg(id);
+
+    const QString name = requireLabel(doc, "name", errors);
+    const QString author = requireLabel(doc, "author", errors);
+
+    const QString mode = doc.value("mode").toString();
+    if (mode != QLatin1String("dark") && mode != QLatin1String("light"))
+        errors << QStringLiteral("'mode' must be \"dark\" or \"light\"");
+
+    return { { "id", id }, { "name", name }, { "author", author }, { "mode", mode } };
+}
+
+// Valid colours by token, plus derived ones. Bad entries are dropped with a warning.
+QVariantMap readPalette(const QJsonObject& doc, QStringList& warnings)
+{
+    QVariantMap palette;
+    const QJsonValue pv = doc.value("palette");
+    if (!pv.isUndefined() && !pv.isObject())
+        warnings << QStringLiteral("'palette' is not an object; ignored");
+    const QJsonObject pobj = pv.toObject();
+    const QStringList& tokens = paletteTokenList();
+    for (auto it = pobj.begin(); it != pobj.end(); ++it) {
+        if (!tokens.contains(it.key())) {
+            warnings << QStringLiteral("unknown colour 'palette.%1' ignored").arg(it.key());
+            continue;
+        }
+        QColor c;
+        if (!it.value().isString() || !parseColor(it.value().toString(), &c)) {
+            warnings << QStringLiteral("'palette.%1' is not #RRGGBB or #RRGGBBAA; ignored").arg(it.key());
+            continue;
+        }
+        palette.insert(it.key(), c);
+    }
+    for (const Derived& d : kDerived) {
+        const QString token = QLatin1String(d.token), source = QLatin1String(d.source);
+        if (!palette.contains(token) && palette.contains(source)) {
+            QColor c = palette.value(source).value<QColor>();
+            c.setAlphaF(d.alpha);
+            palette.insert(token, c);
+        }
+    }
+    return palette;
+}
+
+void warnUnknownKeys(const QJsonObject& doc, QStringList& warnings)
+{
+    static const QSet<QString> known = {
+        "$schema", "formatVersion", "id", "name", "author", "mode", "palette",
+    };
+    static const QSet<QString> notApplied = { "spacing", "radius", "typography" };
+    for (const QString& key : doc.keys()) {
+        if (notApplied.contains(key))
+            warnings << QStringLiteral("'%1' isn't supported yet; ignored").arg(key);
+        else if (!known.contains(key))
+            warnings << QStringLiteral("unknown key '%1' ignored").arg(key);
+    }
+}
+
 const QString kSettingsKey = QStringLiteral("LogosDesignSystem/theme");
 
 } // namespace
@@ -176,96 +250,29 @@ void Logos::ThemeStore::rescan()
 QVariantMap Logos::ThemeStore::parseDocument(const QByteArray& data)
 {
     QStringList errors, warnings;
-    QVariantMap theme;
-    auto result = [&](bool ok) {
+    auto result = [&](const QVariantMap& theme = {}) {
         return QVariantMap{
-            { "ok", ok }, { "errors", errors }, { "warnings", warnings },
-            { "theme", ok ? theme : QVariantMap{} },
+            { "ok", errors.isEmpty() }, { "errors", errors }, { "warnings", warnings },
+            { "theme", errors.isEmpty() ? theme : QVariantMap{} },
         };
     };
 
     if (data.size() > maxDocumentBytes) {
         errors << QStringLiteral("document is larger than 64 KiB");
-        return result(false);
+        return result();
     }
     QJsonParseError perr;
     const QJsonDocument jd = QJsonDocument::fromJson(data, &perr);
-    if (perr.error != QJsonParseError::NoError) {
+    if (perr.error != QJsonParseError::NoError)
         errors << QStringLiteral("invalid JSON: %1").arg(perr.errorString());
-        return result(false);
-    }
-    if (!jd.isObject()) {
+    else if (!jd.isObject())
         errors << QStringLiteral("document must be a JSON object");
-        return result(false);
-    }
-    const QJsonObject doc = jd.object();
-
-    // A newer format still loads, reading only the keys this one knows.
-    const QJsonValue fv = doc.value("formatVersion");
-    const int version = fv.isDouble() ? qRound(fv.toDouble()) : 0;
-    if (version < 1)
-        errors << QStringLiteral("'formatVersion' must be an integer >= 1");
-    else if (version > kFormatVersion)
-        warnings << QStringLiteral("made for a newer format (v%1); unknown keys ignored").arg(version);
-
-    static const QRegularExpression idRe(QStringLiteral("^[a-z0-9_-]+(\\.[a-z0-9_-]+)+$"));
-    const QString id = doc.value("id").toString();
-    if (!idRe.match(id).hasMatch() || id.size() > kMaxIdLength)
-        errors << QStringLiteral("'id' must look like <author>.<name> using [a-z0-9_-], max %1 chars").arg(kMaxIdLength);
-    else if (kBuiltinIds.contains(id))
-        errors << QStringLiteral("'id' %1 is reserved").arg(id);
-
-    const QString name = requireLabel(doc, "name", errors);
-    const QString author = requireLabel(doc, "author", errors);
-
-    const QString mode = doc.value("mode").toString();
-    if (mode != QLatin1String("dark") && mode != QLatin1String("light"))
-        errors << QStringLiteral("'mode' must be \"dark\" or \"light\"");
-
-    static const QSet<QString> known = {
-        "$schema", "formatVersion", "id", "name", "author", "mode", "palette",
-    };
-    static const QSet<QString> notApplied = { "spacing", "radius", "typography" };
-    for (const QString& key : doc.keys()) {
-        if (notApplied.contains(key))
-            warnings << QStringLiteral("'%1' isn't supported yet; ignored").arg(key);
-        else if (!known.contains(key))
-            warnings << QStringLiteral("unknown key '%1' ignored").arg(key);
-    }
-
-    QVariantMap palette;
-    const QJsonValue pv = doc.value("palette");
-    if (!pv.isUndefined() && !pv.isObject())
-        warnings << QStringLiteral("'palette' is not an object; ignored");
-    const QJsonObject pobj = pv.toObject();
-    const QStringList& tokens = paletteTokenList();
-    for (auto it = pobj.begin(); it != pobj.end(); ++it) {
-        if (!tokens.contains(it.key())) {
-            warnings << QStringLiteral("unknown colour 'palette.%1' ignored").arg(it.key());
-            continue;
-        }
-        QColor c;
-        if (!it.value().isString() || !parseColor(it.value().toString(), &c)) {
-            warnings << QStringLiteral("'palette.%1' is not #RRGGBB or #RRGGBBAA; ignored").arg(it.key());
-            continue;
-        }
-        palette.insert(it.key(), c);
-    }
-    for (const Derived& d : kDerived) {
-        const QString token = QLatin1String(d.token), source = QLatin1String(d.source);
-        if (!palette.contains(token) && palette.contains(source)) {
-            QColor c = palette.value(source).value<QColor>();
-            c.setAlphaF(d.alpha);
-            palette.insert(token, c);
-        }
-    }
-
     if (!errors.isEmpty())
-        return result(false);
+        return result();
 
-    theme = {
-        { "id", id }, { "name", name }, { "author", author }, { "mode", mode },
-        { "palette", palette },
-    };
-    return result(true);
+    const QJsonObject doc = jd.object();
+    QVariantMap theme = readIdentity(doc, errors, warnings);
+    warnUnknownKeys(doc, warnings);
+    theme.insert("palette", readPalette(doc, warnings));
+    return result(theme);
 }
