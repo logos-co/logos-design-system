@@ -58,7 +58,8 @@ view->rootContext()->setContextProperty("themeManager", themes);
   It refuses an id another theme directory already provides, since that copy
   would keep being shown. The theme is listed at once.
 - `themes->select(id)` switches every QML engine in the process and saves the
-  choice in the `LogosDesignSystem/theme` setting.
+  choice in `<dir>/theme.ini`, so an isolated instance with its own directory
+  keeps its own choice.
 
 `Logos::ThemeStore` holds the themes and the current one once per process.
 More directories can be added with `ThemeStore::instance()->addDirectory()`;

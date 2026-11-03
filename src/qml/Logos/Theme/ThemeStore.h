@@ -24,6 +24,8 @@ public:
     static QStringList paletteTokens();
     void addDirectory(const QString& dir);
     void rescan();
+    // Where the choice is saved, an ini file the host picks; unset, it isn't saved.
+    void setChoiceFile(const QString& path);
     // The saved choice, or "dark" while that theme isn't installed.
     QString current() const;
     bool setCurrent(const QString& id);
@@ -45,6 +47,7 @@ private:
     QStringList m_dirs;
     QVariantList m_themes;
     QHash<QString, QString> m_sources;   // id -> directory
+    QString m_choiceFile;
     QString m_saved;
 };
 

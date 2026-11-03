@@ -166,7 +166,7 @@ void warnUnknownKeys(const QJsonObject& doc, QStringList& warnings)
     }
 }
 
-const QString kSettingsKey = QStringLiteral("LogosDesignSystem/theme");
+const QString kChoiceKey = QStringLiteral("theme");
 
 } // namespace
 
@@ -177,8 +177,21 @@ Logos::ThemeStore* Logos::ThemeStore::instance()
 }
 
 Logos::ThemeStore::ThemeStore()
-    : m_saved(QSettings().value(kSettingsKey, QStringLiteral("dark")).toString())
+    : m_saved(QStringLiteral("dark"))
 {
+}
+
+void Logos::ThemeStore::setChoiceFile(const QString& path)
+{
+    if (path == m_choiceFile)
+        return;
+    const QString shownBefore = current();
+    m_choiceFile = path;
+    m_saved = path.isEmpty()
+        ? QStringLiteral("dark")
+        : QSettings(path, QSettings::IniFormat).value(kChoiceKey, QStringLiteral("dark")).toString();
+    if (current() != shownBefore)
+        emit currentChanged();
 }
 
 QStringList Logos::ThemeStore::paletteTokens()
@@ -220,7 +233,8 @@ bool Logos::ThemeStore::setCurrent(const QString& id)
         return false;
     const QString shownBefore = current();
     m_saved = id;
-    QSettings().setValue(kSettingsKey, id);
+    if (!m_choiceFile.isEmpty())
+        QSettings(m_choiceFile, QSettings::IniFormat).setValue(kChoiceKey, id);
     if (current() != shownBefore)
         emit currentChanged();
     return true;

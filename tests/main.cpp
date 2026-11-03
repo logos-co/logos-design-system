@@ -31,14 +31,21 @@ public:
         return Logos::ThemeStore::parseDocument(json.toUtf8(), strict
             ? Logos::ThemeStore::Validation::Strict : Logos::ThemeStore::Validation::Lenient);
     }
+    // Removes the installed themes, not the saved choice.
     Q_INVOKABLE void clearInstalled() const
     {
-        QDir(m_installDir).removeRecursively();
+        const QDir dir(m_installDir);
+        for (const QString& sub : dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot))
+            QDir(dir.filePath(sub)).removeRecursively();
         Logos::ThemeStore::instance()->rescan();
     }
     Q_INVOKABLE QString savedTheme() const
     {
-        return QSettings().value("LogosDesignSystem/theme").toString();
+        return QSettings(m_installDir + "/theme.ini", QSettings::IniFormat).value("theme").toString();
+    }
+    Q_INVOKABLE bool appSettingsHaveTheme() const
+    {
+        return !QSettings().allKeys().filter("theme", Qt::CaseInsensitive).isEmpty();
     }
 
     // `property` of Theme as seen from a second, independent QQmlEngine, the

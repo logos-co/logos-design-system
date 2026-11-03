@@ -12,8 +12,10 @@ Logos::ThemeManager::ThemeManager(const QString& dir, QObject* parent)
 {
     if (m_dir.isEmpty())
         qWarning("ThemeManager: themes directory must be absolute: %s", qPrintable(dir));
-    else
+    else {
+        ThemeStore::instance()->setChoiceFile(m_dir + QStringLiteral("/theme.ini"));
         ThemeStore::instance()->addDirectory(m_dir);
+    }
 }
 
 QVariantMap Logos::ThemeManager::install(const QUrl& file) const

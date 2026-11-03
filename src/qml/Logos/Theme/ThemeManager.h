@@ -15,7 +15,8 @@ class ThemeManager : public QObject
     Q_OBJECT
 
 public:
-    // `dir` must be absolute; ThemeStore reads it.
+    // `dir` must be absolute. ThemeStore reads themes from it, and the choice
+    // is saved in <dir>/theme.ini.
     explicit ThemeManager(const QString& dir, QObject* parent = nullptr);
 
     // Validate the local file strictly and copy it to <dir>/<id>/theme.json,

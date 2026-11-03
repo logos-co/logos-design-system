@@ -205,11 +205,14 @@ TestCase {
         compare(ThemeTestHelper.savedTheme(), "dark")
     }
 
-    function test_choice_is_saved() {
+    // In the host's directory, never the app's own settings: an isolated
+    // instance (Basecamp's --user-dir) must not share it.
+    function test_choice_is_saved_in_the_hosts_directory() {
         ThemeManager.select("test.partial")
         compare(ThemeTestHelper.savedTheme(), "test.partial")
         ThemeManager.select("dark")
         compare(ThemeTestHelper.savedTheme(), "dark")
+        verify(!ThemeTestHelper.appSettingsHaveTheme())
     }
 
     // Basecamp has one QML engine per view; all of them must follow a switch.
