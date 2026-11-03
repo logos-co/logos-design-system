@@ -42,27 +42,27 @@ QtObject {
         return info
     }
 
-    // ===== AVAILABLE THEMES =====
-    property var availableThemes: {
-        var themes = { "dark": darkTheme }
-        var installed = ThemeRegistry.themes
-        for (var i = 0; i < installed.length; ++i)
-            themes[installed[i].id] = _resolvePalette(installed[i])
-        return themes
-    }
-
     readonly property string currentTheme:
-        availableThemes[ThemeRegistry.current] ? ThemeRegistry.current : "dark"
+        themeInfo[ThemeRegistry.current] ? ThemeRegistry.current : "dark"
 
     // ===== CURRENT THEME (Semantic Palette) =====
-    readonly property var palette: availableThemes[currentTheme]
+    // Only the current theme's colours are built, not every installed one's.
+    readonly property var palette: {
+        if (currentTheme === "dark")
+            return darkTheme
+        var installed = ThemeRegistry.themes
+        for (var i = 0; i < installed.length; ++i)
+            if (installed[i].id === currentTheme)
+                return _resolvePalette(installed[i])
+        return darkTheme
+    }
 
     // ===== CONVENIENCE PROPERTIES =====
     readonly property bool isDark: themeInfo[currentTheme].mode === "dark"
-    readonly property var themeNames: Object.keys(availableThemes)
+    readonly property var themeNames: Object.keys(themeInfo)
 
     // Helper to check if a theme is available
     function isThemeAvailable(themeName) {
-        return availableThemes.hasOwnProperty(themeName)
+        return themeInfo.hasOwnProperty(themeName)
     }
 }

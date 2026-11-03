@@ -43,6 +43,11 @@ public:
     {
         return QSettings(m_installDir + "/theme.ini", QSettings::IniFormat).value("theme").toString();
     }
+    Q_INVOKABLE bool storeIsRegistered() const
+    {
+        return qApp->property("_logos_theme_store").value<QObject*>()
+               == Logos::ThemeStore::instance();
+    }
     Q_INVOKABLE bool appSettingsHaveTheme() const
     {
         return !QSettings().allKeys().filter("theme", Qt::CaseInsensitive).isEmpty();

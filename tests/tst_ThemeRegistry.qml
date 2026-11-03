@@ -126,6 +126,12 @@ TestCase {
         verify(!ThemeTestHelper.parse(minimalDoc({ formatVersion: 0 })).ok)
     }
 
+    function test_strict_refuses_a_palette_that_is_not_an_object() {
+        var doc = minimalDoc({ palette: "not-an-object" })
+        verify(!ThemeTestHelper.parse(doc, true).ok)
+        verify(ThemeTestHelper.parse(doc).ok)
+    }
+
     function test_strict_refuses_bad_colour_values() {
         var doc = minimalDoc({ palette: { surface: "red", notAToken: "#000000" } })
         var strict = ThemeTestHelper.parse(doc, true)
@@ -164,6 +170,9 @@ TestCase {
 
     function test_discovers_valid_themes_only() {
         verify(findTheme("test.partial"), "test.partial not found")
+        // 00-imported also says test.partial and sorts first, but a theme's
+        // folder must be named after its id, so it can't shadow the real one.
+        compare(findTheme("test.partial").name, "Test Partial")
         verify(!findTheme("test.broken"))
         verify(!findTheme("dark"))
         // Symlinked theme folders are skipped.
@@ -207,6 +216,11 @@ TestCase {
 
     // In the host's directory, never the app's own settings: an isolated
     // instance (Basecamp's --user-dir) must not share it.
+    // There is only one copy of the design system here: the store says so.
+    function test_store_is_registered_once() {
+        verify(ThemeTestHelper.storeIsRegistered())
+    }
+
     function test_choice_is_saved_in_the_hosts_directory() {
         ThemeManager.select("test.partial")
         compare(ThemeTestHelper.savedTheme(), "test.partial")
@@ -286,6 +300,36 @@ TestCase {
         verify(!r.ok)
         verify(r.errors.join(" ").indexOf("test.partial") >= 0)
         compare(Theme.themeInfo["test.partial"].name, "Test Partial")
+    }
+
+    function test_remove_deletes_the_theme() {
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        var r = ThemeManager.remove("test.installed")
+        verify(r.ok, r.errors.join("; "))
+        compare(r.name, "Installed")
+        verify(!findTheme("test.installed"))
+    }
+
+    // Removed on purpose, so it isn't brought back if the file is added again.
+    function test_removing_the_current_theme_switches_to_dark() {
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        ThemeManager.select("test.installed")
+        verify(ThemeManager.remove("test.installed").ok)
+        compare(Theme.currentTheme, "dark")
+        compare(ThemeTestHelper.savedTheme(), "dark")
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        compare(Theme.currentTheme, "dark")
+        verify(ThemeManager.remove("test.installed").ok)
+    }
+
+    function test_remove_refuses_dark_unknown_and_other_folders() {
+        verify(!ThemeManager.remove("dark").ok)
+        verify(!ThemeManager.remove("nobody.nothing").ok)
+        // test.partial comes from the fixtures folder, not the manager's.
+        var r = ThemeManager.remove("test.partial")
+        verify(!r.ok)
+        verify(r.errors.join(" ").indexOf("built in") >= 0)
+        verify(findTheme("test.partial"))
     }
 
     function test_install_refuses_missing_and_remote_files() {

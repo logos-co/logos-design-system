@@ -27,6 +27,12 @@ public:
     // Returns { ok, id, name, errors: [string], warnings: [string] }.
     Q_INVOKABLE QVariantMap install(const QUrl& file) const;
 
+    // Delete a theme installed in <dir>. Dark and themes from other
+    // directories can't be removed. Removing the current theme switches to Dark.
+    //
+    // Returns { ok, id, name, errors: [string] }.
+    Q_INVOKABLE QVariantMap remove(const QString& id) const;
+
     // Switch every view to `id` and save it. False for an unknown id.
     Q_INVOKABLE bool select(const QString& id) const;
 

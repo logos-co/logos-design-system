@@ -57,15 +57,23 @@ view->rootContext()->setContextProperty("themeManager", themes);
   `<dir>/<id>/theme.json`, replacing a theme with that id installed there.
   It refuses an id another theme directory already provides, since that copy
   would keep being shown. The theme is listed at once.
+- `themes->remove(id)` deletes a theme installed in `<dir>`; themes from other
+  directories and Dark can't be removed. Removing the current theme switches
+  to Dark.
 - `themes->select(id)` switches every QML engine in the process and saves the
-  choice in `<dir>/theme.ini`, so an isolated instance with its own directory
+  choice in `<dir>/theme.ini` (a failed save is logged; the switch still holds
+  until restart), so an isolated instance with its own directory
   keeps its own choice.
 
 `Logos::ThemeStore` holds the themes and the current one once per process.
 More directories can be added with `ThemeStore::instance()->addDirectory()`;
-for a repeated id the directory added first wins. Symlinked theme folders and
-files are skipped. Link the design system once per process: a second copy has
-its own store.
+for a repeated id the directory added first wins. Each theme lives in a folder
+named after its id, `<dir>/<id>/theme.json`; other folders, and symlinked
+folders and files, are skipped.
+
+Link the design system once per process: a second copy has its own store, so
+its views would not follow theme changes. The store detects that and logs a
+critical `logos.theme` error.
 
 ## Reading the theme in QML
 

@@ -13,6 +13,8 @@ Logos::ThemeManager::ThemeManager(const QString& dir, QObject* parent)
     if (m_dir.isEmpty())
         qWarning("ThemeManager: themes directory must be absolute: %s", qPrintable(dir));
     else {
+        // Exists before anything is saved in it.
+        QDir().mkpath(m_dir);
         ThemeStore::instance()->setChoiceFile(m_dir + QStringLiteral("/theme.ini"));
         ThemeStore::instance()->addDirectory(m_dir);
     }
@@ -74,4 +76,35 @@ QVariantMap Logos::ThemeManager::install(const QUrl& file) const
 bool Logos::ThemeManager::select(const QString& id) const
 {
     return ThemeStore::instance()->setCurrent(id);
+}
+
+QVariantMap Logos::ThemeManager::remove(const QString& id) const
+{
+    QVariantMap out{ { "ok", false }, { "id", id }, { "errors", QStringList{} } };
+    auto fail = [&](const QString& why) {
+        out.insert("errors", QStringList{ why });
+        return out;
+    };
+
+    auto* store = ThemeStore::instance();
+    QString name;
+    for (const QVariant& t : store->themes())
+        if (t.toMap().value("id").toString() == id)
+            name = t.toMap().value("name").toString();
+    if (name.isEmpty())
+        return fail(tr("There is no installed theme \u201c%1\u201d.").arg(id));
+    out.insert("name", name);
+    // Ids are validated as [a-z0-9_.-], so this stays inside m_dir.
+    if (m_dir.isEmpty() || store->directoryOf(id) != m_dir)
+        return fail(tr("\u201c%1\u201d is built in and can't be removed.").arg(name));
+
+    const QString dir = m_dir + QLatin1Char('/') + id;
+    if (QFileInfo(dir).isSymLink() || !QDir(dir).removeRecursively())
+        return fail(tr("Can't remove %1").arg(dir));
+
+    if (store->current() == id)
+        store->setCurrent(QStringLiteral("dark"));
+    store->rescan();
+    out.insert("ok", true);
+    return out;
 }

@@ -1,6 +1,7 @@
 #include "ThemeStore.h"
 
 #include <QColor>
+#include <QCoreApplication>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -124,8 +125,12 @@ QVariantMap readPalette(const QJsonObject& doc, bool strict, QStringList& errors
 {
     QVariantMap palette;
     const QJsonValue pv = doc.value("palette");
-    if (!pv.isUndefined() && !pv.isObject())
-        warnings << QStringLiteral("'palette' is not an object; ignored");
+    if (!pv.isUndefined() && !pv.isObject()) {
+        if (strict)
+            errors << QStringLiteral("'palette' is not an object");
+        else
+            warnings << QStringLiteral("'palette' is not an object; ignored");
+    }
     const QJsonObject pobj = pv.toObject();
     const QStringList& tokens = paletteTokenList();
     for (auto it = pobj.begin(); it != pobj.end(); ++it) {
@@ -173,6 +178,21 @@ const QString kChoiceKey = QStringLiteral("theme");
 Logos::ThemeStore* Logos::ThemeStore::instance()
 {
     static ThemeStore* store = new ThemeStore;   // lives for the process
+    // A second copy of the design system in the process would have its own
+    // store, and its views would stop following theme changes. Checked once an
+    // application exists, which may be after the first call.
+    static bool registered = false;
+    if (!registered) {
+        if (auto* app = QCoreApplication::instance()) {
+            registered = true;
+            const QVariant other = app->property("_logos_theme_store");
+            if (other.isValid() && other.value<QObject*>() != store)
+                qCCritical(lcTheme, "two copies of the Logos design system are linked into this "
+                                    "process; link it once, or themes will not stay in step");
+            else
+                app->setProperty("_logos_theme_store", QVariant::fromValue<QObject*>(store));
+        }
+    }
     return store;
 }
 
@@ -233,8 +253,14 @@ bool Logos::ThemeStore::setCurrent(const QString& id)
         return false;
     const QString shownBefore = current();
     m_saved = id;
-    if (!m_choiceFile.isEmpty())
-        QSettings(m_choiceFile, QSettings::IniFormat).setValue(kChoiceKey, id);
+    if (!m_choiceFile.isEmpty()) {
+        QSettings settings(m_choiceFile, QSettings::IniFormat);
+        settings.setValue(kChoiceKey, id);
+        settings.sync();
+        // Still switched for this run; it just won't survive a restart.
+        if (settings.status() != QSettings::NoError)
+            qCWarning(lcTheme, "couldn't save the theme choice to %s", qPrintable(m_choiceFile));
+    }
     if (current() != shownBefore)
         emit currentChanged();
     return true;
@@ -269,6 +295,12 @@ void Logos::ThemeStore::rescan()
             }
             const QVariantMap theme = result.value("theme").toMap();
             const QString id = theme.value("id").toString();
+            // <dir>/<id>/ only: installing and removing address a theme by id.
+            if (sub.fileName() != id) {
+                qCWarning(lcTheme, "skipping %s: its folder must be named after its id '%s'",
+                         qPrintable(doc.absoluteFilePath()), qPrintable(id));
+                continue;
+            }
             if (sources.contains(id)) {
                 qCWarning(lcTheme, "duplicate theme id '%s' at %s ignored",
                          qPrintable(id), qPrintable(doc.absoluteFilePath()));
