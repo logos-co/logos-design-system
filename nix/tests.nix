@@ -35,6 +35,12 @@ pkgs.stdenv.mkDerivation rec {
     export QML_IMPORT_PATH="${pkgs.qt6.qtdeclarative}/lib/qt-6/qml:$QML_IMPORT_PATH"
     export QML2_IMPORT_PATH="$QML_IMPORT_PATH"
     ctest --test-dir build --output-on-failure
+
+    # Logos.Theme loaded from the QML source tree, without its C++ types, as
+    # apps' scene tests do: it must still give Dark's palette.
+    ${pkgs.qt6.qtdeclarative}/bin/qml -I ${src}/src/qml -I "${pkgs.qt6.qtdeclarative}/lib/qt-6/qml" \
+      ${src}/tests/source-qml/probe.qml \
+      || { echo "Logos.Theme from source: no usable palette (exit $?)"; exit 1; }
     runHook postCheck
   '';
 
