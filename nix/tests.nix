@@ -49,6 +49,7 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/share/logos-design-system-tests
     cp ${src}/tests/tst_*.qml $out/share/logos-design-system-tests/
     cp ${src}/tests/test-icon.png $out/share/logos-design-system-tests/
+    cp -r ${src}/tests/fixtures $out/share/logos-design-system-tests/
 
     # Logos.Theme/.Controls/.Icons are STATIC-linked into the test binary via
     # logos_design_system; no lib/Logos copy needed.

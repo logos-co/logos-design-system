@@ -121,10 +121,14 @@ ApplicationWindow {
             }
 
             LogosButton {
-                text: Theme.isDark ? "Light" : "Dark"
-                implicitWidth: 100
+                text: "Next theme"
+                implicitWidth: 120
                 implicitHeight: 36
-                onClicked: Theme.switchTheme()
+                visible: Theme.themeNames.length > 1
+                onClicked: {
+                    const names = Theme.themeNames
+                    themeManager.select(names[(names.indexOf(Theme.currentTheme) + 1) % names.length])
+                }
             }
         }
     }
