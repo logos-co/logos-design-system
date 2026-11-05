@@ -48,6 +48,11 @@ public:
         return qApp->property("_logos_theme_store").value<QObject*>()
                == Logos::ThemeStore::instance();
     }
+    // The colour a host painting in C++ gets.
+    Q_INVOKABLE QColor storeColor(const QString& token) const
+    {
+        return Logos::ThemeStore::instance()->color(token);
+    }
     Q_INVOKABLE bool appSettingsHaveTheme() const
     {
         return !QSettings().allKeys().filter("theme", Qt::CaseInsensitive).isEmpty();

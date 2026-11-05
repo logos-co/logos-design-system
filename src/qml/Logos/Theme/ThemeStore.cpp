@@ -25,27 +25,97 @@ constexpr int kMaxIdLength = 64;
 
 const QStringList kBuiltinIds = { QStringLiteral("dark") };
 
-// Colours a theme may set
+// Dark, the built-in theme, and with it the colours a theme may set. Each is
+// DarkTheme.qml's value, which tst_ThemeRegistry checks: hex plus alpha, so
+// an alpha like 0.07 stays exact rather than rounding to 8 bits.
+struct DarkColour { const char* token; const char* hex; double alpha; };
+const DarkColour kDark[] = {
+    { "background", "#171717", 1 },
+    { "backgroundSecondary", "#262626", 1 },
+    { "backgroundTertiary", "#1C1C1C", 1 },
+    { "backgroundElevated", "#0E121B", 1 },
+    { "backgroundMuted", "#808080", 0.07 },
+    { "backgroundBlack", "#000000", 1 },
+    { "backgroundInset", "#141414", 1 },
+    { "backgroundButton", "#2F2F2F", 1 },
+    { "surface", "#343434", 1 },
+    { "surfaceRaised", "#232323", 1 },
+    { "surfaceInteractiveHover", "#434343", 1 },
+    { "surfaceRecessed", "#1F1F1F", 1 },
+    { "surfaceContrast", "#595959", 1 },
+    { "text", "#FFFFFF", 1 },
+    { "textSecondary", "#A4A4A4", 1 },
+    { "textSubtle", "#A9A9A9", 1 },
+    { "textTertiary", "#969696", 1 },
+    { "textPlaceholder", "#717784", 1 },
+    { "textMuted", "#5C5C5C", 1 },
+    { "border", "#434343", 1 },
+    { "borderSecondary", "#2B303B", 1 },
+    { "borderTertiary", "#969696", 1 },
+    { "borderTertiaryMuted", "#969696", 0.2 },
+    { "borderSubtle", "#333333", 1 },
+    { "borderHairline", "#808080", 0.2 },
+    { "borderGlyph", "#969696", 0.35 },
+    { "borderInteractive", "#434343", 1 },
+    { "borderDark", "#2F2F2F", 1 },
+    { "borderStrong", "#515151", 1 },
+    { "primary", "#ED7B58", 1 },
+    { "primaryHover", "#F55702", 1 },
+    { "primaryPressed", "#8F3C03", 1 },
+    { "primarySoft", "#FFD5C0", 1 },
+    { "success", "#49F563", 1 },
+    { "successHover", "#6CCC93", 1 },
+    { "successPressed", "#19C332", 1 },
+    { "successBorder", "#49F563", 0.4 },
+    { "error", "#FB3748", 1 },
+    { "errorHover", "#FF736A", 1 },
+    { "errorPressed", "#F44336", 1 },
+    { "errorBorder", "#FB3748", 0.4 },
+    { "warning", "#FEBC2E", 1 },
+    { "warningHover", "#FFA726", 1 },
+    { "warningBorder", "#FEBC2E", 0.4 },
+    { "info", "#4A90E2", 1 },
+    { "primaryBorder", "#ED7B58", 0.4 },
+    { "notification", "#FB3748", 1 },
+    { "accentOrange", "#ED7B58", 1 },
+    { "accentOrangeMid", "#FF6F42", 1 },
+    { "accentOrangeDeep", "#FF4911", 1 },
+    { "accentBurntOrange", "#BF5104", 1 },
+    { "accentYellowSoft", "#EEF083", 1 },
+    { "hover", "#5C5C5C", 1 },
+    { "pressed", "#262626", 1 },
+    { "disabled", "#969696", 1 },
+    { "focus", "#FF8800", 1 },
+    { "glassOverlay", "#808080", 0.07 },
+    { "glassStrong", "#808080", 0.3 },
+    { "overlayDark", "#1C1C1C", 0.3 },
+    { "overlayLight", "#FFFFFF", 0.06 },
+    { "overlayOrange", "#FF8800", 0.3 },
+    { "scrim", "#000000", 0.5 },
+};
+
+const QVariantMap& darkPalette()
+{
+    static const QVariantMap v = [] {
+        QVariantMap m;
+        for (const DarkColour& d : kDark) {
+            QColor c(QLatin1String(d.hex));
+            c.setAlphaF(d.alpha);
+            m.insert(QLatin1String(d.token), c);
+        }
+        return m;
+    }();
+    return v;
+}
+
 const QStringList& paletteTokenList()
 {
-    static const QStringList v = {
-        "background", "backgroundSecondary", "backgroundTertiary", "backgroundElevated",
-        "backgroundMuted", "backgroundBlack", "backgroundInset", "backgroundButton",
-        "surface", "surfaceRaised", "surfaceInteractiveHover", "surfaceRecessed",
-        "surfaceContrast",
-        "text", "textSecondary", "textSubtle", "textTertiary", "textPlaceholder", "textMuted",
-        "border", "borderSecondary", "borderTertiary", "borderTertiaryMuted", "borderSubtle",
-        "borderHairline", "borderGlyph", "borderInteractive", "borderDark", "borderStrong",
-        "primary", "primaryHover", "primaryPressed", "primarySoft",
-        "success", "successHover", "successPressed", "successBorder",
-        "error", "errorHover", "errorPressed", "errorBorder",
-        "warning", "warningHover", "warningBorder",
-        "info", "primaryBorder", "notification",
-        "accentOrange", "accentOrangeMid", "accentOrangeDeep", "accentBurntOrange",
-        "accentYellowSoft",
-        "hover", "pressed", "disabled", "focus",
-        "glassOverlay", "glassStrong", "overlayDark", "overlayLight", "overlayOrange", "scrim",
-    };
+    static const QStringList v = [] {
+        QStringList l;
+        for (const DarkColour& d : kDark)
+            l << QLatin1String(d.token);
+        return l;
+    }();
     return v;
 }
 
@@ -198,7 +268,34 @@ Logos::ThemeStore* Logos::ThemeStore::instance()
 
 Logos::ThemeStore::ThemeStore()
     : m_saved(QStringLiteral("dark"))
+    , m_palette(darkPalette())
 {
+}
+
+void Logos::ThemeStore::settle(const QString& shownBefore)
+{
+    if (current() != shownBefore)
+        emit currentChanged();
+    const QVariantMap now = palette(current());
+    if (now != m_palette) {
+        m_palette = now;
+        emit paletteChanged();
+    }
+}
+
+QVariantMap Logos::ThemeStore::palette(const QString& id) const
+{
+    QVariantMap resolved = darkPalette();
+    for (const QVariant& t : m_themes) {
+        const QVariantMap theme = t.toMap();
+        if (theme.value("id").toString() != id)
+            continue;
+        const QVariantMap own = theme.value("palette").toMap();
+        for (auto it = own.cbegin(); it != own.cend(); ++it)
+            resolved.insert(it.key(), it.value());
+        break;
+    }
+    return resolved;
 }
 
 void Logos::ThemeStore::setChoiceFile(const QString& path)
@@ -210,8 +307,7 @@ void Logos::ThemeStore::setChoiceFile(const QString& path)
     m_saved = path.isEmpty()
         ? QStringLiteral("dark")
         : QSettings(path, QSettings::IniFormat).value(kChoiceKey, QStringLiteral("dark")).toString();
-    if (current() != shownBefore)
-        emit currentChanged();
+    settle(shownBefore);
 }
 
 QStringList Logos::ThemeStore::paletteTokens()
@@ -261,8 +357,7 @@ bool Logos::ThemeStore::setCurrent(const QString& id)
         if (settings.status() != QSettings::NoError)
             qCWarning(lcTheme, "couldn't save the theme choice to %s", qPrintable(m_choiceFile));
     }
-    if (current() != shownBefore)
-        emit currentChanged();
+    settle(shownBefore);
     return true;
 }
 
@@ -314,8 +409,7 @@ void Logos::ThemeStore::rescan()
     m_themes = found;
     m_sources = sources;
     emit themesChanged();
-    if (current() != shownBefore)
-        emit currentChanged();
+    settle(shownBefore);
 }
 
 QVariantMap Logos::ThemeStore::parseDocument(const QByteArray& data, Validation validation)

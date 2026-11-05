@@ -13,27 +13,14 @@ QtObject {
     readonly property Typography typography: Typography {}
     
     // ===== THEME INSTANCES =====
-    // Currently available themes - created first
+    // Dark's colours in QML. The palette comes from ThemeStore (C++), whose
+    // copy of Dark tst_ThemeRegistry holds equal to this one; this is the
+    // palette only where there is no ThemeRegistry.
     property var darkTheme: DarkTheme { colors: theme.colors }
-    // Add new theme instances here as needed
 
     // ThemeRegistry is C++, so it is missing when Logos.Theme is loaded from
     // the QML source tree (apps' scene tests do that). Then only Dark exists.
     readonly property bool _hasRegistry: typeof ThemeRegistry !== "undefined"
-
-    // ===== INSTALLED THEMES =====
-    // Data-only theme files found on disk (see ThemeStore.h). A colour a
-    // theme leaves out comes from darkTheme.
-    function _resolvePalette(entry) {
-        var resolved = {}
-        var tokens = ThemeRegistry.paletteTokens
-        for (var i = 0; i < tokens.length; ++i) {
-            var token = tokens[i]
-            resolved[token] = entry.palette[token] !== undefined
-                ? entry.palette[token] : darkTheme[token]
-        }
-        return resolved
-    }
 
     // id -> { id, name, author, mode, builtin }
     readonly property var themeInfo: {
@@ -52,15 +39,16 @@ QtObject {
         _hasRegistry && themeInfo[ThemeRegistry.current] ? ThemeRegistry.current : "dark"
 
     // ===== CURRENT THEME (Semantic Palette) =====
-    // Only the current theme's colours are built, not every installed one's.
+    // ThemeStore resolves it (a theme's own colours, Dark's for the rest), so
+    // a host painting in C++ gets the same colours. `colors` is kept on it
+    // for apps that read Theme.palette.colors; Theme.colors is the same.
     readonly property var palette: {
-        if (currentTheme === "dark")
+        if (!_hasRegistry)
             return darkTheme
-        var installed = ThemeRegistry.themes
-        for (var i = 0; i < installed.length; ++i)
-            if (installed[i].id === currentTheme)
-                return _resolvePalette(installed[i])
-        return darkTheme
+        // A copy: what C++ hands over is a wrapper that drops added keys.
+        var p = Object.assign({}, ThemeRegistry.palette)
+        p.colors = theme.colors
+        return p
     }
 
     // ===== CONVENIENCE PROPERTIES =====

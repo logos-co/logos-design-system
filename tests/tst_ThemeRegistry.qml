@@ -185,7 +185,72 @@ TestCase {
         ThemeManager.select("dark")
         compare(Theme.currentTheme, "dark")
         verify(Theme.isDark)
-        compare(Theme.palette, Theme.darkTheme)
+        var tokens = ThemeRegistry.paletteTokens
+        for (var i = 0; i < tokens.length; ++i)
+            verify(Qt.colorEqual(Theme.palette[tokens[i]], Theme.darkTheme[tokens[i]]), tokens[i])
+    }
+
+    // ThemeStore has its own copy of Dark, for hosts painting in C++, and
+    // DarkTheme.qml stays for loading from source: the two must not drift.
+    function test_store_dark_equals_dark_theme_qml() {
+        var dark = ThemeRegistry.paletteOf("dark")
+        var tokens = ThemeRegistry.paletteTokens
+        for (var i = 0; i < tokens.length; ++i) {
+            var t = tokens[i]
+            verify(Qt.colorEqual(dark[t], Theme.darkTheme[t]),
+                   t + ": store " + dark[t] + ", DarkTheme.qml " + Theme.darkTheme[t])
+        }
+        // An unknown theme is Dark.
+        verify(Qt.colorEqual(ThemeRegistry.paletteOf("nobody.nothing").background,
+                             Theme.darkTheme.background))
+    }
+
+    // A host painting in C++ reads ThemeStore::color(); it must agree with QML.
+    function test_cpp_colours_follow_the_current_theme() {
+        var tokens = ThemeRegistry.paletteTokens
+        var themes = ["dark", "test.partial", "test.light"]
+        for (var j = 0; j < themes.length; ++j) {
+            verify(ThemeManager.select(themes[j]))
+            for (var i = 0; i < tokens.length; ++i)
+                verify(Qt.colorEqual(ThemeTestHelper.storeColor(tokens[i]), Theme.palette[tokens[i]]),
+                       themes[j] + "." + tokens[i])
+        }
+        compare(ThemeTestHelper.storeColor("text").toString(), "#171717")
+        ThemeManager.select("dark")
+        compare(ThemeTestHelper.storeColor("text").toString(), "#ffffff")
+    }
+
+    SignalSpy { id: paletteSpy; target: ThemeRegistry; signalName: "paletteChanged" }
+
+    // Reinstalling the current theme changes its colours without a switch.
+    function test_palette_changed_on_switch_and_reinstall() {
+        ThemeManager.select("dark")
+        paletteSpy.clear()
+        verify(ThemeManager.select("test.partial"))
+        compare(paletteSpy.count, 1)
+        ThemeManager.select("dark")
+
+        verify(ThemeManager.install(installPath("good.theme.json")).ok)
+        verify(ThemeManager.select("test.installed"))
+        paletteSpy.clear()
+        verify(ThemeManager.install(installPath("good-v2.theme.json")).ok)
+        compare(paletteSpy.count, 1)
+        compare(ThemeTestHelper.storeColor("background").toString(), "#406080")
+        ThemeManager.select("dark")
+        verify(ThemeManager.remove("test.installed").ok)
+    }
+
+    // Apps have read Theme.palette.colors (it was DarkTheme.qml's); it stays,
+    // under every theme, as Theme.colors.
+    function test_palette_keeps_colors_for_apps() {
+        var themes = ["dark", "test.partial"]
+        for (var j = 0; j < themes.length; ++j) {
+            verify(ThemeManager.select(themes[j]))
+            verify(Qt.colorEqual(Theme.palette.colors.gray900, Theme.colors.gray900), themes[j])
+            var c = Theme.palette.colors.getColor(Theme.palette.text, 0.5)
+            fuzzyCompare(c.a, 0.5, 0.01)
+        }
+        ThemeManager.select("dark")
     }
 
     function test_select_installed_theme() {

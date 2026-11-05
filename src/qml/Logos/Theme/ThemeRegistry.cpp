@@ -7,6 +7,7 @@ ThemeRegistry::ThemeRegistry(QObject* parent)
     auto* store = Logos::ThemeStore::instance();
     connect(store, &Logos::ThemeStore::themesChanged, this, &ThemeRegistry::themesChanged);
     connect(store, &Logos::ThemeStore::currentChanged, this, &ThemeRegistry::currentChanged);
+    connect(store, &Logos::ThemeStore::paletteChanged, this, &ThemeRegistry::paletteChanged);
 }
 
 QVariantList ThemeRegistry::themes() const
@@ -22,4 +23,14 @@ QStringList ThemeRegistry::paletteTokens() const
 QString ThemeRegistry::current() const
 {
     return Logos::ThemeStore::instance()->current();
+}
+
+QVariantMap ThemeRegistry::palette() const
+{
+    return Logos::ThemeStore::instance()->palette();
+}
+
+QVariantMap ThemeRegistry::paletteOf(const QString& id) const
+{
+    return Logos::ThemeStore::instance()->palette(id);
 }
