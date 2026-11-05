@@ -31,6 +31,9 @@ whitelist, and nothing in it is ever evaluated as QML or JavaScript.
 - A light theme must set every colour, since Dark's would not fit it.
   `primaryBorder` and `borderTertiaryMuted` can be left out: unless set, they
   follow `primary` and `borderTertiary`.
+- `primaryForeground` is the colour of text and icons on `primary` (a primary
+  button's label, a checkmark). Unless set, a theme that sets `primary` gets
+  black or white, whichever reads better on it.
 - Installing is strict: a bad value for a known colour fails it. A file that
   is already installed loads leniently: such a colour is dropped with a
   warning and comes from Dark.

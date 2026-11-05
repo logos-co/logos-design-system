@@ -37,8 +37,9 @@ import Logos.Controls
 // IconSpec fields:
 //     source     URL of the icon asset. Empty renders nothing.
 //     size       icon footprint in px. Default 20.
-//     color      tint applied to the icon. Default = Theme.palette.text.
-//                Falls back to textMuted when the button is disabled.
+//     color      tint applied to the icon. Default = the label's colour:
+//                Theme.palette.text, or primaryForeground on a Primary
+//                button. Falls back to textMuted when the button is disabled.
 //     brightness MultiEffect brightness before tinting. Default 0.
 //
 // Read-only inspection aliases (for tests):
@@ -71,8 +72,8 @@ LogosAbstractButton {
     }
 
     property alias text: label.text
-    readonly property IconSpec leadingIcon: IconSpec {}
-    readonly property IconSpec trailingIcon: IconSpec {}
+    readonly property IconSpec leadingIcon: IconSpec { color: d.foreground }
+    readonly property IconSpec trailingIcon: IconSpec { color: d.foreground }
     property real radius: Theme.spacing.radiusXlarge
     property int variant: LogosButton.Variant.Secondary
     property bool compact: false
@@ -86,6 +87,10 @@ LogosAbstractButton {
 
     QtObject {
         id: d
+
+        readonly property color foreground: root.variant === LogosButton.Variant.Primary
+                                            ? Theme.palette.primaryForeground
+                                            : Theme.palette.text
 
         // focused is treated like hovered (pressed still wins).
         function backgroundColor(enabled, variant, pressed, hovered, focused) {
@@ -156,7 +161,7 @@ LogosAbstractButton {
         LogosText {
             id: label
             Layout.fillWidth: true
-            color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
+            color: root.enabled ? d.foreground : Theme.palette.textMuted
             font: root.font
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter

@@ -90,6 +90,18 @@ TestCase {
         fuzzyCompare(border.a, 0.4, 0.01)
     }
 
+    // logos-basecamp#546: Dark's white label was 1.4:1 on a light primary.
+    function test_primary_foreground_reads_on_primary() {
+        function fg(palette) {
+            return ThemeTestHelper.parse(minimalDoc({ palette: palette })).theme.palette.primaryForeground
+        }
+        compare(fg({ primary: "#CBA6F7" }).toString(), "#000000")   // light: black
+        compare(fg({ primary: "#C8460F" }).toString(), "#ffffff")   // dark: white
+        compare(fg({ primary: "#CBA6F7", primaryForeground: "#11111B" }).toString(), "#11111b")
+        compare(fg({ background: "#000000" }), undefined)           // no primary: Dark's
+        verify(Qt.colorEqual(ThemeRegistry.paletteOf("dark").primaryForeground, "#FFFFFF"))
+    }
+
     function test_rejects_invalid_documents() {
         var cases = [
             "",
@@ -155,6 +167,7 @@ TestCase {
             full[tokens[i]] = "#EEEEEE"
         delete full.primaryBorder          // derived from primary
         delete full.borderTertiaryMuted    // derived from borderTertiary
+        delete full.primaryForeground      // derived from primary
         var r = ThemeTestHelper.parse(minimalDoc({ mode: "light", palette: full }))
         verify(r.ok, r.errors.join("; "))
     }

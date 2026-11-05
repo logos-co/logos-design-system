@@ -63,6 +63,7 @@ const DarkColour kDark[] = {
     { "primaryHover", "#F55702", 1 },
     { "primaryPressed", "#8F3C03", 1 },
     { "primarySoft", "#FFD5C0", 1 },
+    { "primaryForeground", "#FFFFFF", 1 },
     { "success", "#49F563", 1 },
     { "successHover", "#6CCC93", 1 },
     { "successPressed", "#19C332", 1 },
@@ -126,6 +127,18 @@ const Derived kDerived[] = {
     { "primaryBorder", "primary", 0.4 },
     { "borderTertiaryMuted", "borderTertiary", 0.2 },
 };
+
+// Black or white, whichever reads better on `background` (WCAG contrast).
+QColor readableOn(const QColor& background)
+{
+    auto linear = [](double c) {
+        return c <= 0.03928 ? c / 12.92 : std::pow((c + 0.055) / 1.055, 2.4);
+    };
+    const double l = 0.2126 * linear(background.redF()) + 0.7152 * linear(background.greenF())
+                   + 0.0722 * linear(background.blueF());
+    // Contrast with black is (l + 0.05) / 0.05, with white 1.05 / (l + 0.05).
+    return (l + 0.05) * (l + 0.05) > 0.05 * 1.05 ? QColor(Qt::black) : QColor(Qt::white);
+}
 
 // "#RRGGBB" or "#RRGGBBAA" (CSS order; Qt's own string form is #AARRGGBB).
 bool parseColor(const QString& s, QColor* out)
@@ -224,6 +237,9 @@ QVariantMap readPalette(const QJsonObject& doc, bool strict, QStringList& errors
             palette.insert(token, c);
         }
     }
+    // Dark's white would be unreadable on a light primary.
+    if (!palette.contains("primaryForeground") && palette.contains("primary"))
+        palette.insert("primaryForeground", readableOn(palette.value("primary").value<QColor>()));
     return palette;
 }
 

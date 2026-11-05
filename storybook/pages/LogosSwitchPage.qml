@@ -24,7 +24,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: Switch (text, checked, clicked()) + trackColorOn/Off, handleColor. Aliases: indicatorItem, handleItem, labelItem."
+                text: "Public API: Switch (text, checked, clicked()) + trackColorOn/Off, handleColor, handleColorOn. Aliases: indicatorItem, handleItem, labelItem."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
