@@ -8,7 +8,7 @@ import Logos.Controls
 //     activeColor      Inner fill when checked      (default: Theme.palette.primary)
 //     boxColor         Inner fill when unchecked    (default: Theme.palette.surface)
 //     borderColor      Outer ring color             (default: Theme.palette.border)
-//     checkmarkColor   Checkmark stroke color       (default: Theme.palette.text)
+//     checkmarkColor   Checkmark stroke color       (default: Theme.palette.primaryForeground)
 //
 // Read-only inspection aliases: indicatorItem, focusRingItem, labelItem.
 //
@@ -24,7 +24,7 @@ CheckBox {
     property color activeColor: Theme.palette.primary
     property color boxColor: Theme.palette.surface
     property color borderColor: Theme.palette.border
-    property color checkmarkColor: Theme.palette.text
+    property color checkmarkColor: Theme.palette.primaryForeground
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias indicatorItem: box

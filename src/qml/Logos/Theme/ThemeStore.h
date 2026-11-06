@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QColor>
 #include <QHash>
 #include <QObject>
 #include <QStringList>
@@ -31,6 +32,9 @@ public:
     bool setCurrent(const QString& id);
     bool hasTheme(const QString& id) const;
     QString directoryOf(const QString& id) const;
+    QVariantMap palette(const QString& id) const;
+    QVariantMap palette() const { return m_palette; }
+    QColor color(const QString& token) const { return m_palette.value(token).value<QColor>(); }
 
     // Strict (installing): a bad colour value is an error, not a warning.
     enum class Validation { Lenient, Strict };
@@ -40,15 +44,18 @@ public:
 signals:
     void themesChanged();
     void currentChanged();
+    void paletteChanged();
 
 private:
     ThemeStore();
+    void settle(const QString& shownBefore);
 
     QStringList m_dirs;
     QVariantList m_themes;
     QHash<QString, QString> m_sources;   // id -> directory
     QString m_choiceFile;
     QString m_saved;
+    QVariantMap m_palette;
 };
 
 } // namespace Logos

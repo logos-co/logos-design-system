@@ -10,6 +10,7 @@ Switch {
     property color trackColorOn: Theme.palette.primary
     property color trackColorOff: Theme.palette.surface
     property color handleColor: Theme.palette.text
+    property color handleColorOn: Theme.palette.primaryForeground
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias indicatorItem: track
@@ -57,7 +58,7 @@ Switch {
                 width: parent.height - Theme.spacing.tiny
                 height: width
                 radius: height / 2
-                color: root.handleColor
+                color: root.checked ? root.handleColorOn : root.handleColor
                 x: root.checked
                    ? parent.width - width - Theme.spacing.tiny / 2
                    : Theme.spacing.tiny / 2

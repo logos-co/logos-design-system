@@ -25,12 +25,15 @@ whitelist, and nothing in it is ever evaluated as QML or JavaScript.
 | `id` | Required. `<author>.<name>`, lowercase `a-z 0-9 _ -`, at least one dot, up to 64 characters. `dark` is reserved. |
 | `name`, `author` | Required. 1 to 40 characters, without `<`, `>`, `&` or control characters. |
 | `mode` | Required. `"dark"` or `"light"`; read by `Theme.isDark`. |
-| `palette` | Any of the names in `DarkTheme.qml` (`ThemeRegistry.paletteTokens`), each `"#RRGGBB"` or `"#RRGGBBAA"` (alpha last). |
+| `palette` | Any of Dark's colour names (`ThemeRegistry.paletteTokens`), each `"#RRGGBB"` or `"#RRGGBBAA"` (alpha last). |
 
 - A dark theme may set only some colours; the rest come from Dark.
 - A light theme must set every colour, since Dark's would not fit it.
   `primaryBorder` and `borderTertiaryMuted` can be left out: unless set, they
   follow `primary` and `borderTertiary`.
+- `primaryForeground` is the colour of text and icons on `primary` (a primary
+  button's label, a checkmark). Unless set, a theme that sets `primary` gets
+  black or white, whichever reads better on it.
 - Installing is strict: a bad value for a known colour fails it. A file that
   is already installed loads leniently: such a colour is dropped with a
   warning and comes from Dark.
@@ -71,6 +74,26 @@ for a repeated id the directory added first wins. Each theme lives in a folder
 named after its id, `<dir>/<id>/theme.json`; other folders, and symlinked
 folders and files, are skipped.
 
+### Reading colours in C++
+
+Widget chrome QML doesn't draw (QSS, `QPalette`, a `QQuickWidget`'s clear
+colour) reads the same colours as `Theme.palette`, from the store:
+
+```cpp
+#include <ThemeStore.h>
+
+auto* store = Logos::ThemeStore::instance();
+auto apply = [w, store] { w->setClearColor(store->color("background")); };
+apply();
+QObject::connect(store, &Logos::ThemeStore::paletteChanged, w, apply);
+```
+
+- `color(token)` is the current theme's colour, Dark's where the theme leaves
+  it out; invalid for an unknown token. `palette()` is all of them.
+- `palette(id)` resolves any theme the same way, current or not.
+- `paletteChanged()` fires on a switch and when the current theme is
+  reinstalled with other colours.
+
 Link the design system once per process: a second copy has its own store, so
 its views would not follow theme changes. The store detects that and logs a
 critical `logos.theme` error.
@@ -78,6 +101,10 @@ critical `logos.theme` error.
 ## Reading the theme in QML
 
 - `Theme.palette` is the current theme's colours; `Theme.currentTheme` its id.
+  It is resolved by `ThemeStore`, so it always matches C++'s `color()`.
+  Raw colours are `Theme.colors` (`Theme.palette.colors` is the same).
+- `ThemeRegistry.paletteOf(id)` is a theme's colours without switching to it,
+  for previews.
 - `Theme.themeNames` lists Dark plus every installed theme, and
   `Theme.themeInfo[id]` gives its `name`, `author` and `mode`.
 - If the saved theme is no longer installed, Dark is shown; the choice is

@@ -2,6 +2,7 @@ import QtQuick
 import QtTest
 
 import Logos.Controls
+import LogosTests
 import Logos.Theme
 
 TestCase {
@@ -26,6 +27,20 @@ TestCase {
         sw.checked = false
         sw.enabled = true
         sw.text = "Toggle"
+    }
+
+    // A test that switches theme and fails must not leave it switched.
+    function cleanup() {
+        ThemeManager.select("dark")
+    }
+
+    // On, the handle sits on the primary track.
+    function test_handle_colour_follows_the_track() {
+        verify(ThemeManager.select("test.light"))
+        verify(!Qt.colorEqual(Theme.palette.primaryForeground, Theme.palette.text))
+        compare(sw.handleItem.color, Theme.palette.text)
+        sw.checked = true
+        compare(sw.handleItem.color, Theme.palette.primaryForeground)
     }
 
     function test_aliases_resolve() {

@@ -96,7 +96,8 @@ Rectangle {
                     { name: "primary",        value: Theme.palette.primary },
                     { name: "primaryHover",   value: Theme.palette.primaryHover },
                     { name: "primaryPressed", value: Theme.palette.primaryPressed },
-                    { name: "primarySoft",    value: Theme.palette.primarySoft }
+                    { name: "primarySoft",    value: Theme.palette.primarySoft },
+                    { name: "primaryForeground", value: Theme.palette.primaryForeground }
                 ]
             }
 

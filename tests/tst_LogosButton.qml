@@ -3,6 +3,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -38,6 +39,21 @@ TestCase {
         trailingIcon.source: "qrc:/test-icon.png"
     }
 
+    // Not reset by init(), whose icon colours would replace the defaults.
+    LogosButton {
+        id: primaryDefaults
+        text: "Go"
+        variant: LogosButton.Variant.Primary
+        leadingIcon.source: "qrc:/test-icon.png"
+        trailingIcon.source: "qrc:/test-icon.png"
+    }
+
+    LogosButton {
+        id: secondaryDefaults
+        text: "Go"
+        leadingIcon.source: "qrc:/test-icon.png"
+    }
+
     SignalSpy {
         id: clickedSpy
         target: btn
@@ -58,6 +74,11 @@ TestCase {
         btn.trailingIcon.color = Theme.palette.text
         btn.font.pixelSize = Theme.typography.secondaryText
         btn.focus = false
+    }
+
+    // A test that switches theme and fails must not leave it switched.
+    function cleanup() {
+        ThemeManager.select("dark")
     }
 
     function test_renders_text() {
@@ -102,6 +123,18 @@ TestCase {
 
         btn.variant = LogosButton.Variant.Primary
         tryCompare(btn.backgroundItem, "color", Theme.palette.primary)
+    }
+
+    // logos-basecamp#546: the label was Theme.palette.text on primary. Under
+    // test.light the two differ (black on its light primary, #171717 text).
+    function test_primary_content_uses_primary_foreground() {
+        verify(ThemeManager.select("test.light"))
+        verify(!Qt.colorEqual(Theme.palette.primaryForeground, Theme.palette.text))
+        compare(primaryDefaults.labelItem.color, Theme.palette.primaryForeground)
+        compare(primaryDefaults.leadingIconItem.color, Theme.palette.primaryForeground)
+        compare(primaryDefaults.trailingIconItem.color, Theme.palette.primaryForeground)
+        compare(secondaryDefaults.labelItem.color, Theme.palette.text)
+        compare(secondaryDefaults.leadingIconItem.color, Theme.palette.text)
     }
 
     function test_secondary_pressed_uses_background_fill() {

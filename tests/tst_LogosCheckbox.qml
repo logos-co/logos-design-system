@@ -3,6 +3,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -28,6 +29,18 @@ TestCase {
         cbox.enabled = true
         cbox.text = "Accept"
         cbox.focus = false
+    }
+
+    // A test that switches theme and fails must not leave it switched.
+    function cleanup() {
+        ThemeManager.select("dark")
+    }
+
+    // The checkmark sits on the primary fill.
+    function test_checkmark_uses_primary_foreground() {
+        verify(ThemeManager.select("test.light"))
+        verify(!Qt.colorEqual(Theme.palette.primaryForeground, Theme.palette.text))
+        compare(cbox.checkmarkColor, Theme.palette.primaryForeground)
     }
 
     function test_renders_text() {

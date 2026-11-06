@@ -181,7 +181,7 @@ For verbose runs:
 - **Surfaces & backgrounds**: `background`, `backgroundSecondary`, `backgroundElevated`, `surface`, `surfaceRaised`, `backgroundButton`, `backgroundInset`
 - **Text**: `text`, `textSecondary`, `textTertiary`, `textPlaceholder`, `textMuted`
 - **Borders**: `border`, `borderSubtle`, `borderHairline`, `borderInteractive`, `borderDark`
-- **Primary / accent**: `primary`, `primaryHover`, `primaryPressed`, `primarySoft`
+- **Primary / accent**: `primary`, `primaryHover`, `primaryPressed`, `primarySoft`, `primaryForeground` (text and icons on `primary`)
 - **Status**: `success`, `error`, `warning`, `info`, `notification`
 - **Interactive states**: `hover`, `pressed`, `disabled`, `focus`
 - **Overlays**: `glassOverlay`, `glassStrong`, `overlayDark`, `overlayLight`, `overlayOrange`
