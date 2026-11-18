@@ -85,7 +85,6 @@ Control {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: Theme.size.borderWidth
-            // While the bar is the search, the line marks the field, as a field's border would.
             color: d.searching ? Theme.palette.primary : Theme.palette.borderSubtle
         }
     }
@@ -93,19 +92,14 @@ Control {
     contentItem: RowLayout {
         spacing: Theme.spacing.tiny
 
-        // ‹ sits on the page margin, like the text below it; its tap area runs
-        // from the bar's edge to just past it, at least a touch target wide.
-        AbstractButton {
+        LogosAbstractButton {
             id: backButton
             visible: root.canGoBack
             Layout.leftMargin: -root.leftPadding
             Layout.rightMargin: d.backEnd - width - parent.spacing
             implicitWidth: Math.max(Theme.size.touchTarget, d.backEnd)
             implicitHeight: Theme.size.touchTarget
-            focusPolicy: Qt.StrongFocus
             Accessible.name: qsTr("Back")
-            Keys.onReturnPressed: click()
-            Keys.onEnterPressed: click()
             onClicked: root.backRequested()
 
             contentItem: Item {

@@ -72,7 +72,6 @@ AbstractButton {
     Accessible.name: title
     Accessible.description: subtitle
 
-    // A tap on the row is a tap on its switch or checkbox.
     onClicked: {
         const button = root.accessory as T.AbstractButton
         if (button && button.checkable)
@@ -81,7 +80,6 @@ AbstractButton {
 
     onAccessoryChanged: if (accessory) accessory.parent = accessorySlot
 
-    // The highlight stops above the separator, which the row draws under it.
     bottomInset: separator.visible ? separator.height : 0
 
     background: Rectangle {
@@ -159,7 +157,6 @@ AbstractButton {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        // Under the text, past the icon.
         anchors.leftMargin: root.leftPadding + (d.hasIcon ? Theme.controls.listRow.iconSize + contentRow.spacing : 0)
         height: Theme.size.borderWidth
         color: Theme.palette.borderSubtle

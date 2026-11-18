@@ -83,6 +83,24 @@ TestCase {
         compare(spy.count, 1)
     }
 
+    function test_back_from_the_keyboard_data() {
+        return [
+            { tag: "space",  key: Qt.Key_Space },
+            { tag: "return", key: Qt.Key_Return },
+            { tag: "enter",  key: Qt.Key_Enter },
+        ]
+    }
+
+    // ‹ answers the keys every Logos button does.
+    function test_back_from_the_keyboard(data) {
+        const b = createRendered(pageBar, 390)
+        b.canGoBack = true
+        const spy = createTemporaryObject(backSpy, root, { target: b })
+        b.backButtonItem.forceActiveFocus()
+        keyClick(data.key)
+        compare(spy.count, 1)
+    }
+
     function test_overflow_menu() {
         const b = createRendered(pageBar, 900)
         verify(!b.moreButtonItem.visible)

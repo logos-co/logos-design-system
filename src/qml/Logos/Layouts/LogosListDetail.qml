@@ -55,10 +55,7 @@ Item {
             item.parent = pane
             item.anchors.fill = pane
         }
-
-        // Closes the detail at phone width; otherwise the key goes on to the
-        // parent. Focus leaves the hidden detail, so what is typed next
-        // doesn't go into it.
+        
         function back(event) {
             event.accepted = root.showingDetail
             if (!root.showingDetail)

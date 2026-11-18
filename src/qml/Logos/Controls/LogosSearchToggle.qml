@@ -56,7 +56,6 @@ Control {
         property bool unfolded: false
     }
 
-    // Folding again keeps a query on screen.
     onFoldsChanged: if (folds && bar.text !== "") d.unfolded = true
 
     Layout.fillWidth: folds && expanded
@@ -86,8 +85,6 @@ Control {
                 id: bar
                 Layout.fillWidth: true
                 Layout.preferredHeight: Theme.size.touchTarget
-                // Folding, the bar is the field: no box of its own, and its
-                // icon where the bar's title was. Its ✕ is below; it also folds.
                 flat: root.folds
                 leftPadding: root.folds ? 0 : Theme.controls.search.paddingLeft
                 clearable: !root.folds
