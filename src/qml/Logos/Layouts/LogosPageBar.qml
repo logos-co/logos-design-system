@@ -48,13 +48,13 @@ Control {
     property LogosMenu menu: null
     readonly property bool phone: Theme.windowClass(width) === "phone"
 
+    signal backRequested()
+    signal searchSubmitted(string text)
+
     readonly property alias titleItem: titleText
     readonly property alias backButtonItem: backButton
     readonly property alias searchItem: search
     readonly property alias moreButtonItem: moreButton
-
-    signal backRequested()
-    signal searchSubmitted(string text)
 
     QtObject {
         id: d

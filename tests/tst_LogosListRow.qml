@@ -15,8 +15,10 @@ TestCase {
     when: windowShown
 
     Component { id: row; LogosListRow { width: 360; title: "Network"; value: "Testnet"; showChevron: true } }
+    Component { id: rowWithIcon; LogosListRow { width: 360; title: "Download folder"; iconSource: "qrc:/test-icon.png" } }
     Component { id: rowWithSubtitle; LogosListRow { width: 360; title: "Network"; subtitle: "Where the node connects" } }
     Component { id: switchRow; LogosListRow { width: 360; title: "Notifications"; accessory: LogosSwitch {} } }
+    Component { id: disabledSwitchRow; LogosListRow { width: 360; title: "Notifications"; accessory: LogosSwitch { enabled: false } } }
     Component {
         id: rowWithTooltip
         LogosListRow {
@@ -61,6 +63,19 @@ TestCase {
         verify(!r.subtitleItem.visible)
     }
 
+    function test_separator_starts_under_the_text_data() {
+        return [
+            { tag: "no icon", component: row },
+            { tag: "icon",    component: rowWithIcon },
+        ]
+    }
+
+    // The separator starts under the text, past any icon.
+    function test_separator_starts_under_the_text(data) {
+        const r = createRendered(data.component)
+        compare(r.separatorItem.x, r.titleItem.mapToItem(r, 0, 0).x)
+    }
+
     function test_selected_row_stands_out() {
         const r = createRendered(row)
         // A copy: a colour read from a property follows it.
@@ -82,6 +97,15 @@ TestCase {
         mouseClick(r, 20, r.height / 2)
         verify(r.accessory.checked)
         compare(toggled.count, 1)
+    }
+
+    // A row tap is a tap on the switch, so a disabled switch stays as it is.
+    function test_row_tap_leaves_a_disabled_accessory_alone() {
+        const r = createRendered(disabledSwitchRow)
+        const toggled = createTemporaryObject(spyComponent, root, { target: r.accessory, signalName: "toggled" })
+        mouseClick(r, 20, r.height / 2)
+        verify(!r.accessory.checked)
+        compare(toggled.count, 0)
     }
 
     function test_clicked() {

@@ -15,6 +15,18 @@ TestCase {
 
     Component { id: toggle; LogosSearchToggle { placeholderText: "Search apps" } }
     Component { id: submittedSpy; SignalSpy { signalName: "submitted" } }
+    // Counts the Esc presses that reach the toggle's parent.
+    Component {
+        id: inParent
+        Item {
+            property int escapes: 0
+            readonly property alias search: inner
+            width: 300
+            height: 50
+            Keys.onEscapePressed: escapes++
+            LogosSearchToggle { id: inner }
+        }
+    }
 
     function createRendered(properties) {
         const item = createTemporaryObject(toggle, root, properties || {})
@@ -57,6 +69,20 @@ TestCase {
         tryVerify(() => s.searchBarItem.textInput.activeFocus)
         keyClick(Qt.Key_Escape)
         verify(!s.expanded)
+    }
+
+    // Esc folds a folding search and stops there; a field that doesn't fold
+    // lets it go on, e.g. to close a dialog.
+    function test_escape_goes_on_when_it_does_not_fold() {
+        const p = createTemporaryObject(inParent, root)
+        p.search.open()
+        tryVerify(() => p.search.searchBarItem.textInput.activeFocus)
+        keyClick(Qt.Key_Escape)
+        compare(p.escapes, 0)
+        p.search.folds = false
+        p.search.searchBarItem.textInput.forceActiveFocus()
+        keyClick(Qt.Key_Escape)
+        compare(p.escapes, 1)
     }
 
     function test_enter_submits() {

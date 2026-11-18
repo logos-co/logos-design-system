@@ -7,7 +7,7 @@ description: Activate when creating, modifying, or extending a QML control or la
 
 A control here is a QML file under `src/qml/Logos/Controls/` exposed via `qmldir`. Every new control must ship with a unit test and a storybook page; every public property and signal is API and changing it is a breaking change.
 
-A piece of a page's skeleton (a bar, a pane arrangement, a scaffold) is a layout instead: it goes in `src/qml/Logos/Layouts/` (`Logos.Layouts`), its sizes in `LayoutTokens.qml` (`Theme.layouts.<layout>`), its storybook entry under "Layouts (not designed)". Everything below applies to it too. What a page puts inside those (rows, fields, a search toggle) is a control, even when it adapts to its width.
+A piece of a page's skeleton (a bar, a pane arrangement, a scaffold) is a layout instead: it goes in `src/qml/Logos/Layouts/` (`Logos.Layouts`), its sizes in `LayoutTokens.qml` (`Theme.layouts.<layout>`), its storybook entry under "Layouts (not designed)". Everything below applies to it too, except the base class: a layout that only arranges other items is an `Item`, like Qt's own layouts (`LogosListDetail`, `LogosSections`); one with chrome of its own is a `Control` (`LogosPageBar`). What a page puts inside those (rows, fields, a search toggle) is a control, even when it adapts to its width.
 
 ## 1. Pick the base class
 

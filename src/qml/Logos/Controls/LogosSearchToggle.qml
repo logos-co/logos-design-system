@@ -27,7 +27,7 @@ import Logos.Controls
 //         LogosText { visible: !search.expanded; Layout.fillWidth: true; text: qsTr("Apps") }
 //         LogosSearchToggle { id: search; placeholderText: qsTr("Search apps") }
 //     }
-Item {
+Control {
     id: root
 
     property alias text: bar.text
@@ -35,11 +35,11 @@ Item {
     property bool folds: true
     readonly property bool expanded: !folds || d.unfolded
 
+    signal submitted(string text)
+
     readonly property alias searchBarItem: bar
     readonly property alias openButtonItem: openButton
     readonly property alias closeButtonItem: closeButton
-
-    signal submitted(string text)
 
     function open() {
         d.unfolded = true
@@ -64,41 +64,49 @@ Item {
                  : expanded ? Theme.controls.searchToggle.fieldWidth : Theme.size.touchTarget
     implicitHeight: Theme.size.touchTarget
 
-    LogosIconButton {
-        id: openButton
-        visible: !root.expanded
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        size: Theme.size.touchTarget
-        flat: true
-        iconSource: LogosIcons.search
-        Accessible.name: qsTr("Search")
-        onClicked: root.open()
-    }
-
-    RowLayout {
-        visible: root.expanded
-        anchors.fill: parent
-        spacing: Theme.spacing.tiny
-
-        LogosSearchBar {
-            id: bar
-            Layout.fillWidth: true
-            Layout.preferredHeight: Theme.size.touchTarget
-            // Folding has its own ✕ below, which also folds.
-            clearable: !root.folds
-            onSubmitted: function(text) { root.submitted(text) }
-            Keys.onEscapePressed: if (root.folds) root.close()
-        }
-
+    contentItem: Item {
         LogosIconButton {
-            id: closeButton
-            visible: root.folds
+            id: openButton
+            visible: !root.expanded
+            anchors.right: parent.right
+            anchors.verticalCenter: parent.verticalCenter
             size: Theme.size.touchTarget
             flat: true
-            iconSource: LogosIcons.close
-            Accessible.name: qsTr("Close search")
-            onClicked: root.close()
+            iconSource: LogosIcons.search
+            Accessible.name: qsTr("Search")
+            onClicked: root.open()
+        }
+
+        RowLayout {
+            visible: root.expanded
+            anchors.fill: parent
+            spacing: Theme.spacing.tiny
+
+            LogosSearchBar {
+                id: bar
+                Layout.fillWidth: true
+                Layout.preferredHeight: Theme.size.touchTarget
+                // Folding has its own ✕ below, which also folds.
+                clearable: !root.folds
+                onSubmitted: function(text) { root.submitted(text) }
+                // Only a folding search uses Esc; otherwise it goes on, e.g. to close a dialog.
+                Keys.onEscapePressed: function(event) {
+                    if (root.folds)
+                        root.close()
+                    else
+                        event.accepted = false
+                }
+            }
+
+            LogosIconButton {
+                id: closeButton
+                visible: root.folds
+                size: Theme.size.touchTarget
+                flat: true
+                iconSource: LogosIcons.close
+                Accessible.name: qsTr("Close search")
+                onClicked: root.close()
+            }
         }
     }
 }

@@ -1,6 +1,9 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+// Its AbstractButton is the base of every style's switch and checkbox; the
+// QtQuick.Controls name doesn't match them in a type check.
+import QtQuick.Templates as T
 
 import Logos.Theme
 import Logos.Icons
@@ -26,7 +29,7 @@ import Logos.Controls
 //     clicked()                  a tap or click on the row
 //
 // Read-only inspection aliases: titleItem, subtitleItem, valueItem,
-// chevronItem, backgroundItem.
+// chevronItem, backgroundItem, separatorItem.
 //
 // Example:
 //     LogosListRow { title: qsTr("Network"); value: qsTr("Testnet"); showChevron: true; onClicked: openNetwork() }
@@ -50,6 +53,12 @@ AbstractButton {
     readonly property alias valueItem: valueText
     readonly property alias chevronItem: chevron
     readonly property alias backgroundItem: bg
+    readonly property alias separatorItem: separator
+
+    QtObject {
+        id: d
+        readonly property bool hasIcon: root.iconSource.toString() !== ""
+    }
 
     hoverEnabled: true
     focusPolicy: Qt.StrongFocus
@@ -63,15 +72,11 @@ AbstractButton {
     Accessible.name: title
     Accessible.description: subtitle
 
-    // A tap on the row toggles the accessory. toggle() doesn't emit toggled()
-    // (that is for the user's own taps), so emit it: an app's onToggled must
-    // run whichever the user tapped.
+    // A tap on the row is a tap on its switch or checkbox.
     onClicked: {
-        if (accessory && accessory.toggle !== undefined) {
-            accessory.toggle()
-            if (accessory.toggled !== undefined)
-                accessory.toggled()
-        }
+        const button = root.accessory as T.AbstractButton
+        if (button && button.checkable)
+            button.click()
     }
 
     onAccessoryChanged: if (accessory) accessory.parent = accessorySlot
@@ -84,21 +89,24 @@ AbstractButton {
              : "transparent"
 
         Rectangle {
+            id: separator
             visible: root.showSeparator
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            anchors.leftMargin: root.leftPadding
+            // Under the text, past the icon.
+            anchors.leftMargin: root.leftPadding + (d.hasIcon ? Theme.controls.listRow.iconSize + contentRow.spacing : 0)
             height: Theme.size.borderWidth
             color: Theme.palette.borderSubtle
         }
     }
 
     contentItem: RowLayout {
+        id: contentRow
         spacing: Theme.spacing.medium
 
         LogosIcon {
-            visible: root.iconSource.toString() !== ""
+            visible: d.hasIcon
             source: root.iconSource
             color: root.destructive ? Theme.palette.error : Theme.palette.textSecondary
             Layout.preferredWidth: Theme.controls.listRow.iconSize
