@@ -50,7 +50,7 @@ The bars and panes a page is built from; controls go inside them. Each arranges 
 - `LogosWelcome` — an onboarding's first screen: a backdrop, a title and the ways in, centred or aligned left, with a slot over the title and four corners for what the app adds (brand, close, version, other ways in); on a phone the bottom corners stack. Its `background` can be replaced. A wizard's `welcome`.
 - `LogosSections` — an app with several sections: a list of them beside the current one from tablet width; on a phone the app opens on its current section and ‹ goes back to the list. There is no ☰ drawer.
 
-All are placeholders for now, under **Layouts (not designed)** in the storybook.
+All are placeholders for now, under **Layouts (not designed)** in the storybook. [docs/responsive.md](docs/responsive.md) shows how a page is put together from them.
 
 #### Designed vs placeholder
 
@@ -79,13 +79,15 @@ When a placeholder graduates to designed:
 │   ├── Controls/              Logos.Controls module
 │   └── Layouts/               Logos.Layouts module
 ├── storybook/                 catalog browser host app + per-page QML
-│   ├── main.cpp + main.qml    host with sidebar, dark/light toggle, hot-reload
+│   ├── main.cpp + main.qml    host with sidebar, dark/light toggle, hot-reload, phone/tablet preview
+│   ├── PhoneChecks.js         what wouldn't work on a phone (preview marks, tst_PhoneFit)
 │   └── pages/                 one .qml per token group / control
 ├── tests/                     QtQuickTest unit tests
 │   ├── main.cpp               quick_test_main_with_setup wiring
 │   ├── tst_*.qml              one file per component (LogosTabBar, LogosButton, …)
 │   ├── test-icon.png          1×1 RGBA PNG bundled via test-resources.qrc
 │   └── CMakeLists.txt
+├── docs/                      themes.md (theme files), responsive.md (phone to desktop)
 ├── CMakeLists.txt             top-level: opt-in storybook + tests via flags
 └── .github/workflows/ci.yml   build + tests + storybook smoke
 ```
@@ -219,7 +221,7 @@ For verbose runs:
 
 Tooltips stay extras: never put something only in a tooltip, since touch users have to know to long-press.
 
-Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes. Two widths, on purpose: a component arranges itself by its own width, so a wizard in a narrow desktop pane stacks its buttons; type sizes and touch targets follow the whole view (`Theme.viewClass`), so text stays one scale across a view.
+[docs/responsive.md](docs/responsive.md) is the guide to pages that work on a phone, a tablet and a desktop. Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes. Two widths, on purpose: a component arranges itself by its own width, so a wizard in a narrow desktop pane stacks its buttons; type sizes and touch targets follow the whole view (`Theme.viewClass`), so text stays one scale across a view.
 
 On a phone, what covers the window's edges: `Theme.safeAreaTop` / `safeAreaBottom` (the notch and the home indicator; `followViewWidth` keeps them from Qt 6.9) and `Theme.keyboardHeight` (the on-screen keyboard). `Theme.topInset(item)` and `Theme.bottomInset(item)` say how much of an item they cover. Sheets, full-page dialogs, the wizard and the list → detail action bar stay clear of them, and in a dialog, a wizard or a form the field with focus scrolls into view above the keyboard.
 
