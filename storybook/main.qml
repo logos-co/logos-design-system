@@ -6,6 +6,8 @@ import QtQuick.Layouts
 import Logos.Theme
 import Logos.Controls
 
+import "PhoneChecks.js" as PhoneChecks
+
 ApplicationWindow {
     id: window
 
@@ -174,11 +176,24 @@ ApplicationWindow {
     // The page in a window the size of a phone or a tablet. The window has its
     // own overlay, so menus and dialogs place themselves as on the device, and
     // while it is open Theme.viewWidth is its width: a phone's gets touch sizes,
-    // in both windows.
+    // in both windows. Every second it marks what wouldn't work on the device:
+    // in red, parts that reach past the sides; where targets are touch-sized,
+    // in orange, tappable parts smaller than a fingertip.
     Window {
         id: previewWindow
 
         readonly property var preview: window.previews[window.previewIndex]
+        property var problems: ({ overflow: [], small: [] })
+
+        function check() {
+            const page = previewLoader.item
+            if (!page) {
+                problems = { overflow: [], small: [] }
+                return
+            }
+            const found = PhoneChecks.find(page, Theme.size.touchTarget)
+            problems = { overflow: found.overflow, small: Theme.touch ? found.small : [] }
+        }
 
         visible: preview.width > 0
         width: preview.width
@@ -191,6 +206,7 @@ ApplicationWindow {
         Flickable {
             id: previewScroll
             anchors.fill: parent
+            anchors.bottomMargin: Theme.size.touchTarget
             clip: true
             flickableDirection: Flickable.VerticalFlick
             boundsBehavior: Flickable.StopAtBounds
@@ -207,6 +223,57 @@ ApplicationWindow {
                 height: previewScroll.contentHeight
                 source: previewWindow.visible ? pageLoader.source : ""
             }
+
+            // Over the page, in its coordinates, so the marks scroll with it.
+            Repeater {
+                model: previewWindow.problems.overflow.map(item => ({ item: item, color: Theme.palette.error }))
+                    .concat(previewWindow.problems.small.map(item => ({ item: item, color: Theme.palette.warning })))
+                delegate: Rectangle {
+                    id: mark
+                    required property var modelData
+                    readonly property point at: modelData.item.mapToItem(previewLoader, 0, 0)
+                    x: at.x
+                    y: at.y
+                    width: modelData.item.width
+                    height: modelData.item.height
+                    color: "transparent"
+                    border.width: Theme.size.focusWidth
+                    border.color: modelData.color
+
+                    HoverHandler { id: markHover }
+                    LogosToolTip {
+                        visible: markHover.hovered
+                        text: PhoneChecks.describe(mark.modelData.item, previewLoader)
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            anchors.left: parent.left
+            anchors.right: parent.right
+            anchors.bottom: parent.bottom
+            height: Theme.size.touchTarget
+            color: Theme.palette.backgroundSecondary
+
+            LogosText {
+                anchors.centerIn: parent
+                readonly property int past: previewWindow.problems.overflow.length
+                readonly property int small: previewWindow.problems.small.length
+                text: past + small === 0 ? "Nothing reaches past the sides" + (Theme.touch ? " or is too small to tap" : "")
+                    : [past > 0 ? past + " past the sides (red)" : "", small > 0 ? small + " too small to tap (orange)" : ""]
+                      .filter(part => part !== "").join(" · ")
+                font.pixelSize: Theme.typography.secondaryText
+                color: past + small === 0 ? Theme.palette.textSecondary : Theme.palette.text
+            }
+        }
+
+        Timer {
+            interval: 1000
+            repeat: true
+            running: previewWindow.visible
+            triggeredOnStart: true
+            onTriggered: previewWindow.check()
         }
     }
 

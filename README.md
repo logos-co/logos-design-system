@@ -162,7 +162,7 @@ The storybook host app watches the `pages/` directory and the design-system QML 
 
 The header has manual **Reload** and **Light/Dark** buttons. The "Open in Figma" button appears on pages where the page's `figmaUrl` property is set.
 
-**Preview** opens the page again in a window of a phone's size (390 px) or a tablet's (700 px). That window has its own overlay, as an app's view does, so menus and dialogs place themselves there as they would on the device. While it is open, `Theme.viewWidth` is its width, so on a phone every tappable part is touch-sized, in the main window too. **Density** switches compact, comfortable and touch.
+**Preview** opens the page again in a window of a phone's size (390 px) or a tablet's (700 px). That window has its own overlay, as an app's view does, so menus and dialogs place themselves there as they would on the device. While it is open, `Theme.viewWidth` is its width, so on a phone every tappable part is touch-sized, in the main window too. Every second the preview marks in red what reaches past its sides and, where targets are touch-sized, in orange what is too small to tap; hover a mark for what it is. `tests/tst_PhoneFit.qml` runs the same checks (`storybook/PhoneChecks.js`) on the layouts and controls at a phone's width. **Density** switches compact, comfortable and touch.
 
 ### Adding a new page
 

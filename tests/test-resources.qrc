@@ -2,5 +2,6 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>test-icon.png</file>
+        <file alias="PhoneChecks.js">../storybook/PhoneChecks.js</file>
     </qresource>
 </RCC>
