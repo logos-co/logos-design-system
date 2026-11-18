@@ -57,7 +57,7 @@ LogosAbstractButton {
 
     property string text: ""
     property string title: ""
-    property int dialogWidth: 560
+    property int dialogWidth: Theme.controls.infoButton.dialogWidth
 
     // What the dialog centres on. Null (default) centres it on the host view —
     // in basecamp and the standalone app that is the module's own QQuickWidget,
@@ -86,8 +86,8 @@ LogosAbstractButton {
         readonly property bool lit: root.hovered || dialog.visible
     }
 
-    implicitWidth: 16
-    implicitHeight: 16
+    implicitWidth: Theme.controls.infoButton.size
+    implicitHeight: Theme.controls.infoButton.size
     padding: 0
 
     Accessible.role: Accessible.Button
@@ -98,7 +98,7 @@ LogosAbstractButton {
         id: ring
         radius: width / 2
         color: "transparent"
-        border.width: 1
+        border.width: Theme.size.borderWidth
         border.color: d.lit ? Theme.palette.text : Theme.palette.borderGlyph
         Behavior on border.color { ColorAnimation { duration: 120 } }
     }
@@ -108,7 +108,7 @@ LogosAbstractButton {
         text: "i"
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        font.pixelSize: 9
+        font.pixelSize: Theme.controls.infoButton.fontSize
         color: d.lit ? Theme.palette.text : Theme.palette.textMuted
         Behavior on color { ColorAnimation { duration: 120 } }
     }

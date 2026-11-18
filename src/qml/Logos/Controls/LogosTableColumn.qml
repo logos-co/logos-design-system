@@ -1,4 +1,5 @@
 import QtQuick
+import Logos.Theme
 
 // Public API:
 //     title             header text shown to the user
@@ -43,7 +44,7 @@ QtObject {
     property string role: ""
     property bool sortable: false
 
-    property int minWidth: 80
+    property int minWidth: Theme.controls.table.columnMinWidth
     property int preferredWidth: minWidth
     property int maxWidth: -1
     property bool fillWidth: false

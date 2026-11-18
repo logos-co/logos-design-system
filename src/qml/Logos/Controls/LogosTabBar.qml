@@ -36,7 +36,7 @@ TabBar {
     id: root
 
     property color indicatorColor: Theme.palette.primary
-    property int indicatorHeight: 3
+    property int indicatorHeight: Theme.controls.tabBar.indicatorHeight
     property int animationDuration: 200
     property color trackColor: Theme.palette.borderHairline
 

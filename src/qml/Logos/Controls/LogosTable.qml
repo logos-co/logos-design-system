@@ -65,8 +65,8 @@ Rectangle {
     property int sortOrder: Qt.AscendingOrder
 
     // ─── Properties: dimensions ───
-    property int rowHeight: 64
-    property int headerHeight: 36
+    property int rowHeight: Theme.controls.table.rowHeight
+    property int headerHeight: Theme.controls.table.headerHeight
 
     // Default horizontal inset applied to every body cell + header cell
     property int defaultCellPadding: Theme.spacing.medium
@@ -110,9 +110,9 @@ Rectangle {
         }
 
         property LogosTableColumn _selectionColumn: LogosTableColumn {
-            minWidth: 40
-            preferredWidth: 40
-            maxWidth: 40
+            minWidth: Theme.controls.table.selectionColumnWidth
+            preferredWidth: Theme.controls.table.selectionColumnWidth
+            maxWidth: Theme.controls.table.selectionColumnWidth
             cellPadding: 0
             cellDelegate: _selectionCell
             headerCellDelegate: _selectionHeader
@@ -313,15 +313,15 @@ Rectangle {
                 // instead of relying on rotating a single symmetric icon.
                 ColumnLayout {
                     Layout.leftMargin: columnDef.sortable ? Theme.spacing.tiny : 0
-                    Layout.preferredWidth: 12
-                    Layout.preferredHeight: 16
+                    Layout.preferredWidth: Theme.controls.table.sortIconWidth
+                    Layout.preferredHeight: Theme.controls.table.sortIconHeight * 2
                     Layout.alignment: Qt.AlignVCenter
                     visible: columnDef.sortable
                     spacing: 0
 
                     Image {
-                        Layout.preferredWidth: 12
-                        Layout.preferredHeight: 8
+                        Layout.preferredWidth: Theme.controls.table.sortIconWidth
+                        Layout.preferredHeight: Theme.controls.table.sortIconHeight
                         source: LogosIcons.triangleUp
                         sourceSize.width: 24
                         sourceSize.height: 12
@@ -330,8 +330,8 @@ Rectangle {
                                   && parent.parent.parent._isAscending) ? 1.0 : 0.35
                     }
                     Image {
-                        Layout.preferredWidth: 12
-                        Layout.preferredHeight: 8
+                        Layout.preferredWidth: Theme.controls.table.sortIconWidth
+                        Layout.preferredHeight: Theme.controls.table.sortIconHeight
                         source: LogosIcons.triangleDown
                         sourceSize.width: 24
                         sourceSize.height: 12
@@ -401,7 +401,7 @@ Rectangle {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                height: 1
+                height: Theme.size.borderWidth
                 color: Theme.palette.borderTertiaryMuted
             }
         }

@@ -62,7 +62,7 @@ LogosAbstractButton {
     property bool highlighted: false
     // Artwork is inset and uncropped rather than bleeding to the tile edge.
     property bool insetArtwork: true
-    property int tileSize: 40
+    property int tileSize: Theme.controls.tile.size
     property real radius: Theme.spacing.radiusMedium
     property real dimOpacity: 1.0
 
@@ -121,7 +121,7 @@ LogosAbstractButton {
         id: plate
         radius: root.radius
         color: d.plateColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         border.color: d.ringColor
         Behavior on color { enabled: root.interactive; ColorAnimation { duration: 120 } }
         Behavior on border.color { enabled: root.interactive; ColorAnimation { duration: 120 } }

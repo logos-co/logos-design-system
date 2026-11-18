@@ -32,7 +32,7 @@ GroupBox {
         height: root.height - y
         color: "transparent"
         border.color: root.borderColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         radius: Theme.spacing.radiusSmall
     }
 }

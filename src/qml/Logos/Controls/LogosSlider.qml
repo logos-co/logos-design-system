@@ -22,11 +22,11 @@ Slider {
         id: track
         x: root.leftPadding
         y: root.topPadding + root.availableHeight / 2 - height / 2
-        implicitWidth: 200
-        implicitHeight: 4
+        implicitWidth: Theme.controls.slider.width
+        implicitHeight: Theme.controls.slider.trackHeight
         width: root.availableWidth
-        height: 4
-        radius: 2
+        height: Theme.controls.slider.trackHeight
+        radius: Theme.spacing.radiusTiny
         color: root.trackColor
 
         Rectangle {
@@ -34,7 +34,7 @@ Slider {
             width: root.visualPosition * parent.width
             height: parent.height
             color: root.fillColor
-            radius: 2
+            radius: Theme.spacing.radiusTiny
         }
     }
 
@@ -42,11 +42,11 @@ Slider {
         id: handle
         x: root.leftPadding + root.visualPosition * (root.availableWidth - width)
         y: root.topPadding + root.availableHeight / 2 - height / 2
-        implicitWidth: 18
-        implicitHeight: 18
+        implicitWidth: Theme.controls.slider.handleSize
+        implicitHeight: Theme.controls.slider.handleSize
         radius: width / 2
         color: root.pressed ? Theme.palette.primaryPressed : root.handleColor
         border.color: root.visualFocus ? Theme.palette.overlayOrange : Theme.palette.border
-        border.width: root.visualFocus ? 2 : 1
+        border.width: root.visualFocus ? Theme.size.focusWidth : Theme.size.borderWidth
     }
 }

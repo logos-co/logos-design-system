@@ -15,11 +15,13 @@ nix flake check              # CI: build + test
 
 | File | Provides |
 |---|---|
-| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, theme switching |
+| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, theme switching |
 | `ColorPalette.qml` | Raw color values (gray, orange, red, green, …) — single source of truth |
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
+| `Sizes.qml` | Shared size scale: control heights (`controlXSmall:24` … `controlXLarge:44`), icon sizes, `borderWidth`, `focusWidth` |
+| `ControlTokens.qml` | Each control's own dimensions (`Theme.controls.button.height`, `Theme.controls.toggle.trackWidth`, …), defaulting to the shared scale where a value is shared |
 | `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
@@ -187,6 +189,10 @@ For verbose runs:
 - **Overlays**: `glassOverlay`, `glassStrong`, `overlayDark`, `overlayLight`, `overlayOrange`
 
 `Theme.spacing.*`: `tiny:4`, `small:8`, `medium:12`, `large:16`, `xlarge:20`, `xxlarge:40`, plus `radiusSmall:4`, `radiusMedium:6`, `radiusLarge:8`, `radiusXlarge:16`, `radiusPill:999`.
+
+`Theme.size.*`: control heights `controlXSmall:24`, `controlSmall:32`, `controlMedium:36`, `controlLarge:40`, `controlXLarge:44`; icons `iconXSmall:12`, `iconSmall:16`, `iconMedium:20`; strokes `borderWidth:1`, `focusWidth:2`.
+
+`Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 
 `Theme.typography.*`: `weightRegular:400`, `weightMedium:500`, `weightBold:700`, sizes `secondaryText:12`, `primaryText:14`, `titleText:30`, `mainTitleText:256`.
 

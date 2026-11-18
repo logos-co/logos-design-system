@@ -27,13 +27,13 @@ ToolButton {
 
     background: Rectangle {
         id: bg
-        implicitWidth: 36
-        implicitHeight: 36
+        implicitWidth: Theme.controls.toolButton.size
+        implicitHeight: Theme.controls.toolButton.size
         radius: Theme.spacing.radiusSmall
         color: root.pressed
                ? root.pressedColor
                : (root.hovered || root.visualFocus ? root.hoverColor : "transparent")
-        border.width: root.visualFocus ? 1 : 0
+        border.width: root.visualFocus ? Theme.size.borderWidth : 0
         border.color: Theme.palette.overlayOrange
     }
 

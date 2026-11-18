@@ -11,6 +11,11 @@ QtObject {
     // ===== DESIGN TOKENS =====
     readonly property Spacing spacing: Spacing {}
     readonly property Typography typography: Typography {}
+    readonly property Sizes size: Sizes {}
+    readonly property ControlTokens controls: ControlTokens {
+        size: theme.size
+        spacing: theme.spacing
+    }
     
     // ===== THEME INSTANCES =====
     // Dark's colours in QML. The palette comes from ThemeStore (C++), whose

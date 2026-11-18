@@ -317,13 +317,13 @@ Control {
         // other controls. moveFocus / restore use TabFocusReason so ←/→ keeps
         // visualFocus true.
         function navFocusBorderWidth(button) {
-            return button.visualFocus ? 2 : 0
+            return button.visualFocus ? Theme.size.focusWidth : 0
         }
     }
 
     onCurrentPageChanged: d.scheduleFocusRestore()
 
-    implicitHeight: 36
+    implicitHeight: Theme.controls.paginator.height
     focusPolicy: Qt.NoFocus
     activeFocusOnTab: false
 
@@ -348,11 +348,11 @@ Control {
         LogosIconButton {
             id: firstBtn
             Layout.fillWidth: true
-            Layout.minimumWidth: 24
-            Layout.maximumWidth: 36
+            Layout.minimumWidth: Theme.controls.paginator.buttonMinWidth
+            Layout.maximumWidth: Theme.controls.paginator.buttonSize
             iconSource: LogosIcons.arrowLeftDouble
             iconColor: root.iconColor
-            size: 36
+            size: Theme.controls.paginator.buttonSize
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
@@ -372,11 +372,11 @@ Control {
         LogosIconButton {
             id: prevBtn
             Layout.fillWidth: true
-            Layout.minimumWidth: 24
-            Layout.maximumWidth: 36
+            Layout.minimumWidth: Theme.controls.paginator.buttonMinWidth
+            Layout.maximumWidth: Theme.controls.paginator.buttonSize
             iconSource: LogosIcons.arrowLeft
             iconColor: root.iconColor
-            size: 36
+            size: Theme.controls.paginator.buttonSize
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
@@ -404,8 +404,8 @@ Control {
 
                 delegate: AbstractButton {
                     id: pageCell
-                    width: 36
-                    height: 36
+                    width: Theme.controls.paginator.buttonSize
+                    height: Theme.controls.paginator.buttonSize
 
                     readonly property bool isEllipsis: typeof modelData === "string"
                     readonly property bool isCurrent: !isEllipsis && modelData === root.currentPage
@@ -433,7 +433,7 @@ Control {
                                : (pageCell.pressed
                                   ? Theme.palette.pressed
                                   : Theme.palette.surfaceRecessed)
-                        border.width: pageCell.visualFocus ? 2 : (pageCell.isCurrent ? 0 : 1)
+                        border.width: pageCell.visualFocus ? Theme.size.focusWidth : (pageCell.isCurrent ? 0 : Theme.size.borderWidth)
                         border.color: pageCell.visualFocus
                                       ? Theme.palette.overlayOrange
                                       : Theme.palette.borderStrong
@@ -461,11 +461,11 @@ Control {
         LogosIconButton {
             id: nextBtn
             Layout.fillWidth: true
-            Layout.minimumWidth: 24
-            Layout.maximumWidth: 36
+            Layout.minimumWidth: Theme.controls.paginator.buttonMinWidth
+            Layout.maximumWidth: Theme.controls.paginator.buttonSize
             iconSource: LogosIcons.arrowRight
             iconColor: root.iconColor
-            size: 36
+            size: Theme.controls.paginator.buttonSize
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
@@ -485,11 +485,11 @@ Control {
         LogosIconButton {
             id: lastBtn
             Layout.fillWidth: true
-            Layout.minimumWidth: 24
-            Layout.maximumWidth: 36
+            Layout.minimumWidth: Theme.controls.paginator.buttonMinWidth
+            Layout.maximumWidth: Theme.controls.paginator.buttonSize
             iconSource: LogosIcons.arrowRightDouble
             iconColor: root.iconColor
-            size: 36
+            size: Theme.controls.paginator.buttonSize
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
@@ -515,11 +515,11 @@ Control {
             id: sizeSelector
             Layout.alignment: Qt.AlignVCenter
             Layout.fillWidth: true
-            Layout.minimumWidth: 80
-            Layout.preferredWidth: 130
-            Layout.maximumWidth: 130
+            Layout.minimumWidth: Theme.controls.paginator.pageSizeMinWidth
+            Layout.preferredWidth: Theme.controls.paginator.pageSizeWidth
+            Layout.maximumWidth: Theme.controls.paginator.pageSizeWidth
             visible: root.pageSizeOptions && root.pageSizeOptions.length > 0
-            implicitHeight: 36
+            implicitHeight: Theme.controls.paginator.height
 
             textColor: Theme.palette.textMuted
             indicatorColor: root.iconColor
@@ -528,7 +528,7 @@ Control {
                 color: Theme.palette.surfaceRecessed
                 radius: Theme.spacing.radiusLarge
                 border.color: Theme.palette.borderStrong
-                border.width: 1
+                border.width: Theme.size.borderWidth
             }
 
             model: d.sizeOptionLabels()

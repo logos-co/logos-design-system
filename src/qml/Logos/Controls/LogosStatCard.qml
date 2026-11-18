@@ -131,7 +131,7 @@ LogosAbstractButton {
     property color backgroundColor: Theme.palette.surfaceRaised
     property color borderColor: "transparent"
     property real radius: Theme.spacing.radiusLarge
-    property real minimumHeight: 108
+    property real minimumHeight: Theme.controls.statCard.minHeight
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias labelItem: labelText
@@ -203,7 +203,7 @@ LogosAbstractButton {
         id: bg
         color: d.surfaceColor
         border.color: root.borderColor
-        border.width: root.borderColor.a > 0 ? 1 : 0
+        border.width: root.borderColor.a > 0 ? Theme.size.borderWidth : 0
         radius: root.radius
         Behavior on color {
             enabled: root.interactive
@@ -233,8 +233,8 @@ LogosAbstractButton {
             LogosIcon {
                 id: severityIcon
                 Layout.alignment: Qt.AlignVCenter
-                Layout.preferredWidth: 16
-                Layout.preferredHeight: 16
+                Layout.preferredWidth: Theme.controls.statCard.iconSize
+                Layout.preferredHeight: Theme.controls.statCard.iconSize
                 visible: d.hasSeverity
                 source: d.iconSource
                 color: d.accent

@@ -23,19 +23,19 @@ TabButton {
     readonly property alias labelItem: labelText
     readonly property alias underlineItem: underline
 
-    implicitHeight: 40
-    spacing: 6
-    leftPadding: 8
-    rightPadding: 8
-    topPadding: 4
-    bottomPadding: 4
+    implicitHeight: Theme.controls.tab.height
+    spacing: Theme.controls.tab.spacing
+    leftPadding: Theme.spacing.small
+    rightPadding: Theme.spacing.small
+    topPadding: Theme.spacing.tiny
+    bottomPadding: Theme.spacing.tiny
 
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
     font.weight: Theme.typography.weightMedium
 
-    icon.width: 20
-    icon.height: 20
+    icon.width: Theme.controls.tab.iconSize
+    icon.height: Theme.controls.tab.iconSize
 
     focusPolicy: Qt.StrongFocus
     activeFocusOnTab: true
@@ -48,7 +48,7 @@ TabButton {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            height: 2
+            height: Theme.controls.tab.underlineHeight
             radius: height / 2
             color: root.visualFocus && !root.checked
                    ? Theme.palette.overlayOrange

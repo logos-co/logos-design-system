@@ -41,7 +41,7 @@ ItemDelegate {
     readonly property alias backgroundItem: bg
     readonly property alias labelItem: label
 
-    implicitHeight: 36
+    implicitHeight: Theme.controls.listItem.height
 
     leftPadding: Theme.spacing.medium
     rightPadding: Theme.spacing.medium

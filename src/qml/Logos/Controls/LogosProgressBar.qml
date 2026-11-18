@@ -15,8 +15,8 @@ ProgressBar {
     readonly property alias backgroundItem: bg
     readonly property alias fillItem: fill
 
-    implicitWidth: 200
-    implicitHeight: 8
+    implicitWidth: Theme.controls.progressBar.width
+    implicitHeight: Theme.controls.progressBar.height
 
     background: Rectangle {
         id: bg

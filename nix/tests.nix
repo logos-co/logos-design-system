@@ -41,6 +41,8 @@ pkgs.stdenv.mkDerivation rec {
     ${pkgs.qt6.qtdeclarative}/bin/qml -I ${src}/src/qml -I "${pkgs.qt6.qtdeclarative}/lib/qt-6/qml" \
       ${src}/tests/source-qml/probe.qml \
       || { echo "Logos.Theme from source: no usable palette (exit $?)"; exit 1; }
+
+    bash ${src}/tests/check-size-literals.sh ${src}/src/qml/Logos/Controls
     runHook postCheck
   '';
 

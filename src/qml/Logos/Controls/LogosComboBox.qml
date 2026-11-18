@@ -105,7 +105,7 @@ ComboBox {
         function onDataChanged() { d.entryRevision += 1 }
     }
 
-    implicitHeight: 32
+    implicitHeight: Theme.controls.combo.height
 
     focusPolicy: Qt.StrongFocus
     activeFocusOnTab: true
@@ -113,8 +113,8 @@ ComboBox {
     contentItem: LogosText {
         id: contentText
 
-        leftPadding: Theme.spacing.medium - 2
-        rightPadding: root.indicator ? root.indicator.width + Theme.spacing.medium - 2 : 30
+        leftPadding: Theme.controls.combo.paddingX
+        rightPadding: (root.indicator ? root.indicator.width : Theme.controls.combo.indicatorSize) + Theme.controls.combo.paddingX
         text: root.displayText.length > 0 ? root.displayText : root.placeholderText
         font.pixelSize: Theme.typography.secondaryText
         color: !root.enabled
@@ -129,8 +129,8 @@ ComboBox {
     indicator: Item {
         id: chevronHolder
 
-        width: 20
-        height: 20
+        width: Theme.controls.combo.indicatorSize
+        height: Theme.controls.combo.indicatorSize
         x: root.width - width - root.rightPadding
         y: root.topPadding + (root.availableHeight - height) / 2
         rotation: 90
@@ -162,13 +162,13 @@ ComboBox {
         radius: Theme.spacing.radiusSmall
         border.color: root.visualFocus ? Theme.palette.overlayOrange
                      : (root.enabled ? Theme.palette.border : Theme.palette.borderSubtle)
-        border.width: 1
+        border.width: Theme.size.borderWidth
     }
 
     popup: Popup {
         id: dropdownPopup
 
-        y: root.height + 2
+        y: root.height + Theme.controls.combo.popupGap
         width: {
             var wanted = Math.max(root.width,
                                   Math.min(implicitWidth, root.width * root.maxPopupWidthFactor))
@@ -180,7 +180,7 @@ ComboBox {
         height: root.Window.window
                 ? Math.min(implicitHeight, root.Window.height - topMargin - bottomMargin)
                 : implicitHeight
-        padding: 1
+        padding: Theme.size.borderWidth
         margins: Theme.spacing.small
 
         contentItem: ListView {
