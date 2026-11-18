@@ -42,6 +42,7 @@ TestCase {
             { tag: "iconButton",    group: "iconButton",    values: { size: 40, iconSize: 20 } },
             { tag: "infoButton",    group: "infoButton",    values: { size: 16, fontSize: 9, dialogWidth: 560 } },
             { tag: "listItem",      group: "listItem",      values: { height: 36, paddingX: 12 } },
+            { tag: "listRow",       group: "listRow",       values: { height: 52, subtitleHeight: 64, paddingX: 16, iconSize: 20 } },
             { tag: "menu",          group: "menu",          values: { width: 200 } },
             { tag: "menuItem",      group: "menuItem",      values: { height: 32, paddingX: 12 } },
             { tag: "notice",        group: "notice",        values: { iconPlateSize: 28, iconSize: 16, closeButtonSize: 20, closeIconSize: 12 } },
@@ -50,6 +51,7 @@ TestCase {
             { tag: "radio",         group: "radio",         values: { indicatorSize: 22, dotSize: 8 } },
             { tag: "scrollBar",     group: "scrollBar",     values: { thickness: 6 } },
             { tag: "search",        group: "search",        values: { width: 400, height: 54, paddingLeft: 10, iconSize: 20, clearButtonSize: 20, clearIconSize: 14, hintHeight: 20 } },
+            { tag: "searchToggle",  group: "searchToggle",  values: { fieldWidth: 280 } },
             { tag: "slider",        group: "slider",        values: { width: 200, trackHeight: 4, handleSize: 18 } },
             { tag: "spinBox",       group: "spinBox",       values: { height: 32, buttonWidth: 28 } },
             { tag: "spinner",       group: "spinner",       values: { size: 36, thickness: 3, dotSize: 6, dotInset: 2 } },
@@ -72,6 +74,20 @@ TestCase {
         verify(group, "Theme.controls." + data.group + " is missing")
         for (const key in data.values)
             fuzzyCompare(group[key], data.values[key], 0.0001, data.group + "." + key)
+    }
+
+    function test_layoutTokens_data() {
+        return [
+            { tag: "listDetail", group: "listDetail", values: { tabletListWidth: 320, desktopListWidth: 360 } },
+            { tag: "pageBar",    group: "pageBar",    values: { height: 56, phoneHeight: 44 } },
+        ]
+    }
+
+    function test_layoutTokens(data) {
+        const group = Theme.layouts[data.group]
+        verify(group, "Theme.layouts." + data.group + " is missing")
+        for (const key in data.values)
+            compare(group[key], data.values[key], data.group + "." + key)
     }
 
     LogosButton { id: button; text: "Go" }

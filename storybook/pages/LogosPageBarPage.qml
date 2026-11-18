@@ -1,0 +1,113 @@
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+
+import Logos.Theme
+import Logos.Controls
+import Logos.Layouts
+import Logos.Icons
+
+// Catalog page for LogosPageBar: the same bar at phone, tablet and desktop
+// width, with knobs for back, search and the overflow menu.
+Rectangle {
+    id: page
+
+    property string figmaUrl: ""
+    property bool designed: false
+
+    color: Theme.palette.background
+    implicitHeight: column.implicitHeight + 2 * Theme.spacing.xxlarge
+
+    component Section: ColumnLayout {
+        property alias title: sectionTitle.text
+        Layout.fillWidth: true
+        spacing: Theme.spacing.medium
+        LogosText {
+            id: sectionTitle
+            font.pixelSize: Theme.typography.primaryText
+            font.weight: Theme.typography.weightBold
+        }
+        Rectangle { Layout.fillWidth: true; height: 1; color: Theme.palette.borderHairline }
+    }
+
+    component Framed: ColumnLayout {
+        id: framed
+        property int frameWidth: 390
+        default property alias content: frame.data
+        spacing: Theme.spacing.tiny
+        LogosText {
+            text: framed.frameWidth + " px · " + Theme.windowClass(framed.frameWidth)
+            font.pixelSize: Theme.typography.secondaryText
+            color: Theme.palette.textSecondary
+        }
+        Rectangle {
+            id: frame
+            Layout.preferredWidth: framed.frameWidth
+            Layout.preferredHeight: 72
+            color: Theme.palette.background
+            border.color: Theme.palette.borderSubtle
+            clip: true
+        }
+    }
+
+    ColumnLayout {
+        id: column
+        anchors.fill: parent
+        anchors.margins: Theme.spacing.xxlarge
+        spacing: Theme.spacing.xxlarge
+
+        ColumnLayout {
+            spacing: Theme.spacing.tiny
+            LogosText {
+                text: "LogosPageBar"
+                font.pixelSize: Theme.typography.titleText
+                font.weight: Theme.typography.weightBold
+            }
+            LogosText {
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
+                text: "The first row of a page a shell already frames. Public API: title, leading, canGoBack, searchEnabled, searchPlaceholder, searchText, actions, menu, phone, backRequested(), searchSubmitted(). Below 600 px, measured on the bar, search folds into an icon."
+                font.pixelSize: Theme.typography.secondaryText
+                color: Theme.palette.textSecondary
+            }
+        }
+
+        Section {
+            title: "Knobs"
+            RowLayout {
+                spacing: Theme.spacing.large
+                LogosCheckbox { id: backKnob; text: "canGoBack" }
+                LogosCheckbox { id: searchKnob; text: "searchEnabled"; checked: true }
+                LogosCheckbox { id: menuKnob; text: "menu"; checked: true }
+            }
+        }
+
+        Section {
+            title: "Phone, tablet and desktop"
+            Repeater {
+                model: [390, 700, 1000]
+                delegate: Framed {
+                    required property int modelData
+                    frameWidth: modelData
+                    LogosPageBar {
+                        width: parent.width
+                        title: "Packages"
+                        canGoBack: backKnob.checked
+                        searchEnabled: searchKnob.checked
+                        menu: menuKnob.checked ? overflow : null
+                        actions: [
+                            LogosIconButton { flat: true; iconSource: LogosIcons.refresh; Accessible.name: "Reload" }
+                        ]
+                        LogosMenu {
+                            id: overflow
+                            LogosMenuItem { text: "Install a local package" }
+                            LogosMenuItem { text: "Manage repositories" }
+                        }
+                    }
+                }
+            }
+        }
+
+        Item { Layout.fillHeight: true }
+    }
+}

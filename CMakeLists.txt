@@ -34,6 +34,7 @@ install(TARGETS
     logos_theme_qml    logos_theme_qmlplugin
     logos_icons_qml    logos_icons_qmlplugin
     logos_controls_qml logos_controls_qmlplugin
+    logos_layouts_qml  logos_layouts_qmlplugin
     logos_design_system
     ${logos_design_system_extra_targets}
     EXPORT LogosDesignSystemTargets

@@ -18,6 +18,7 @@ QtObject {
         density: theme.density
         touch: theme.touch
     }
+    readonly property LayoutTokens layouts: LayoutTokens { size: theme.size }
 
     // ===== DENSITY =====
     // "compact", "comfortable" or "touch"; the host chooses it (ThemeManager).

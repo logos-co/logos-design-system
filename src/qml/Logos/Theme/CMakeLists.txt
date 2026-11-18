@@ -32,6 +32,7 @@ qt_add_qml_module(logos_theme_qml
         Typography.qml
         Sizes.qml
         ControlTokens.qml
+        LayoutTokens.qml
         DarkTheme.qml
     RESOURCES
         fonts/PublicSans-Bold.ttf

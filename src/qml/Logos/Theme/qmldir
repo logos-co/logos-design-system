@@ -5,4 +5,5 @@ Spacing 1.0 Spacing.qml
 Typography 1.0 Typography.qml
 Sizes 1.0 Sizes.qml
 ControlTokens 1.0 ControlTokens.qml
+LayoutTokens 1.0 LayoutTokens.qml
 DarkTheme 1.0 DarkTheme.qml
