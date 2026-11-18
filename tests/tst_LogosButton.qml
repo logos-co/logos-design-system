@@ -327,31 +327,47 @@ TestCase {
         return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
     }
 
-    function test_density_scales_the_side_padding_data() {
+    function test_density_scales_the_padding_data() {
         return [
-            { tag: "compact",     density: "compact",     paddingX: 14, compactPaddingX: 10 },
-            { tag: "comfortable", density: "comfortable", paddingX: 16, compactPaddingX: 12 },
-            { tag: "touch",       density: "touch",       paddingX: 19, compactPaddingX: 14 },
+            { tag: "compact",     density: "compact",     x: 14, y: 10, compactX: 10, compactY: 7 },
+            { tag: "comfortable", density: "comfortable", x: 16, y: 12, compactX: 12, compactY: 8 },
+            { tag: "touch",       density: "touch",       x: 19, y: 14, compactX: 14, compactY: 10 },
         ]
     }
 
-    function test_density_scales_the_side_padding(data) {
+    function test_density_scales_the_padding(data) {
         ThemeManager.setDensity(data.density)
-        compare(btn.leftPadding, data.paddingX)
-        compare(btn.rightPadding, data.paddingX)
+        compare(btn.leftPadding, data.x)
+        compare(btn.rightPadding, data.x)
+        compare(btn.topPadding, data.y)
+        compare(btn.bottomPadding, data.y)
         btn.compact = true
-        compare(btn.leftPadding, data.compactPaddingX)
-        compare(btn.rightPadding, data.compactPaddingX)
+        compare(btn.leftPadding, data.compactX)
+        compare(btn.rightPadding, data.compactX)
+        compare(btn.topPadding, data.compactY)
+        compare(btn.bottomPadding, data.compactY)
     }
 
-    function test_density_scales_the_height_floor() {
+    function test_density_scales_the_height_data() {
+        return [
+            { tag: "compact",     density: "compact",     height: 37 },
+            { tag: "comfortable", density: "comfortable", height: 44 },
+            { tag: "touch",       density: "touch",       height: 53 },
+        ]
+    }
+
+    function test_density_scales_the_height(data) {
+        ThemeManager.setDensity(data.density)
         btn.text = "OK"
-        compare(btn.implicitHeight, 44)
-        ThemeManager.setDensity("touch")
-        compare(btn.implicitHeight, 53)
-        // The label and its padding need more than compact's 37.
+        compare(btn.implicitHeight, data.height)
+    }
+
+    // Its label and padding need a little more than compact's 27.
+    function test_compact_density_makes_a_compact_button_smaller() {
+        btn.text = "OK"
+        btn.compact = true
         ThemeManager.setDensity("compact")
-        verify(btn.implicitHeight < 44)
+        verify(btn.implicitHeight < 32)
     }
 
     function test_touch_keeps_a_compact_button_at_the_touch_target() {

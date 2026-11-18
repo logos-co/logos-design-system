@@ -122,8 +122,8 @@ LogosAbstractButton {
                              implicitContentHeight + topPadding + bottomPadding)
     leftPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
     rightPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
-    topPadding: compact ? Theme.spacing.small : Theme.spacing.medium
-    bottomPadding: compact ? Theme.spacing.small : Theme.spacing.medium
+    topPadding: compact ? Theme.controls.button.compactPaddingY : Theme.controls.button.paddingY
+    bottomPadding: compact ? Theme.controls.button.compactPaddingY : Theme.controls.button.paddingY
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.secondaryText
     font.weight: Theme.typography.weightMedium

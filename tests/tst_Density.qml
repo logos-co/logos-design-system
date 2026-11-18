@@ -84,6 +84,8 @@ TestCase {
             { tag: "button.compactHeight",       group: "button",     key: "compactHeight",        compact: 27, comfortable: 32, touch: 44 },
             { tag: "button.paddingX",            group: "button",     key: "paddingX",             compact: 14, comfortable: 16, touch: 19 },
             { tag: "button.compactPaddingX",     group: "button",     key: "compactPaddingX",      compact: 10, comfortable: 12, touch: 14 },
+            { tag: "button.paddingY",            group: "button",     key: "paddingY",             compact: 10, comfortable: 12, touch: 14 },
+            { tag: "button.compactPaddingY",     group: "button",     key: "compactPaddingY",      compact: 7,  comfortable: 8,  touch: 10 },
             { tag: "field.height",               group: "field",      key: "height",               compact: 34, comfortable: 40, touch: 48 },
             { tag: "field.paddingX",             group: "field",      key: "paddingX",             compact: 10, comfortable: 12, touch: 14 },
             { tag: "search.height",              group: "search",     key: "height",               compact: 46, comfortable: 54, touch: 65 },

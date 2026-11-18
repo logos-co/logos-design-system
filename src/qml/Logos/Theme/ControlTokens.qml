@@ -47,6 +47,8 @@ QtObject {
         readonly property int compactHeight: d.tappable(tokens.size.controlSmall)
         readonly property int paddingX: d.padding(tokens.spacing.large)
         readonly property int compactPaddingX: d.padding(tokens.spacing.medium)
+        readonly property int paddingY: d.padding(tokens.spacing.medium)
+        readonly property int compactPaddingY: d.padding(tokens.spacing.small)
         readonly property int minWidth: 100
         readonly property int compactMinWidth: 72
         readonly property int iconSize: tokens.size.iconMedium

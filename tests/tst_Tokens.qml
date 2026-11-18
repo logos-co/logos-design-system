@@ -32,7 +32,7 @@ TestCase {
         return [
             { tag: "artwork",       group: "artwork",       values: { size: 40 } },
             { tag: "badge",         group: "badge",         values: { iconSize: 12, fontSize: 11, letterSpacing: 0.22 } },
-            { tag: "button",        group: "button",        values: { height: 44, compactHeight: 32, paddingX: 16, compactPaddingX: 12, minWidth: 100, compactMinWidth: 72, iconSize: 20 } },
+            { tag: "button",        group: "button",        values: { height: 44, compactHeight: 32, paddingX: 16, compactPaddingX: 12, paddingY: 12, compactPaddingY: 8, minWidth: 100, compactMinWidth: 72, iconSize: 20 } },
             { tag: "checkbox",      group: "checkbox",      values: { indicatorSize: 24 } },
             { tag: "combo",         group: "combo",         values: { height: 32, paddingX: 10, indicatorSize: 20, popupGap: 2 } },
             { tag: "copyButton",    group: "copyButton",    values: { size: 24, iconSize: 16 } },
