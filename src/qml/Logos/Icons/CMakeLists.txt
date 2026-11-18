@@ -15,6 +15,7 @@ qt_add_qml_module(logos_icons_qml
         LogosIcons.qml
     RESOURCES
         icons/arrow-left-double-line.svg
+        icons/back.svg
         icons/arrow-left-s-line.svg
         icons/arrow-right-double-line.svg
         icons/arrow-right-s-line.svg

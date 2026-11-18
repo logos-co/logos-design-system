@@ -85,7 +85,7 @@ Control {
             LogosSearchBar {
                 id: bar
                 Layout.fillWidth: true
-                Layout.preferredHeight: Theme.size.touchTarget
+                Layout.preferredHeight: root.folds ? Theme.size.controlMedium : Theme.size.touchTarget
                 // Folding has its own ✕ below, which also folds.
                 clearable: !root.folds
                 onSubmitted: function(text) { root.submitted(text) }

@@ -25,8 +25,8 @@ import Logos.Controls
 //
 // Signals: backRequested(), searchSubmitted(string text)
 //
-// Read-only inspection aliases: titleItem, backButtonItem, searchItem,
-// moreButtonItem.
+// Read-only inspection aliases: titleItem, backButtonItem, backIconItem,
+// searchItem, moreButtonItem.
 //
 // Example:
 //     LogosPageBar {
@@ -53,6 +53,7 @@ Control {
 
     readonly property alias titleItem: titleText
     readonly property alias backButtonItem: backButton
+    readonly property alias backIconItem: backIcon
     readonly property alias searchItem: search
     readonly property alias moreButtonItem: moreButton
 
@@ -63,6 +64,8 @@ Control {
         // At phone width the padding is for the edge buttons; text that starts
         // the bar lines up with the page's margin instead.
         readonly property real textInset: root.phone && !root.canGoBack ? Theme.pageMargin(root.width) - root.leftPadding : 0
+        // Where what follows ‹ starts, from the bar's edge.
+        readonly property real backEnd: Theme.pageMargin(root.width) + Theme.size.iconXSmall + Theme.spacing.tiny
     }
 
     onLeadingChanged: if (leading) leading.parent = leadingSlot
@@ -86,14 +89,32 @@ Control {
     contentItem: RowLayout {
         spacing: Theme.spacing.tiny
 
-        LogosIconButton {
+        // ‹ sits on the page margin, like the text below it; its tap area runs
+        // from the bar's edge to just past it, at least a touch target wide.
+        AbstractButton {
             id: backButton
             visible: root.canGoBack
-            flat: true
-            size: Theme.size.touchTarget
-            iconSource: LogosIcons.arrowLeft
+            Layout.leftMargin: -root.leftPadding
+            Layout.rightMargin: d.backEnd - width - parent.spacing
+            implicitWidth: Math.max(Theme.size.touchTarget, d.backEnd)
+            implicitHeight: Theme.size.touchTarget
+            focusPolicy: Qt.StrongFocus
             Accessible.name: qsTr("Back")
+            Keys.onReturnPressed: click()
+            Keys.onEnterPressed: click()
             onClicked: root.backRequested()
+
+            contentItem: Item {
+                LogosIcon {
+                    id: backIcon
+                    x: Theme.pageMargin(root.width)
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: Theme.size.iconXSmall
+                    height: Theme.size.iconXSmall
+                    source: LogosIcons.back
+                    color: Theme.palette.textTertiary
+                }
+            }
         }
 
         RowLayout {
@@ -117,6 +138,7 @@ Control {
         LogosSearchToggle {
             id: search
             visible: root.searchEnabled
+            Layout.leftMargin: d.searching ? d.textInset : 0
             folds: root.phone
             placeholderText: root.searchPlaceholder
             onSubmitted: function(text) { root.searchSubmitted(text) }

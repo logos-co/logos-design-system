@@ -96,6 +96,16 @@ TestCase {
         compare(spy.signalArguments[0][0], "w")
     }
 
+    // Folding (in a phone bar), the field is a control's height inside the
+    // toggle's touch-target height; not folding, it is the touch target's.
+    function test_field_height() {
+        const folding = createRendered()
+        folding.open()
+        compare(folding.searchBarItem.height, Theme.size.controlMedium)
+        const plain = createRendered({ folds: false })
+        compare(plain.searchBarItem.height, Theme.size.touchTarget)
+    }
+
     // Not folding: a plain field with its own clear, no ✕ to fold it.
     function test_without_folding_it_is_a_field() {
         const s = createRendered({ folds: false })

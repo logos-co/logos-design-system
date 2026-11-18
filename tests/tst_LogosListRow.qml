@@ -76,6 +76,17 @@ TestCase {
         compare(r.separatorItem.x, r.titleItem.mapToItem(r, 0, 0).x)
     }
 
+    // A highlighted row's background stops above its separator; without a
+    // separator it fills the row.
+    function test_highlight_stops_above_the_separator() {
+        const r = createRendered(row)
+        r.selected = true
+        compare(r.backgroundItem.height, r.height - Theme.size.borderWidth)
+        compare(r.separatorItem.y, r.height - Theme.size.borderWidth)
+        r.showSeparator = false
+        compare(r.backgroundItem.height, r.height)
+    }
+
     function test_selected_row_stands_out() {
         const r = createRendered(row)
         // A copy: a colour read from a property follows it.

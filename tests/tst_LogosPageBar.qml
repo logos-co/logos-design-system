@@ -93,16 +93,45 @@ TestCase {
         m.menu.close()
     }
 
-    // At phone width, text that starts the bar lines up with the page's
-    // margin; ‹ sits at the edge.
+    // At phone width, text that starts the bar lines up with the page's margin.
     function test_phone_text_lines_up_with_the_page_margin() {
         const b = createRendered(pageBar, 390)
         compare(b.titleItem.mapToItem(b, 0, 0).x, Theme.pageMargin(390))
         const p = createRendered(withPicker, 390)
         compare(p.leading.mapToItem(p, 0, 0).x, Theme.pageMargin(390))
+    }
+
+    function test_back_sits_on_the_page_margin_data() {
+        return [
+            { tag: "phone",   width: 390 },
+            { tag: "tablet",  width: 700 },
+            { tag: "desktop", width: 900 },
+        ]
+    }
+
+    // ‹ lines up with the page's text and the title follows it closely, at
+    // every width; its tap area runs from the bar's edge, a touch target wide.
+    function test_back_sits_on_the_page_margin(data) {
+        const b = createRendered(pageBar, data.width)
         b.canGoBack = true
         waitForRendering(b)
-        compare(b.backButtonItem.mapToItem(b, 0, 0).x, Theme.spacing.tiny)
+        const margin = Theme.pageMargin(data.width)
+        compare(b.titleItem.mapToItem(b, 0, 0).x, margin + Theme.size.iconXSmall + Theme.spacing.tiny)
+        compare(b.backIconItem.mapToItem(b, 0, 0).x, margin)
+        compare(b.backButtonItem.mapToItem(b, 0, 0).x, 0)
+        verify(b.backButtonItem.width >= Theme.size.touchTarget)
+        verify(b.backButtonItem.height >= Theme.size.touchTarget)
+    }
+
+    // Open on a phone, the search field lines up with the page's margin and
+    // sits inside the bar, not edge to edge.
+    function test_phone_search_lines_up_with_the_page_margin() {
+        const b = createRendered(pageBar, 390)
+        mouseClick(b.searchItem.openButtonItem)
+        waitForRendering(b)
+        const field = b.searchItem.searchBarItem
+        compare(field.mapToItem(b, 0, 0).x, Theme.pageMargin(390))
+        verify(field.height < b.height)
     }
 
     function test_leading_replaces_the_title() {

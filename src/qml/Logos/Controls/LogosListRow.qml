@@ -81,24 +81,15 @@ AbstractButton {
 
     onAccessoryChanged: if (accessory) accessory.parent = accessorySlot
 
+    // The highlight stops above the separator, which the row draws under it.
+    bottomInset: separator.visible ? separator.height : 0
+
     background: Rectangle {
         id: bg
         color: root.pressed ? Theme.palette.pressed
              : root.selected ? Theme.colors.getColor(Theme.palette.primary, 0.18)
              : root.hovered || root.visualFocus ? Theme.palette.hover
              : "transparent"
-
-        Rectangle {
-            id: separator
-            visible: root.showSeparator
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            // Under the text, past the icon.
-            anchors.leftMargin: root.leftPadding + (d.hasIcon ? Theme.controls.listRow.iconSize + contentRow.spacing : 0)
-            height: Theme.size.borderWidth
-            color: Theme.palette.borderSubtle
-        }
     }
 
     contentItem: RowLayout {
@@ -160,6 +151,18 @@ AbstractButton {
             Layout.preferredWidth: Theme.controls.listRow.iconSize
             Layout.preferredHeight: Theme.controls.listRow.iconSize
         }
+    }
+
+    Rectangle {
+        id: separator
+        visible: root.showSeparator
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        // Under the text, past the icon.
+        anchors.leftMargin: root.leftPadding + (d.hasIcon ? Theme.controls.listRow.iconSize + contentRow.spacing : 0)
+        height: Theme.size.borderWidth
+        color: Theme.palette.borderSubtle
     }
 
     LongPressToolTips {

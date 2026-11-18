@@ -43,6 +43,7 @@ Rectangle {
             Section {
                 title: "Arrows"
                 items: [
+                    { name: "back",             value: LogosIcons.back },
                     { name: "arrowLeft",        value: LogosIcons.arrowLeft },
                     { name: "arrowLeftDouble",  value: LogosIcons.arrowLeftDouble },
                     { name: "arrowRight",       value: LogosIcons.arrowRight },
