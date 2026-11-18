@@ -9,8 +9,9 @@ import Logos.Controls
 // LogosPageBar — the first row of a page that a shell already frames, such as
 // an app in a Basecamp tab: the page's title (or a picker in its place), its
 // search, its actions and an overflow ⋯ menu. At phone width, measured on the
-// bar itself, it is a touch-target-tall bar whose search folds into an icon;
-// wider, the search is a field. On a detail, `canGoBack` puts ‹ before the
+// bar itself, it is a touch-target-tall bar whose search folds into an icon,
+// and opening it turns the bar into the search field; wider, the search is a
+// field beside the title. On a detail, `canGoBack` puts ‹ before the
 // title.
 //
 // Public API:
@@ -26,7 +27,7 @@ import Logos.Controls
 // Signals: backRequested(), searchSubmitted(string text)
 //
 // Read-only inspection aliases: titleItem, backButtonItem, backIconItem,
-// searchItem, moreButtonItem.
+// searchItem, moreButtonItem, dividerItem.
 //
 // Example:
 //     LogosPageBar {
@@ -56,6 +57,7 @@ Control {
     readonly property alias backIconItem: backIcon
     readonly property alias searchItem: search
     readonly property alias moreButtonItem: moreButton
+    readonly property alias dividerItem: divider
 
     QtObject {
         id: d
@@ -78,11 +80,13 @@ Control {
         color: Theme.palette.background
 
         Rectangle {
+            id: divider
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: Theme.size.borderWidth
-            color: Theme.palette.borderSubtle
+            // While the bar is the search, the line marks the field, as a field's border would.
+            color: d.searching ? Theme.palette.primary : Theme.palette.borderSubtle
         }
     }
 

@@ -22,6 +22,8 @@ import Logos.Icons
 //                      survive navigation, which only works if there is an
 //                      obvious way out of it. Turn off for fields that are
 //                      cleared some other way, or that must not be.
+//     flat             no border or fill of its own, for a search that is a
+//                      whole bar (LogosSearchToggle on a phone). Default false.
 //
 // Read-only inspection aliases:
 //     textInput        the inner TextInput (cursor, selection, etc.)
@@ -58,6 +60,7 @@ Control {
     property url iconSource: LogosIcons.search
     property string shortcutHint: ""
     property bool clearable: true
+    property bool flat: false
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias textInput: field.textInput
@@ -90,6 +93,7 @@ Control {
         field.textInput.forceActiveFocus()
 
     background: Rectangle {
+        visible: !root.flat
         color: Theme.palette.background
         radius: Theme.spacing.radiusLarge
         border.width: Theme.size.borderWidth

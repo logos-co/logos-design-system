@@ -123,15 +123,19 @@ TestCase {
         verify(b.backButtonItem.height >= Theme.size.touchTarget)
     }
 
-    // Open on a phone, the search field lines up with the page's margin and
-    // sits inside the bar, not edge to edge.
-    function test_phone_search_lines_up_with_the_page_margin() {
+    // Opened on a phone, the bar becomes the search: a field with no box of its
+    // own, its icon on the page margin, the bar's line marking it.
+    function test_phone_search_becomes_the_bar() {
         const b = createRendered(pageBar, 390)
+        compare(b.dividerItem.color, Theme.palette.borderSubtle)
         mouseClick(b.searchItem.openButtonItem)
         waitForRendering(b)
         const field = b.searchItem.searchBarItem
-        compare(field.mapToItem(b, 0, 0).x, Theme.pageMargin(390))
-        verify(field.height < b.height)
+        verify(!field.background.visible)
+        compare(field.iconItem.mapToItem(b, 0, 0).x, Theme.pageMargin(390))
+        compare(b.dividerItem.color, Theme.palette.primary)
+        mouseClick(b.searchItem.closeButtonItem)
+        compare(b.dividerItem.color, Theme.palette.borderSubtle)
     }
 
     function test_leading_replaces_the_title() {

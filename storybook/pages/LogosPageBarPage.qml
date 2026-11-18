@@ -72,7 +72,7 @@ Rectangle {
             LogosText {
                 Layout.fillWidth: true
                 wrapMode: Text.Wrap
-                text: "The first row of a page a shell already frames. Public API: title, leading, canGoBack, searchEnabled, searchPlaceholder, searchText, actions, menu, phone, backRequested(), searchSubmitted(). Below 600 px, measured on the bar, search folds into an icon."
+                text: "The first row of a page a shell already frames. Public API: title, leading, canGoBack, searchEnabled, searchPlaceholder, searchText, actions, menu, phone, backRequested(), searchSubmitted(). Below 600 px, measured on the bar, search folds into an icon, and opening it turns the bar into the search field."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }

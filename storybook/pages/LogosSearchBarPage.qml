@@ -70,6 +70,19 @@ Rectangle {
                 iconSource: ""
                 shortcutHint: "Ctrl+F"
             }
+
+            // A flat bar has no box of its own: the bar it fills is the box.
+            Rectangle {
+                Layout.preferredWidth: 600
+                Layout.preferredHeight: Theme.size.touchTarget
+                color: Theme.palette.backgroundSecondary
+
+                LogosSearchBar {
+                    anchors.fill: parent
+                    flat: true
+                    placeholderText: "flat: true, filling a bar (LogosSearchToggle on a phone)"
+                }
+            }
         }
 
         // Consumer-side wiring

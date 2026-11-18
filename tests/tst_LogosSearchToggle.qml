@@ -96,14 +96,15 @@ TestCase {
         compare(spy.signalArguments[0][0], "w")
     }
 
-    // Folding (in a phone bar), the field is a control's height inside the
-    // toggle's touch-target height; not folding, it is the touch target's.
-    function test_field_height() {
+    // Folding, the unfolded field is flat and starts with its icon, so a bar
+    // becomes the search; not folding, it is a field with its own box.
+    function test_folding_field_is_flat() {
         const folding = createRendered()
         folding.open()
-        compare(folding.searchBarItem.height, Theme.size.controlMedium)
+        verify(!folding.searchBarItem.background.visible)
+        compare(folding.searchBarItem.iconItem.mapToItem(folding, 0, 0).x, 0)
         const plain = createRendered({ folds: false })
-        compare(plain.searchBarItem.height, Theme.size.touchTarget)
+        verify(plain.searchBarItem.background.visible)
     }
 
     // Not folding: a plain field with its own clear, no ✕ to fold it.

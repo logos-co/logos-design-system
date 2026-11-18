@@ -43,7 +43,7 @@ Rectangle {
             LogosText {
                 Layout.fillWidth: true
                 wrapMode: Text.Wrap
-                text: "Search that folds into an icon at phone width. Public API: text, placeholderText, folds, expanded, open(), close(), submitted(). It stays open while it holds text; ✕ clears and folds; Escape folds."
+                text: "Search that folds into an icon at phone width; opened, the bar becomes the search, a field with no box of its own. Public API: text, placeholderText, folds, expanded, open(), close(), submitted(). It stays open while it holds text; ✕ clears and folds; Escape folds."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }

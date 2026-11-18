@@ -7,9 +7,9 @@ import Logos.Icons
 import Logos.Controls
 
 // LogosSearchToggle — a search that folds into an icon, for bars at phone
-// width. Folded, it is a search icon; tapped, it unfolds across the bar into a
-// search field with ✕, which clears and folds it, as Escape does. It stays
-// unfolded while it holds text. With `folds: false` it is a plain search
+// width. Folded, it is a search icon; tapped, the bar becomes the search: a
+// flat field, its icon first, with ✕, which clears and folds it, as Escape
+// does. It stays unfolded while it holds text. With `folds: false` it is a plain search
 // field that never folds: one field at every width, so the query survives a
 // change of width class.
 //
@@ -85,8 +85,11 @@ Control {
             LogosSearchBar {
                 id: bar
                 Layout.fillWidth: true
-                Layout.preferredHeight: root.folds ? Theme.size.controlMedium : Theme.size.touchTarget
-                // Folding has its own ✕ below, which also folds.
+                Layout.preferredHeight: Theme.size.touchTarget
+                // Folding, the bar is the field: no box of its own, and its
+                // icon where the bar's title was. Its ✕ is below; it also folds.
+                flat: root.folds
+                leftPadding: root.folds ? 0 : Theme.controls.search.paddingLeft
                 clearable: !root.folds
                 onSubmitted: function(text) { root.submitted(text) }
                 // Only a folding search uses Esc; otherwise it goes on, e.g. to close a dialog.
