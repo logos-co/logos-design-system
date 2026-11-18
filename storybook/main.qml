@@ -17,6 +17,14 @@ ApplicationWindow {
 
     property string currentPage: settings.lastPage
 
+    // The page again in a window of a phone's or a tablet's size; see previewWindow.
+    readonly property var previews: [
+        { name: "off", width: 0, height: 0 },
+        { name: "phone", width: 390, height: 844 },
+        { name: "tablet", width: 700, height: 1000 }
+    ]
+    property int previewIndex: 0
+
     Settings {
         id: settings
         category: "LogosStorybook"
@@ -153,7 +161,59 @@ ApplicationWindow {
                     themeManager.setDensity(order[(order.indexOf(Theme.density) + 1) % order.length])
                 }
             }
+
+            LogosButton {
+                text: "Preview: " + window.previews[window.previewIndex].name
+                implicitWidth: 150
+                implicitHeight: 36
+                onClicked: window.previewIndex = (window.previewIndex + 1) % window.previews.length
+            }
         }
+    }
+
+    // The page in a window the size of a phone or a tablet. The window has its
+    // own overlay, so menus and dialogs place themselves as on the device, and
+    // while it is open Theme.viewWidth is its width: a phone's gets touch sizes,
+    // in both windows.
+    Window {
+        id: previewWindow
+
+        readonly property var preview: window.previews[window.previewIndex]
+
+        visible: preview.width > 0
+        width: preview.width
+        height: preview.height
+        title: "Preview: " + preview.name + " · " + window.currentPage
+        color: Theme.palette.background
+
+        onClosing: window.previewIndex = 0
+
+        Flickable {
+            id: previewScroll
+            anchors.fill: parent
+            clip: true
+            flickableDirection: Flickable.VerticalFlick
+            boundsBehavior: Flickable.StopAtBounds
+            contentWidth: width
+            contentHeight: previewLoader.item
+                           ? Math.max(previewLoader.item.implicitHeight || 0, height)
+                           : height
+
+            ScrollBar.vertical: ScrollBar { policy: ScrollBar.AsNeeded }
+
+            Loader {
+                id: previewLoader
+                width: previewScroll.width
+                height: previewScroll.contentHeight
+                source: previewWindow.visible ? pageLoader.source : ""
+            }
+        }
+    }
+
+    Binding {
+        target: Theme
+        property: "viewWidth"
+        value: previewWindow.visible ? previewWindow.width : 0
     }
 
     RowLayout {
@@ -273,6 +333,10 @@ ApplicationWindow {
             const src = pageLoader.source
             pageLoader.source = ""
             pageLoader.source = src
+            if (previewWindow.visible) {
+                previewLoader.source = ""
+                previewLoader.source = Qt.binding(() => previewWindow.visible ? pageLoader.source : "")
+            }
         }
     }
 }
