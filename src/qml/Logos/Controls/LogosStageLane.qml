@@ -107,8 +107,8 @@ Item {
         return root.busy ? LogosStageLane.Busy : LogosStageLane.Active
     }
 
-    implicitHeight: 30
-    implicitWidth: 200
+    implicitHeight: Theme.controls.stageLane.height
+    implicitWidth: Theme.controls.stageLane.width
 
     Accessible.role: Accessible.ProgressBar
     Accessible.name: (root.currentIndex >= 0 && root.currentIndex < root.count)
@@ -123,9 +123,9 @@ Item {
         // Chevron geometry. `notch` is how far the point protrudes and the notch
         // bites in; `gap` is the clearance left between a point and the next
         // notch, so the segments read as separate.
-        readonly property real notch: 14
-        readonly property real gap: 2
-        readonly property real cornerRadius: 3
+        readonly property real notch: Theme.controls.stageLane.notch
+        readonly property real gap: Theme.controls.stageLane.gap
+        readonly property real cornerRadius: Theme.controls.stageLane.cornerRadius
 
         // Segment palette. Fixed semantics, so these follow Theme rather than
         // the consumer.
@@ -319,7 +319,7 @@ Item {
                 readonly property string label: d.labelAt(index)
                 readonly property int stageState: root.stateAt(index)
 
-                spacing: 4
+                spacing: Theme.spacing.tiny
                 x: d.labelCentre(index) - width / 2
                 y: (root.height - height) / 2
 

@@ -13,7 +13,7 @@ MenuItem {
     readonly property alias labelItem: label
     readonly property alias backgroundItem: bg
 
-    implicitHeight: 32
+    implicitHeight: Theme.controls.menuItem.height
 
     focusPolicy: Qt.StrongFocus
     activeFocusOnTab: true
@@ -31,7 +31,7 @@ MenuItem {
         id: bg
         radius: Theme.spacing.radiusSmall
         color: root.highlighted || root.visualFocus ? root.highlightColor : "transparent"
-        border.width: root.visualFocus ? 1 : 0
+        border.width: root.visualFocus ? Theme.size.borderWidth : 0
         border.color: Theme.palette.overlayOrange
     }
 

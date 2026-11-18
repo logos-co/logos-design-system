@@ -33,7 +33,7 @@ Item {
     property list<int> pattern: []
 
     property int columns: 5
-    property int dotSize: 8
+    property int dotSize: Theme.controls.dotMatrix.dotSize
     property int dotSpacing: Theme.spacing.tiny
 
     property color dotColor: Theme.palette.primary

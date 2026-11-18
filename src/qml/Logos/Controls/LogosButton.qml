@@ -64,7 +64,7 @@ LogosAbstractButton {
 
     component IconSpec: QtObject {
         property url source: ""
-        property int size: 20
+        property int size: Theme.controls.button.iconSize
         property real brightness: 0
         property color color: Theme.palette.text
 
@@ -115,9 +115,9 @@ LogosAbstractButton {
     // steady whether or not the button carries a default-sized (20px) icon;
     // beyond them the content decides. Compact lowers both floors — it is for
     // chrome, where the 44px touch target is the wrong unit.
-    implicitWidth: Math.max(compact ? 72 : 100,
+    implicitWidth: Math.max(compact ? Theme.controls.button.compactMinWidth : Theme.controls.button.minWidth,
                             implicitContentWidth + leftPadding + rightPadding)
-    implicitHeight: Math.max(compact ? 32 : 44,
+    implicitHeight: Math.max(compact ? Theme.controls.button.compactHeight : Theme.controls.button.height,
                              implicitContentHeight + topPadding + bottomPadding)
     leftPadding: compact ? Theme.spacing.medium : Theme.spacing.large
     rightPadding: compact ? Theme.spacing.medium : Theme.spacing.large
@@ -134,7 +134,7 @@ LogosAbstractButton {
         color: d.backgroundColor(root.enabled, root.variant, root.pressed,
                                  root.hovered, root.activeFocus)
         radius: root.radius
-        border.width: 1
+        border.width: Theme.size.borderWidth
         border.color: {
             if (!root.enabled)
                 return Theme.palette.border

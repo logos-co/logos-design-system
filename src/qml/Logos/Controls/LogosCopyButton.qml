@@ -44,8 +44,8 @@ LogosIconButton {
     function copy() { d.copy() }
 
     flat: true
-    size: 24
-    iconSize: 16
+    size: Theme.controls.copyButton.size
+    iconSize: Theme.controls.copyButton.iconSize
     iconSource: d.recentlyCopied ? LogosIcons.check : LogosIcons.copy
     iconColor: d.recentlyCopied ? Theme.palette.success
                                 : (root.isActive ? Theme.palette.text

@@ -20,7 +20,7 @@ ToolBar {
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.bottom: parent.bottom
-            height: 1
+            height: Theme.size.borderWidth
             color: root.separatorColor
         }
     }

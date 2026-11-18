@@ -49,8 +49,8 @@ Item {
     readonly property alias imageItem: img
     readonly property alias effectItem: effect
 
-    implicitWidth: 20
-    implicitHeight: 20
+    implicitWidth: Theme.controls.icon.size
+    implicitHeight: Theme.controls.icon.size
 
     Image {
         id: img

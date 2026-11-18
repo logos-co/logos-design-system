@@ -39,7 +39,7 @@ TextArea {
         id: bg
         color: root.backgroundColor
         border.color: root.activeFocus || root.visualFocus ? root.focusBorderColor : root.borderColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         radius: Theme.spacing.radiusSmall
     }
 }

@@ -19,7 +19,7 @@ Frame {
         id: bg
         color: root.backgroundColor
         border.color: root.borderColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         radius: root.radius
     }
 }

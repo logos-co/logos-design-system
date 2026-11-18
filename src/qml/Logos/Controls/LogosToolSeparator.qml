@@ -13,8 +13,8 @@ ToolSeparator {
 
     contentItem: Rectangle {
         id: line
-        implicitWidth: root.orientation === Qt.Horizontal ? 24 : 1
-        implicitHeight: root.orientation === Qt.Horizontal ? 1 : 24
+        implicitWidth: root.orientation === Qt.Horizontal ? Theme.controls.toolSeparator.length : Theme.size.borderWidth
+        implicitHeight: root.orientation === Qt.Horizontal ? Theme.size.borderWidth : Theme.controls.toolSeparator.length
         color: root.separatorColor
     }
 }

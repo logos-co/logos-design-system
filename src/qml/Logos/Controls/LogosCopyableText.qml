@@ -41,8 +41,8 @@ Control {
     property string copyText: ""
     property bool showCopyButton: true
     property color textColor: Theme.palette.text
-    property int buttonSize: 24
-    property int iconSize: 16
+    property int buttonSize: Theme.controls.copyButton.size
+    property int iconSize: Theme.controls.copyButton.iconSize
     property int feedbackDuration: 1500
     property string feedbackText: qsTr("Copied")
 

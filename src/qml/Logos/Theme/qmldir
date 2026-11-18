@@ -3,4 +3,6 @@ singleton Theme 1.0 Theme.qml
 ColorPalette 1.0 ColorPalette.qml
 Spacing 1.0 Spacing.qml
 Typography 1.0 Typography.qml
+Sizes 1.0 Sizes.qml
+ControlTokens 1.0 ControlTokens.qml
 DarkTheme 1.0 DarkTheme.qml

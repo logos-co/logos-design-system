@@ -75,8 +75,8 @@ LogosDialog {
                 source: root.iconSource
                 color: root.accentColor
                 brightness: 1.0
-                Layout.preferredWidth: 18
-                Layout.preferredHeight: 18
+                Layout.preferredWidth: Theme.controls.warningDialog.iconSize
+                Layout.preferredHeight: Theme.controls.warningDialog.iconSize
                 Layout.alignment: Qt.AlignVCenter
             }
 

@@ -14,7 +14,7 @@ Control {
     property color backgroundColor: Theme.colors.getColor(color, 0.18)
     property color borderColor: color
     property real radius: Theme.spacing.radiusSmall
-    property int borderWidth: 1
+    property int borderWidth: Theme.size.borderWidth
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias iconItem: iconImage
@@ -42,13 +42,13 @@ Control {
 
         Image {
             id: iconImage
-            Layout.preferredWidth: d.hasIcon ? 12 : 0
-            Layout.preferredHeight: d.hasIcon ? 12 : 0
+            Layout.preferredWidth: d.hasIcon ? Theme.controls.badge.iconSize : 0
+            Layout.preferredHeight: d.hasIcon ? Theme.controls.badge.iconSize : 0
             Layout.alignment: Qt.AlignVCenter
             visible: d.hasIcon
             source: root.iconSource
-            sourceSize.width: 12
-            sourceSize.height: 12
+            sourceSize.width: Theme.controls.badge.iconSize
+            sourceSize.height: Theme.controls.badge.iconSize
         }
 
         LogosText {
@@ -56,8 +56,8 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             text: root.text
             font.weight: Theme.typography.weightMedium
-            font.pixelSize: 11
-            font.letterSpacing: 0.22
+            font.pixelSize: Theme.controls.badge.fontSize
+            font.letterSpacing: Theme.controls.badge.letterSpacing
             font.capitalization: Font.AllUppercase
             color: root.color
         }

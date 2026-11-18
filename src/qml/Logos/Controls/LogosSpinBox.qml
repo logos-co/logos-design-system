@@ -15,7 +15,7 @@ SpinBox {
     readonly property alias backgroundItem: bg
     readonly property alias contentLabel: input
 
-    implicitHeight: 32
+    implicitHeight: Theme.controls.spinBox.height
     editable: true
 
     focusPolicy: Qt.StrongFocus
@@ -26,7 +26,7 @@ SpinBox {
         color: root.backgroundColor
         border.color: root.visualFocus || input.activeFocus
                       ? Theme.palette.overlayOrange : root.borderColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         radius: Theme.spacing.radiusSmall
     }
 
@@ -50,7 +50,7 @@ SpinBox {
     up.indicator: Rectangle {
         x: parent.width - width
         height: parent.height
-        implicitWidth: 28
+        implicitWidth: Theme.controls.spinBox.buttonWidth
         color: root.up.pressed ? Theme.palette.pressed : root.buttonColor
         radius: Theme.spacing.radiusSmall
 
@@ -64,7 +64,7 @@ SpinBox {
     down.indicator: Rectangle {
         x: 0
         height: parent.height
-        implicitWidth: 28
+        implicitWidth: Theme.controls.spinBox.buttonWidth
         color: root.down.pressed ? Theme.palette.pressed : root.buttonColor
         radius: Theme.spacing.radiusSmall
 

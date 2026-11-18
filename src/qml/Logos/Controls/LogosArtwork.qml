@@ -48,8 +48,8 @@ Item {
     readonly property alias effectItem: effect
     readonly property alias maskItem: maskShape
 
-    implicitWidth: 40
-    implicitHeight: 40
+    implicitWidth: Theme.controls.artwork.size
+    implicitHeight: Theme.controls.artwork.size
 
     Image {
         id: img

@@ -120,7 +120,7 @@ Control {
         id: bg
         color: Theme.palette.backgroundElevated
         border.color: d.borderColor
-        border.width: 1
+        border.width: Theme.size.borderWidth
         radius: Theme.spacing.radiusSmall
     }
 
@@ -129,16 +129,16 @@ Control {
 
         Rectangle {
             Layout.alignment: Qt.AlignTop
-            Layout.preferredWidth: 28
-            Layout.preferredHeight: 28
+            Layout.preferredWidth: Theme.controls.notice.iconPlateSize
+            Layout.preferredHeight: Theme.controls.notice.iconPlateSize
             radius: width / 2
             color: Theme.palette.surface
 
             LogosIcon {
                 id: severityIcon
                 anchors.centerIn: parent
-                width: 16
-                height: 16
+                width: Theme.controls.notice.iconSize
+                height: Theme.controls.notice.iconSize
                 source: d.iconSource
                 color: d.accent
                 brightness: 1.0
@@ -182,8 +182,8 @@ Control {
             Layout.alignment: Qt.AlignTop
             visible: root.closable
             flat: true
-            size: 20
-            iconSize: 12
+            size: Theme.controls.notice.closeButtonSize
+            iconSize: Theme.controls.notice.closeIconSize
             iconSource: LogosIcons.close
             iconColor: Theme.palette.textTertiary
             onClicked: root.hide()

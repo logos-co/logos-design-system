@@ -22,10 +22,10 @@ Control {
     readonly property alias placeholderItem: placeholder
     readonly property alias backgroundItem: bg
 
-    implicitWidth: 200
-    implicitHeight: 40
-    leftPadding: 12
-    rightPadding: 12
+    implicitWidth: Theme.controls.field.width
+    implicitHeight: Theme.controls.field.height
+    leftPadding: Theme.controls.field.paddingX
+    rightPadding: Theme.controls.field.paddingX
     clip: true
 
     focusPolicy: Qt.StrongFocus
@@ -39,7 +39,7 @@ Control {
         id: bg
         radius: Theme.spacing.radiusSmall
         color: Theme.palette.backgroundSecondary
-        border.width: 1
+        border.width: Theme.size.borderWidth
         border.color: {
             if (input.validator && input.text.length > 0 && !input.acceptableInput)
                 return Theme.palette.error

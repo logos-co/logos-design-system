@@ -39,7 +39,7 @@ Menu {
 
     background: Rectangle {
         id: bg
-        implicitWidth: 200
+        implicitWidth: Theme.controls.menu.width
         color: root.backgroundColor
         border.color: root.borderColor
         radius: Theme.spacing.radiusSmall

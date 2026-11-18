@@ -12,7 +12,7 @@ ScrollBar {
 
     property color barColor: Theme.palette.borderTertiaryMuted
     property color barColorActive: Theme.palette.textTertiary
-    property int barThickness: 6
+    property int barThickness: Theme.controls.scrollBar.thickness
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias barItem: bar

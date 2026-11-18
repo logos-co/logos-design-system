@@ -44,8 +44,8 @@ CheckBox {
     indicator: Item {
         id: indicatorBox
 
-        implicitWidth: 24
-        implicitHeight: 24
+        implicitWidth: Theme.controls.checkbox.indicatorSize
+        implicitHeight: Theme.controls.checkbox.indicatorSize
         x: root.leftPadding
         y: root.topPadding + (root.availableHeight - height) / 2
 
@@ -57,7 +57,7 @@ CheckBox {
             anchors.fill: parent
             radius: Theme.spacing.radiusSmall
             color: "transparent"
-            border.width: root.visualFocus ? 2 : 0
+            border.width: root.visualFocus ? Theme.size.focusWidth : 0
             border.color: Theme.palette.focus
         }
 
@@ -68,7 +68,7 @@ CheckBox {
             height: parent.height - Theme.spacing.tiny
             color: root.checked ? root.activeColor : root.boxColor
             border.color: root.borderColor
-            border.width: 1
+            border.width: Theme.size.borderWidth
             radius: Theme.spacing.radiusSmall
 
             Canvas {

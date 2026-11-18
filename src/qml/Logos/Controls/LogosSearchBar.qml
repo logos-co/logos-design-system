@@ -75,11 +75,11 @@ Control {
 
     signal submitted(string text)
 
-    implicitWidth: 400
-    implicitHeight: 54
+    implicitWidth: Theme.controls.search.width
+    implicitHeight: Theme.controls.search.height
 
-    // Match the figma spec (8/8/8/10) using existing tokens.
-    leftPadding: Theme.spacing.small + 2
+    // Match the figma spec (8/8/8/10).
+    leftPadding: Theme.controls.search.paddingLeft
     rightPadding: Theme.spacing.small
     topPadding: Theme.spacing.small
     bottomPadding: Theme.spacing.small
@@ -92,7 +92,7 @@ Control {
     background: Rectangle {
         color: Theme.palette.background
         radius: Theme.spacing.radiusLarge
-        border.width: 1
+        border.width: Theme.size.borderWidth
         border.color: field.textInput.activeFocus
                       ? Theme.palette.primary
                       : Theme.palette.borderSubtle
@@ -106,8 +106,8 @@ Control {
 
             Layout.alignment: Qt.AlignVCenter
             visible: root.iconSource.toString().length > 0
-            implicitWidth: 20
-            implicitHeight: 20
+            implicitWidth: Theme.controls.search.iconSize
+            implicitHeight: Theme.controls.search.iconSize
 
             Image {
                 id: iconImg
@@ -143,8 +143,8 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             visible: d.clearVisible
             flat: true
-            size: 20
-            iconSize: 14
+            size: Theme.controls.search.clearButtonSize
+            iconSize: Theme.controls.search.clearIconSize
             iconSource: LogosIcons.close
             iconColor: Theme.palette.textSecondary
             focusPolicy: Qt.NoFocus
@@ -162,11 +162,11 @@ Control {
             Layout.alignment: Qt.AlignVCenter
             visible: root.shortcutHint.length > 0
             implicitWidth: shortcutLabel.implicitWidth + Theme.spacing.medium
-            implicitHeight: 20
+            implicitHeight: Theme.controls.search.hintHeight
 
             color: Theme.palette.surfaceRaised
             radius: Theme.spacing.radiusSmall
-            border.width: 1
+            border.width: Theme.size.borderWidth
             border.color: Theme.palette.borderSubtle
 
             LogosText {

@@ -38,8 +38,8 @@ Control {
 
     property url   iconSource: ""
     property color iconColor: Theme.palette.textTertiary
-    property int   size: 40
-    property int   iconSize: 20
+    property int   size: Theme.controls.iconButton.size
+    property int   iconSize: Theme.controls.iconButton.iconSize
     property bool  flat: false
 
     readonly property bool pressed: mouseArea.containsPress || d.keyboardPressed
@@ -114,7 +114,7 @@ Control {
         color: d.backgroundColor(root.enabled, root.pressed, root.hovered, root.activeFocus)
         radius: Theme.spacing.radiusPill
         border.color: root.isActive ? Theme.palette.overlayOrange : Theme.palette.borderStrong
-        border.width: 1
+        border.width: Theme.size.borderWidth
         antialiasing: true
     }
 

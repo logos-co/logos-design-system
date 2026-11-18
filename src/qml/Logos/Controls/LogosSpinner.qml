@@ -8,15 +8,15 @@ Item {
 
     property bool running: true
     property color ringColor: Theme.palette.text
-    property int thickness: 3
-    property int dotSize: 6
+    property int thickness: Theme.controls.spinner.thickness
+    property int dotSize: Theme.controls.spinner.dotSize
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias ringItem: ring
     readonly property alias dotItem: dot
 
-    implicitWidth: 36
-    implicitHeight: 36
+    implicitWidth: Theme.controls.spinner.size
+    implicitHeight: Theme.controls.spinner.size
 
     Rectangle {
         id: ring
@@ -34,7 +34,7 @@ Item {
             color: root.ringColor
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.top: parent.top
-            anchors.topMargin: 2
+            anchors.topMargin: Theme.controls.spinner.dotInset
         }
 
         RotationAnimation on rotation {

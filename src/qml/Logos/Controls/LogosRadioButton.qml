@@ -37,8 +37,8 @@ RadioButton {
     activeFocusOnTab: true
 
     indicator: Item {
-        implicitWidth: 22
-        implicitHeight: 22
+        implicitWidth: Theme.controls.radio.indicatorSize
+        implicitHeight: Theme.controls.radio.indicatorSize
         x: root.leftPadding
         y: root.topPadding + (root.availableHeight - height) / 2
 
@@ -50,7 +50,7 @@ RadioButton {
             anchors.fill: parent
             radius: width / 2
             color: "transparent"
-            border.width: root.visualFocus ? 2 : 0
+            border.width: root.visualFocus ? Theme.size.focusWidth : 0
             border.color: Theme.palette.focus
         }
 
@@ -62,12 +62,12 @@ RadioButton {
             radius: width / 2
             color: root.boxColor
             border.color: root.checked ? root.activeColor : root.borderColor
-            border.width: 1
+            border.width: Theme.size.borderWidth
 
             Rectangle {
                 anchors.centerIn: parent
-                width: 8
-                height: 8
+                width: Theme.controls.radio.dotSize
+                height: Theme.controls.radio.dotSize
                 radius: Theme.spacing.tiny
                 color: root.activeColor
                 visible: root.checked

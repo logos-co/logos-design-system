@@ -58,7 +58,7 @@ ToolTip {
         id: d
 
         readonly property int tailSize: Math.round(root.implicitHeight * 0.4)
-        readonly property int tailGap: 4
+        readonly property int tailGap: Theme.spacing.tiny
         readonly property int tailOffset: tailSize / 2 + tailGap
         readonly property int tailRadius: Math.max(1, Math.round(tailSize / 8))
 
@@ -110,9 +110,9 @@ ToolTip {
     delay: 200
     timeout: 5000
     margins: -1
-    horizontalPadding: 6
-    verticalPadding: 2
-    implicitHeight: 20
+    horizontalPadding: Theme.controls.toolTip.paddingX
+    verticalPadding: Theme.controls.toolTip.paddingY
+    implicitHeight: Theme.controls.toolTip.height
 
     background: Item {
         Rectangle {

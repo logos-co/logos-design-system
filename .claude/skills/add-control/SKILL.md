@@ -39,9 +39,9 @@ TabButton {                   // or Control / AbstractButton / etc.
     readonly property alias labelItem: labelText
 
     // 4. Defaults for inherited properties
-    implicitHeight: 40
-    spacing: 6
-    leftPadding: 8
+    implicitHeight: Theme.controls.tab.height
+    spacing: Theme.controls.tab.spacing
+    leftPadding: Theme.spacing.small
     // ...
 
     // 5. Slot overrides (background, contentItem)
@@ -54,7 +54,7 @@ Rules:
 
 - **Type all properties** (`property color`, `property url`, `property int`, etc.). Untyped `property var` only when the value is genuinely heterogeneous.
 - **Every configurable property has a default**. If a consumer doesn't set it, the control still renders correctly with theme tokens.
-- **All defaults reference `Theme.*` tokens**. Never hardcode a color, spacing value, font size, or radius.
+- **All defaults reference `Theme.*` tokens**. Never hardcode a color, size, spacing value, font size, radius or border width. Sizes shared between controls come from `Theme.size`; a size that belongs to one control gets a token in its `Theme.controls.<control>` group (`ControlTokens.qml`), with today's value as the default.
 - **Figma values are canonical, not approximations.** When a control's spec specifies a color or size that doesn't have an exact-matching token, **add the token first** rather than mapping to a "close enough" existing one — close-but-not-exact mappings drift away from the design over time and are hard to audit later. Add the raw value to `ColorPalette.qml` / `Spacing.qml` / `Typography.qml`, expose a semantic name on `DarkTheme.qml` (e.g., `surfaceRecessed`, `borderStrong`, `surfaceContrast`), then reference that semantic name from the control. Examples already in the palette: `gray350` / `gray355` / `gray370` were added when `LogosPaginator`'s figma needed `#515151` / `#595959` / `#1F1F1F` and no existing token matched.
 - **Public signals are part of the API contract**. Don't rely on inherited signals fired indirectly — declare your own if your control has a distinct event.
 
@@ -180,7 +180,7 @@ Use existing pages (`LogosTabBarPage.qml`, `LogosButtonPage.qml`) as templates.
 
 Follow Qt's official **[QML Coding Conventions](https://doc.qt.io/qt-6/qml-codingconventions.html)** for ordering of property declarations, indentation, signal handler naming, grouped properties, and JS function style. The rules below are the project-specific additions on top.
 
-- **Always reference `Theme.palette.*`, `Theme.spacing.*`, `Theme.typography.*`** — never hardcode hex/px values inside a control.
+- **Always reference `Theme.palette.*`, `Theme.spacing.*`, `Theme.typography.*`, `Theme.size.*`, `Theme.controls.*`** — never hardcode hex/px values inside a control. `tests/check-size-literals.sh` (run when the tests build) fails on size literals; 0 and arithmetic on tokens are fine.
 - **Use `LogosText`** for any text rendering (it carries the theme defaults). Reach for plain `Text` only if you're specifically overriding theme behavior.
 - **camelCase** for properties, signals, ids, and functions (matches Qt's convention).
 - **One control per file**; the file name matches the QML type name. `qmldir` registers `LogosFoo 1.0 LogosFoo.qml`.
@@ -191,7 +191,7 @@ Follow Qt's official **[QML Coding Conventions](https://doc.qt.io/qt-6/qml-codin
 
 Before opening a PR for a new or modified control:
 
-- [ ] No hardcoded colors, spacing, or font sizes — all values reference `Theme.*` tokens.
+- [ ] No hardcoded colors, sizes, spacing, or font sizes — all values reference `Theme.*` tokens; new sizes added to `ControlTokens.qml` and pinned in `tests/tst_Tokens.qml`.
 - [ ] Every configurable property is typed and has a sensible default.
 - [ ] Internal items needed for tests/tooling are exposed as `readonly property alias <name>Item`.
 - [ ] `background:` and `contentItem:` are overridable.

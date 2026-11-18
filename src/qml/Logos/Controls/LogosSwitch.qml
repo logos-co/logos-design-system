@@ -26,8 +26,8 @@ Switch {
 
     indicator: Item {
         id: indicatorBox
-        implicitWidth: 40
-        implicitHeight: 24
+        implicitWidth: Theme.controls.toggle.width
+        implicitHeight: Theme.controls.toggle.height
         x: root.leftPadding
         y: root.topPadding + (root.availableHeight - height) / 2
 
@@ -38,19 +38,19 @@ Switch {
             anchors.fill: parent
             radius: height / 2
             color: "transparent"
-            border.width: root.visualFocus ? 2 : 0
+            border.width: root.visualFocus ? Theme.size.focusWidth : 0
             border.color: Theme.palette.focus
         }
 
         Rectangle {
             id: track
             anchors.centerIn: parent
-            width: 36
-            height: 20
+            width: Theme.controls.toggle.trackWidth
+            height: Theme.controls.toggle.trackHeight
             radius: height / 2
             color: root.checked ? root.trackColorOn : root.trackColorOff
             border.color: Theme.palette.border
-            border.width: 1
+            border.width: Theme.size.borderWidth
             Behavior on color { ColorAnimation { duration: 120 } }
 
             Rectangle {
