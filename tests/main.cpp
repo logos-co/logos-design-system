@@ -43,6 +43,21 @@ public:
     {
         return QSettings(m_installDir + "/theme.ini", QSettings::IniFormat).value("theme").toString();
     }
+    Q_INVOKABLE QString savedDensity() const
+    {
+        return QSettings(m_installDir + "/theme.ini", QSettings::IniFormat).value("density").toString();
+    }
+    // As if a hand-edited theme.ini held `value`, re-read from disk.
+    Q_INVOKABLE void reloadWithSavedDensity(const QString& value) const
+    {
+        const QString file = m_installDir + "/theme.ini";
+        {
+            QSettings settings(file, QSettings::IniFormat);
+            settings.setValue("density", value);
+        }
+        Logos::ThemeStore::instance()->setChoiceFile(QString());
+        Logos::ThemeStore::instance()->setChoiceFile(file);
+    }
     Q_INVOKABLE bool storeIsRegistered() const
     {
         return qApp->property("_logos_theme_store").value<QObject*>()
@@ -67,7 +82,9 @@ public:
             QQmlComponent c(m_otherEngine);
             c.setData("import QtQuick\nimport Logos.Theme\nQtObject {\n"
                       "    property string current: Theme.currentTheme\n"
-                      "    property color background: Theme.palette.background\n}\n",
+                      "    property color background: Theme.palette.background\n"
+                      "    property string density: Theme.density\n"
+                      "    property int buttonHeight: Theme.controls.button.height\n}\n",
                       QUrl());
             m_otherView = c.create();
             if (!m_otherView)

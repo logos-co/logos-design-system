@@ -3,11 +3,34 @@ import QtQuick
 // Each control's own dimensions. Values shared between controls come from
 // Sizes and Spacing; the rest are the control's own. Strokes are read from
 // Theme.size directly.
+//
+// Density scales tappable controls (0.85 compact, 1 comfortable, 1.2 touch),
+// and under `touch` none is smaller than size.touchTarget. Comfortable is
+// the desktop's values.
 QtObject {
     id: tokens
 
     required property Sizes size
     required property Spacing spacing
+    required property string density
+    required property bool touch
+
+    // Internal. A property only because a QtObject can't hold child objects.
+    readonly property QtObject _d: QtObject {
+        id: d
+
+        readonly property real scale: tokens.density === "compact" ? 0.85
+                                    : tokens.density === "touch" ? 1.2 : 1
+
+        function tappable(px) {
+            const scaled = Math.round(px * d.scale)
+            return tokens.touch ? Math.max(tokens.size.touchTarget, scaled) : scaled
+        }
+
+        function padding(px) {
+            return Math.round(px * d.scale)
+        }
+    }
 
     readonly property QtObject artwork: QtObject {
         readonly property int size: tokens.size.controlLarge
@@ -20,8 +43,10 @@ QtObject {
     }
 
     readonly property QtObject button: QtObject {
-        readonly property int height: tokens.size.controlXLarge
-        readonly property int compactHeight: tokens.size.controlSmall
+        readonly property int height: d.tappable(tokens.size.controlXLarge)
+        readonly property int compactHeight: d.tappable(tokens.size.controlSmall)
+        readonly property int paddingX: d.padding(tokens.spacing.large)
+        readonly property int compactPaddingX: d.padding(tokens.spacing.medium)
         readonly property int minWidth: 100
         readonly property int compactMinWidth: 72
         readonly property int iconSize: tokens.size.iconMedium
@@ -32,7 +57,7 @@ QtObject {
     }
 
     readonly property QtObject combo: QtObject {
-        readonly property int height: tokens.size.controlSmall
+        readonly property int height: d.tappable(tokens.size.controlSmall)
         readonly property int paddingX: 10
         readonly property int indicatorSize: tokens.size.iconMedium
         readonly property int popupGap: 2
@@ -49,8 +74,8 @@ QtObject {
 
     readonly property QtObject field: QtObject {
         readonly property int width: 200
-        readonly property int height: tokens.size.controlLarge
-        readonly property int paddingX: tokens.spacing.medium
+        readonly property int height: d.tappable(tokens.size.controlLarge)
+        readonly property int paddingX: d.padding(tokens.spacing.medium)
     }
 
     readonly property QtObject icon: QtObject {
@@ -58,7 +83,7 @@ QtObject {
     }
 
     readonly property QtObject iconButton: QtObject {
-        readonly property int size: tokens.size.controlLarge
+        readonly property int size: d.tappable(tokens.size.controlLarge)
         readonly property int iconSize: tokens.size.iconMedium
     }
 
@@ -69,7 +94,8 @@ QtObject {
     }
 
     readonly property QtObject listItem: QtObject {
-        readonly property int height: tokens.size.controlMedium
+        readonly property int height: d.tappable(tokens.size.controlMedium)
+        readonly property int paddingX: d.padding(tokens.spacing.medium)
     }
 
     readonly property QtObject menu: QtObject {
@@ -77,7 +103,8 @@ QtObject {
     }
 
     readonly property QtObject menuItem: QtObject {
-        readonly property int height: tokens.size.controlSmall
+        readonly property int height: d.tappable(tokens.size.controlSmall)
+        readonly property int paddingX: d.padding(tokens.spacing.medium)
     }
 
     readonly property QtObject notice: QtObject {
@@ -88,9 +115,10 @@ QtObject {
     }
 
     readonly property QtObject paginator: QtObject {
-        readonly property int height: tokens.size.controlMedium
-        readonly property int buttonSize: tokens.size.controlMedium
-        readonly property int buttonMinWidth: tokens.size.controlXSmall
+        readonly property int height: buttonSize
+        readonly property int buttonSize: tokens.touch ? d.tappable(tokens.size.controlMedium)
+                                                       : tokens.size.controlMedium
+        readonly property int buttonMinWidth: tokens.touch ? buttonSize : tokens.size.controlXSmall
         readonly property int pageSizeMinWidth: 80
         readonly property int pageSizeWidth: 130
     }
@@ -111,7 +139,7 @@ QtObject {
 
     readonly property QtObject search: QtObject {
         readonly property int width: 400
-        readonly property int height: 54
+        readonly property int height: d.tappable(54)
         readonly property int paddingLeft: 10
         readonly property int iconSize: tokens.size.iconMedium
         readonly property int clearButtonSize: tokens.size.iconMedium
@@ -126,8 +154,9 @@ QtObject {
     }
 
     readonly property QtObject spinBox: QtObject {
-        readonly property int height: tokens.size.controlSmall
-        readonly property int buttonWidth: 28
+        readonly property int height: tokens.touch ? Math.max(tokens.field.height, tokens.size.touchTarget)
+                                                   : tokens.size.controlSmall
+        readonly property int buttonWidth: tokens.touch ? tokens.size.touchTarget : 28
     }
 
     readonly property QtObject spinner: QtObject {
@@ -151,7 +180,8 @@ QtObject {
     }
 
     readonly property QtObject tab: QtObject {
-        readonly property int height: tokens.size.controlLarge
+        readonly property int height: d.tappable(tokens.size.controlLarge)
+        readonly property int paddingX: d.padding(tokens.spacing.small)
         readonly property int spacing: 6
         readonly property int iconSize: tokens.size.iconMedium
         readonly property int underlineHeight: 2
@@ -163,15 +193,18 @@ QtObject {
 
     readonly property QtObject table: QtObject {
         readonly property int rowHeight: 64
-        readonly property int headerHeight: tokens.size.controlMedium
+        readonly property int headerHeight: tokens.touch ? d.tappable(tokens.size.controlMedium)
+                                                         : tokens.size.controlMedium
         readonly property int columnMinWidth: 80
-        readonly property int selectionColumnWidth: tokens.size.controlLarge
+        readonly property int selectionColumnWidth: tokens.touch ? tokens.size.touchTarget
+                                                                 : tokens.size.controlLarge
         readonly property int sortIconWidth: tokens.size.iconXSmall
         readonly property int sortIconHeight: 8
     }
 
     readonly property QtObject tile: QtObject {
-        readonly property int size: tokens.size.controlLarge
+        readonly property int size: tokens.touch ? d.tappable(tokens.size.controlLarge)
+                                                 : tokens.size.controlLarge
     }
 
     // LogosSwitch (`switch` is reserved in JavaScript).
@@ -183,7 +216,7 @@ QtObject {
     }
 
     readonly property QtObject toolButton: QtObject {
-        readonly property int size: tokens.size.controlMedium
+        readonly property int size: d.tappable(tokens.size.controlMedium)
     }
 
     readonly property QtObject toolSeparator: QtObject {

@@ -18,6 +18,7 @@ class ThemeRegistry : public QObject
     Q_PROPERTY(QStringList paletteTokens READ paletteTokens CONSTANT)
     Q_PROPERTY(QString current READ current NOTIFY currentChanged)
     Q_PROPERTY(QVariantMap palette READ palette NOTIFY paletteChanged)
+    Q_PROPERTY(QString density READ density NOTIFY densityChanged)
 
 public:
     explicit ThemeRegistry(QObject* parent = nullptr);
@@ -26,10 +27,12 @@ public:
     QStringList paletteTokens() const;
     QString current() const;
     QVariantMap palette() const;
+    QString density() const;
     Q_INVOKABLE QVariantMap paletteOf(const QString& id) const;
 
 signals:
     void themesChanged();
     void currentChanged();
     void paletteChanged();
+    void densityChanged();
 };

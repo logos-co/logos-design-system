@@ -9,7 +9,9 @@ import Logos.Controls
 //     duration              Auto-close after N ms. 0 disables it, leaving a toast
 //                           that stays until dismissed. The countdown is held
 //                           while the pointer is over the toast, so the message
-//                           can be read and selected without it vanishing.
+//                           can be read and selected without it vanishing. At
+//                           touch density, where there is no hover, a tap
+//                           holds it until it is shown again.
 //     show(title, message)  Open, updating either field if given, and arm the
 //                           timer when duration > 0.
 //
@@ -38,6 +40,7 @@ LogosNotice {
             root.title = newTitle
         if (newMessage !== undefined)
             root.message = newMessage
+        d.pinned = false
         root.shown = true
         d.rearm()
     }
@@ -48,12 +51,21 @@ LogosNotice {
         id: pointerOver
         onHoveredChanged: d.rearm()
     }
+    TapHandler {
+        enabled: root.shown && Theme.touch
+        onTapped: {
+            d.pinned = true
+            d.rearm()
+        }
+    }
 
     QtObject {
         id: d
 
+        property bool pinned: false
+
         function rearm() {
-            if (root.shown && root.duration > 0 && !pointerOver.hovered)
+            if (root.shown && root.duration > 0 && !pointerOver.hovered && !d.pinned)
                 d.autoHideTimer.restart()
             else
                 d.autoHideTimer.stop()

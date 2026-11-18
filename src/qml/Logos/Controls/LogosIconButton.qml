@@ -8,7 +8,9 @@ import Logos.Theme
 //     iconSource    URL of the icon image (PNG/SVG). Empty hides the icon.
 //     iconColor     tint applied to the icon (default = textTertiary, matches
 //                   the figma's #969696 chip spec)
-//     size          outer width/height in px (default 40)
+//     size          width/height of the button in px (default 40). At touch
+//                   density a smaller one keeps its look inside a transparent
+//                   margin that makes it Theme.size.touchTarget to tap
 //     iconSize      icon width/height in px (default 20)
 //     flat          hide the pill background/border — ghost icon button
 //                   (default false)
@@ -54,6 +56,8 @@ Control {
     QtObject {
         id: d
         property bool keyboardPressed: false
+        readonly property real touchMargin: Theme.touch
+            ? Math.max(0, (Theme.size.touchTarget - root.size) / 2) : 0
 
         function backgroundColor(enabled, pressed, hovered, focused) {
             if (!enabled)
@@ -81,8 +85,12 @@ Control {
             d.keyboardPressed = false
     }
 
-    implicitWidth: size
-    implicitHeight: size
+    implicitWidth: size + 2 * d.touchMargin
+    implicitHeight: size + 2 * d.touchMargin
+    topInset: d.touchMargin
+    bottomInset: d.touchMargin
+    leftInset: d.touchMargin
+    rightInset: d.touchMargin
     hoverEnabled: true
     focusPolicy: Qt.StrongFocus
     activeFocusOnTab: true
@@ -149,5 +157,10 @@ Control {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onPressed: root.forceActiveFocus()
         onClicked: d.emitClicked()
+    }
+
+    LongPressToolTips {
+        control: root
+        source: mouseArea
     }
 }

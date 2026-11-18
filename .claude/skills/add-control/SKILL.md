@@ -56,6 +56,7 @@ Rules:
 - **Every configurable property has a default**. If a consumer doesn't set it, the control still renders correctly with theme tokens.
 - **All defaults reference `Theme.*` tokens**. Never hardcode a color, size, spacing value, font size, radius or border width. Sizes shared between controls come from `Theme.size`; a size that belongs to one control gets a token in its `Theme.controls.<control>` group (`ControlTokens.qml`), with today's value as the default.
 - **Figma values are canonical, not approximations.** When a control's spec specifies a color or size that doesn't have an exact-matching token, **add the token first** rather than mapping to a "close enough" existing one — close-but-not-exact mappings drift away from the design over time and are hard to audit later. Add the raw value to `ColorPalette.qml` / `Spacing.qml` / `Typography.qml`, expose a semantic name on `DarkTheme.qml` (e.g., `surfaceRecessed`, `borderStrong`, `surfaceContrast`), then reference that semantic name from the control. Examples already in the palette: `gray350` / `gray355` / `gray370` were added when `LogosPaginator`'s figma needed `#515151` / `#595959` / `#1F1F1F` and no existing token matched.
+- **Touch.** Under `Theme.touch` every tappable part is at least `Theme.size.touchTarget` (44) each way. Keep a small visual at its size and grow the area that takes the tap: insets and padding (`LogosIconButton`, `LogosInfoButton`), or the Basic style's own size formula with a `Theme.touch ? Theme.size.touchTarget : 0` floor (`LogosCheckbox`). Nothing may need hover or a double-click. A control that takes presses itself declares `LongPressToolTips { control: root }` (plus `source: mouseArea` if it clicks through an inner MouseArea), so at touch density a long-press opens its LogosToolTips and is not also a click. Add the control to the touch targets and the long-press cases in `tests/tst_Density.qml`.
 - **Public signals are part of the API contract**. Don't rely on inherited signals fired indirectly — declare your own if your control has a distinct event.
 
 ## 3. Open for extension, closed for modification
@@ -193,6 +194,7 @@ Before opening a PR for a new or modified control:
 
 - [ ] No hardcoded colors, sizes, spacing, or font sizes — all values reference `Theme.*` tokens; new sizes added to `ControlTokens.qml` and pinned in `tests/tst_Tokens.qml`.
 - [ ] Every configurable property is typed and has a sensible default.
+- [ ] At touch density every tappable part is at least `Theme.size.touchTarget`, and nothing needs hover (`tests/tst_Density.qml`).
 - [ ] Internal items needed for tests/tooling are exposed as `readonly property alias <name>Item`.
 - [ ] `background:` and `contentItem:` are overridable.
 - [ ] `tests/tst_<Component>.qml` exists; `nix flake check` passes.

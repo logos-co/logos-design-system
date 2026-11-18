@@ -36,6 +36,14 @@ public:
     QVariantMap palette() const { return m_palette; }
     QColor color(const QString& token) const { return m_palette.value(token).value<QColor>(); }
 
+    // How big controls are: "compact", "comfortable" or "touch". The saved
+    // choice, or the platform's default (touch on phones and tablets).
+    static QStringList densities();
+    static QString defaultDensity();
+    QString density() const;
+    // "" goes back to the platform's default. False for an unknown density.
+    bool setDensity(const QString& density);
+
     // Strict (installing): a bad colour value is an error, not a warning.
     enum class Validation { Lenient, Strict };
     static QVariantMap parseDocument(const QByteArray& data,
@@ -45,6 +53,7 @@ signals:
     void themesChanged();
     void currentChanged();
     void paletteChanged();
+    void densityChanged();
 
 private:
     ThemeStore();
@@ -55,6 +64,7 @@ private:
     QHash<QString, QString> m_sources;   // id -> directory
     QString m_choiceFile;
     QString m_saved;
+    QString m_density;   // "" = the platform's default
     QVariantMap m_palette;
 };
 

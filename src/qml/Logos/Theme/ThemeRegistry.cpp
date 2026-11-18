@@ -8,6 +8,7 @@ ThemeRegistry::ThemeRegistry(QObject* parent)
     connect(store, &Logos::ThemeStore::themesChanged, this, &ThemeRegistry::themesChanged);
     connect(store, &Logos::ThemeStore::currentChanged, this, &ThemeRegistry::currentChanged);
     connect(store, &Logos::ThemeStore::paletteChanged, this, &ThemeRegistry::paletteChanged);
+    connect(store, &Logos::ThemeStore::densityChanged, this, &ThemeRegistry::densityChanged);
 }
 
 QVariantList ThemeRegistry::themes() const
@@ -28,6 +29,11 @@ QString ThemeRegistry::current() const
 QVariantMap ThemeRegistry::palette() const
 {
     return Logos::ThemeStore::instance()->palette();
+}
+
+QString ThemeRegistry::density() const
+{
+    return Logos::ThemeStore::instance()->density();
 }
 
 QVariantMap ThemeRegistry::paletteOf(const QString& id) const

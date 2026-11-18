@@ -15,6 +15,12 @@ Slider {
     readonly property alias fillItem: fill
     readonly property alias handleItem: handle
 
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitHandleWidth + leftPadding + rightPadding)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitHandleHeight + topPadding + bottomPadding,
+                             Theme.touch ? Theme.size.touchTarget : 0)
+
     focusPolicy: Qt.StrongFocus
     activeFocusOnTab: true
 

@@ -9,6 +9,9 @@
 # the bindings; the target_link_libraries below ensures both plugin
 # registrations end up in every binary that pulls in Controls.
 
+# Used by the controls themselves; not part of the module's API.
+set_source_files_properties(LongPressToolTips.qml PROPERTIES QT_QML_INTERNAL_TYPE TRUE)
+
 qt_add_qml_module(logos_controls_qml
     URI Logos.Controls
     VERSION 1.0
@@ -64,6 +67,7 @@ qt_add_qml_module(logos_controls_qml
         LogosBadge.qml
         LogosScrollView.qml
         LogosToolTip.qml
+        LongPressToolTips.qml
         LogosItemDelegate.qml
         LogosDrawer.qml
         LogosStackView.qml

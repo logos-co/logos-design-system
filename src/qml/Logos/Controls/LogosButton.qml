@@ -23,9 +23,10 @@ import Logos.Controls
 //     trailingIcon IconSpec for the icon after the label. Both may be set.
 //     variant      LogosButton.Variant.Primary or .Secondary (default).
 //                  Drives the background and border palette.
-//     compact      drops the 44px touch-target floor to 32px and tightens the
+//     compact      drops the 44px height floor to 32px and tightens the
 //                  padding, for dense chrome (headers, toolbars) where a
-//                  full-size button crowds the row. Colors and behaviour are
+//                  full-size button crowds the row; at touch density it stays
+//                  at Theme.size.touchTarget. Colors and behaviour are
 //                  unchanged. A bool rather than a size enum, so it does not
 //                  collide with LogosIconButton's pixel-valued `size`.
 //     radius       background corner radius. Default = Theme.spacing.radiusXlarge.
@@ -113,14 +114,14 @@ LogosAbstractButton {
 
     // Floors keep short labels ("OK") on a balanced pill, and hold the height
     // steady whether or not the button carries a default-sized (20px) icon;
-    // beyond them the content decides. Compact lowers both floors — it is for
-    // chrome, where the 44px touch target is the wrong unit.
+    // beyond them the content decides. Compact lowers both floors for chrome,
+    // except at touch density, where no button is under the touch target.
     implicitWidth: Math.max(compact ? Theme.controls.button.compactMinWidth : Theme.controls.button.minWidth,
                             implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(compact ? Theme.controls.button.compactHeight : Theme.controls.button.height,
                              implicitContentHeight + topPadding + bottomPadding)
-    leftPadding: compact ? Theme.spacing.medium : Theme.spacing.large
-    rightPadding: compact ? Theme.spacing.medium : Theme.spacing.large
+    leftPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
+    rightPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
     topPadding: compact ? Theme.spacing.small : Theme.spacing.medium
     bottomPadding: compact ? Theme.spacing.small : Theme.spacing.medium
     font.family: Theme.typography.publicSans

@@ -16,7 +16,7 @@ class ThemeManager : public QObject
 
 public:
     // `dir` must be absolute. ThemeStore reads themes from it, and the choice
-    // is saved in <dir>/theme.ini.
+    // of theme and density is saved in <dir>/theme.ini.
     explicit ThemeManager(const QString& dir, QObject* parent = nullptr);
 
     // Validate the local file strictly and copy it to <dir>/<id>/theme.json,
@@ -35,6 +35,11 @@ public:
 
     // Switch every view to `id` and save it. False for an unknown id.
     Q_INVOKABLE bool select(const QString& id) const;
+
+    // Size every view's controls for `density` ("compact", "comfortable" or
+    // "touch") and save it; "" goes back to the platform's default (touch on
+    // phones and tablets). False for an unknown density.
+    Q_INVOKABLE bool setDensity(const QString& density) const;
 
 private:
     QString m_dir;

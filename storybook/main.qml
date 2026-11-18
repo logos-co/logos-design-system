@@ -130,6 +130,16 @@ ApplicationWindow {
                     themeManager.select(names[(names.indexOf(Theme.currentTheme) + 1) % names.length])
                 }
             }
+
+            LogosButton {
+                text: "Density: " + Theme.density
+                implicitWidth: 170
+                implicitHeight: 36
+                onClicked: {
+                    const order = ["compact", "comfortable", "touch"]
+                    themeManager.setDensity(order[(order.indexOf(Theme.density) + 1) % order.length])
+                }
+            }
         }
     }
 

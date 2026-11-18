@@ -31,6 +31,13 @@ RadioButton {
 
     spacing: Theme.spacing.small
     padding: Theme.spacing.tiny
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding,
+                            Theme.touch ? Theme.size.touchTarget : 0)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding,
+                             implicitIndicatorHeight + topPadding + bottomPadding,
+                             Theme.touch ? Theme.size.touchTarget : 0)
     opacity: enabled ? 1.0 : 0.5
 
     focusPolicy: Qt.StrongFocus
@@ -81,5 +88,9 @@ RadioButton {
         verticalAlignment: Text.AlignVCenter
         text: root.text
         color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }

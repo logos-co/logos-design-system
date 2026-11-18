@@ -20,6 +20,11 @@ import Logos.Theme
 //         }
 //     }
 //
+// At touch density, where there is no hover, a long-press on the parent opens
+// the tip and a tap closes it. On a Logos control that long-press is then not
+// also a click. Set `openOnLongPress: false` for a tip the control opens
+// itself. Don't let a tip be the only place something is said.
+//
 // The text is plain, as LogosText's is; set `textFormat: Text.StyledText` for
 // markup of your own.
 //
@@ -48,6 +53,7 @@ ToolTip {
     // number to pin. Either axis can be manual independently.
     property var manualX: undefined
     property var manualY: undefined
+    property bool openOnLongPress: true
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias backgroundItem: bubble
@@ -105,6 +111,13 @@ ToolTip {
         target: root
         property: "y"
         value: root.manualY !== undefined ? root.manualY : d.targetY
+    }
+
+    TapHandler {
+        parent: root.parent
+        enabled: root.openOnLongPress && Theme.touch && !!root.parent && root.text.length > 0
+        onLongPressed: root.open()
+        onTapped: if (root.visible) root.close()
     }
 
     delay: 200

@@ -215,6 +215,10 @@ ComboBox {
         leftPadding: root.entryPadding
         rightPadding: root.entryPadding
         highlighted: root.highlightedIndex === index
+        implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                                 implicitContentHeight + topPadding + bottomPadding,
+                                 implicitIndicatorHeight + topPadding + bottomPadding,
+                                 Theme.touch ? Theme.size.touchTarget : 0)
 
         contentItem: EntryText {
             text: d.entryText(index)

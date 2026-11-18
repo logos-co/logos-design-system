@@ -78,6 +78,11 @@ bool Logos::ThemeManager::select(const QString& id) const
     return ThemeStore::instance()->setCurrent(id);
 }
 
+bool Logos::ThemeManager::setDensity(const QString& density) const
+{
+    return ThemeStore::instance()->setDensity(density);
+}
+
 QVariantMap Logos::ThemeManager::remove(const QString& id) const
 {
     QVariantMap out{ { "ok", false }, { "id", id }, { "errors", QStringList{} } };

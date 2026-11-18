@@ -15,7 +15,16 @@ QtObject {
     readonly property ControlTokens controls: ControlTokens {
         size: theme.size
         spacing: theme.spacing
+        density: theme.density
+        touch: theme.touch
     }
+
+    // ===== DENSITY =====
+    // "compact", "comfortable" or "touch"; the host chooses it (ThemeManager).
+    // Comfortable where there is no ThemeRegistry.
+    readonly property string density: _hasRegistry ? ThemeRegistry.density : "comfortable"
+    // Every tappable part is at least size.touchTarget each way.
+    readonly property bool touch: density === "touch"
     
     // ===== THEME INSTANCES =====
     // Dark's colours in QML. The palette comes from ThemeStore (C++), whose

@@ -30,7 +30,9 @@ import Logos.Controls
 //                     shows its busyLabel
 //     failed          the current stage has failed: it goes red and stops
 //                     pulsing
-//     interactive     makes stages clickable; emits stageClicked(index)
+//     interactive     makes stages clickable; emits stageClicked(index). At
+//                     touch density an interactive lane is Theme.size.touchTarget
+//                     high
 //     pulseDuration   length of one busy pulse in ms. Set 0 to disable
 //     count           number of stages (read-only)
 //     stateAt(index)  LogosStageLane.Pending / Busy / Active / Done / Failed.
@@ -107,7 +109,8 @@ Item {
         return root.busy ? LogosStageLane.Busy : LogosStageLane.Active
     }
 
-    implicitHeight: Theme.controls.stageLane.height
+    implicitHeight: root.interactive && Theme.touch ? Theme.size.touchTarget
+                                                    : Theme.controls.stageLane.height
     implicitWidth: Theme.controls.stageLane.width
 
     Accessible.role: Accessible.ProgressBar

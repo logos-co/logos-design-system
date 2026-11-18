@@ -33,6 +33,13 @@ CheckBox {
 
     spacing: Theme.spacing.small
     padding: Theme.spacing.tiny
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding,
+                            Theme.touch ? Theme.size.touchTarget : 0)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding,
+                             implicitIndicatorHeight + topPadding + bottomPadding,
+                             Theme.touch ? Theme.size.touchTarget : 0)
 
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
@@ -105,5 +112,9 @@ CheckBox {
         color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
         verticalAlignment: Text.AlignVCenter
         leftPadding: root.indicator ? root.indicator.width + root.spacing : 0
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }
