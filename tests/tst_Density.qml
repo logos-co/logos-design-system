@@ -5,10 +5,9 @@ import Logos.Theme
 import Logos.Controls
 import LogosTests
 
-// Density is the host's choice and reaches every view. At touch density every
-// tappable part is at least Theme.size.touchTarget each way and nothing needs
-// hover; comfortable, the desktop default, keeps the desktop's sizes and
-// behaviour.
+// Density is the host's choice and reaches every view, and at touch density
+// every tappable control is at least Theme.size.touchTarget each way. Each
+// control's own density and touch behaviour is tested in its own file.
 TestCase {
     id: tc
     name: "Density"
@@ -177,63 +176,11 @@ TestCase {
         verify(item.implicitHeight >= Theme.size.touchTarget, "height " + item.implicitHeight)
     }
 
-    // The look stays the size it was; only the area that takes the tap grows.
-    function test_touchKeepsTheLook() {
-        ThemeManager.setDensity("touch")
-        const info = createTemporaryObject(infoButton, tc)
-        compare(info.ringItem.width, Theme.controls.infoButton.size)
-        const small = createTemporaryObject(smallIconButton, tc)
-        compare(small.backgroundItem.width, 20)
-        const box = createTemporaryObject(checkbox, tc)
-        compare(box.indicator.width, Theme.controls.checkbox.indicatorSize)
-        const t = createTemporaryObject(smallTile, tc)
-        compare(t.background.width, 24)
-    }
+    // ─── LongPressToolTips ───
+    // Each control's own long-press cases are in its own test file; these are
+    // the helper's edge cases.
 
-    Component { id: searchBar; LogosSearchBar {} }
-    Component { id: notice;    LogosNotice { title: "Saved"; closable: true } }
-    Component { id: paginator; LogosPaginator { totalCount: 100; pageSize: 10 } }
-
-    function test_touchTargetsInsideControls() {
-        ThemeManager.setDensity("touch")
-        const search = createTemporaryObject(searchBar, tc)
-        search.textInput.text = "abc"
-        verify(search.clearItem.implicitWidth >= Theme.size.touchTarget)
-        verify(search.clearItem.implicitHeight >= Theme.size.touchTarget)
-
-        const n = createTemporaryObject(notice, tc)
-        verify(n.closeButtonItem.implicitWidth >= Theme.size.touchTarget)
-        verify(n.closeButtonItem.implicitHeight >= Theme.size.touchTarget)
-
-        const p = createTemporaryObject(paginator, tc)
-        for (const b of [p.firstButton, p.prevButton, p.nextButton, p.lastButton]) {
-            verify(b.implicitWidth >= Theme.size.touchTarget)
-            verify(b.implicitHeight >= Theme.size.touchTarget)
-        }
-        const cell = p.pageCells.itemAt(0)
-        verify(cell.width >= Theme.size.touchTarget && cell.height >= Theme.size.touchTarget)
-    }
-
-    function test_comfortableKeepsDesktopSizes() {
-        compare(createTemporaryObject(copyButton, tc).implicitWidth, 24)
-        compare(createTemporaryObject(smallIconButton, tc).implicitWidth, 20)
-        compare(createTemporaryObject(infoButton, tc).implicitWidth, 16)
-        compare(createTemporaryObject(smallTile, tc).implicitWidth, 24)
-        compare(createTemporaryObject(stageLane, tc).implicitHeight, 30)
-        const l = createTemporaryObject(link, tc)
-        compare(l.implicitHeight, l.labelItem.implicitHeight)
-    }
-
-    // ─── Nothing needs hover ───
-
-    Component {
-        id: labelWithTip
-        LogosText {
-            text: "A long name"
-            readonly property alias tip: tip
-            LogosToolTip { id: tip; text: "A long name, in full" }
-        }
-    }
+    Component { id: clickSpy; SignalSpy {} }
 
     // Input reaches a new item once it has been rendered.
     function create(component, properties) {
@@ -248,19 +195,6 @@ TestCase {
         mouseRelease(item)
     }
 
-    Component { id: buttonTip;     LogosButton { text: "OK"; LogosToolTip { text: "Tip" } } }
-    Component { id: iconButtonTip; LogosIconButton { LogosToolTip { text: "Tip" } } }
-    Component { id: linkTip;       LogosLink { text: "Docs"; LogosToolTip { text: "Tip" } } }
-    Component { id: tileTip;       LogosTile { label: "AB"; LogosToolTip { text: "Tip" } } }
-    Component { id: toolButtonTip; LogosToolButton { text: "T"; LogosToolTip { text: "Tip" } } }
-    Component { id: tabButtonTip;  LogosTabButton { text: "Tab"; LogosToolTip { text: "Tip" } } }
-    Component { id: checkboxTip;   LogosCheckbox { text: "Box"; LogosToolTip { text: "Tip" } } }
-    Component { id: radioTip;      LogosRadioButton { text: "Radio"; LogosToolTip { text: "Tip" } } }
-    Component { id: toggleTip;     LogosSwitch { text: "Switch"; LogosToolTip { text: "Tip" } } }
-    Component { id: listItemTip;   LogosItemDelegate { text: "Row"; width: 200; LogosToolTip { text: "Tip" } } }
-    Component { id: menuItemTip;   LogosMenuItem { text: "Item"; width: 200; LogosToolTip { text: "Tip" } } }
-    Component { id: clickSpy; SignalSpy {} }
-
     function tipIn(control) {
         for (let i = 0; i < control.data.length; ++i)
             if (control.data[i] instanceof LogosToolTip)
@@ -268,59 +202,8 @@ TestCase {
         return null
     }
 
-    function spyOnClicks(control, signalName) {
-        return createTemporaryObject(clickSpy, tc, { target: control, signalName: signalName || "clicked" })
-    }
-
-    function test_longPress_data() {
-        return [
-            { tag: "LogosButton",       withTip: buttonTip,     without: button },
-            { tag: "LogosIconButton",   withTip: iconButtonTip, without: iconButton },
-            { tag: "LogosLink",         withTip: linkTip,       without: link, signal: "activated" },
-            { tag: "LogosTile",         withTip: tileTip,       without: tile },
-            { tag: "LogosToolButton",   withTip: toolButtonTip, without: toolButton },
-            { tag: "LogosTabButton",    withTip: tabButtonTip,  without: tabButton },
-            { tag: "LogosCheckbox",     withTip: checkboxTip,   without: labelledCheckbox },
-            { tag: "LogosRadioButton",  withTip: radioTip,      without: radio },
-            { tag: "LogosSwitch",       withTip: toggleTip,     without: toggle },
-            { tag: "LogosItemDelegate", withTip: listItemTip,   without: listItem },
-            { tag: "LogosMenuItem",     withTip: menuItemTip,   without: menuItem },
-        ]
-    }
-
-    // On touch a long-press shows what a control does, without doing it; a
-    // tap still does it.
-    function test_longPress(data) {
-        ThemeManager.setDensity("touch")
-        const c = create(data.withTip)
-        const clicked = spyOnClicks(c, data.signal)
-        holdOn(c)
-        tryCompare(tipIn(c), "opened", true)
-        compare(clicked.count, 0)
-        mouseClick(c)
-        compare(clicked.count, 1)
-    }
-
-    function test_longPressWithoutTip_data() { return test_longPress_data() }
-
-    // Without a tip, a long-press is a click at touch density too: people who
-    // press slowly must still get one.
-    function test_longPressWithoutTip(data) {
-        ThemeManager.setDensity("touch")
-        const c = create(data.without)
-        const clicked = spyOnClicks(c, data.signal)
-        holdOn(c)
-        compare(clicked.count, 1)
-    }
-
-    function test_longPressOnDesktop_data() { return test_longPress_data() }
-
-    function test_longPressOnDesktop(data) {
-        const c = create(data.withTip)
-        const clicked = spyOnClicks(c, data.signal)
-        holdOn(c)
-        compare(clicked.count, 1)
-        verify(!tipIn(c).opened)
+    function spyOnClicks(control) {
+        return createTemporaryObject(clickSpy, tc, { target: control, signalName: "clicked" })
     }
 
     Component {
@@ -361,6 +244,8 @@ TestCase {
         compare(clicked.count, 1)
     }
 
+    Component { id: checkboxTip; LogosCheckbox { text: "Box"; LogosToolTip { text: "Tip" } } }
+
     function test_switchingToTouchAppliesToExistingControls() {
         const c = create(checkboxTip)
         ThemeManager.setDensity("touch")
@@ -368,94 +253,4 @@ TestCase {
         tryCompare(tipIn(c), "opened", true)
         verify(!c.checked)
     }
-
-    // A tip on something that isn't a button, e.g. a cut-off label.
-    function test_longPressOpensLabelTipOnTouch() {
-        ThemeManager.setDensity("touch")
-        const l = create(labelWithTip)
-        holdOn(l)
-        tryCompare(l.tip, "opened", true)
-        mouseClick(l)
-        tryCompare(l.tip, "opened", false)
-    }
-
-    function test_longPressOnLabelDoesNothingOnDesktop() {
-        const l = create(labelWithTip)
-        holdOn(l)
-        wait(400)
-        verify(!l.tip.opened)
-    }
-
-    Component { id: toast; LogosToast { duration: 300; title: "Saved" } }
-
-    function test_tapHoldsToastOnTouch() {
-        ThemeManager.setDensity("touch")
-        const t = create(toast)
-        t.show()
-        mouseClick(t.titleItem)
-        mouseMove(tc, tc.width - 1, tc.height - 1)  // not held by hover
-        wait(t.duration * 2)
-        verify(t.shown)
-        t.show()
-        tryCompare(t, "shown", false, t.duration * 10)
-    }
-
-    function test_clickDoesNotHoldToastOnDesktop() {
-        const t = create(toast)
-        t.show()
-        mouseClick(t.titleItem)
-        mouseMove(tc, tc.width - 1, tc.height - 1)
-        tryCompare(t, "shown", false, t.duration * 10)
-    }
-
-    Component { id: plainLink; LogosLink { text: "Docs"; underline: false } }
-
-    function test_linkUnderlinedOnTouch() {
-        const l = createTemporaryObject(plainLink, tc)
-        verify(!l.labelItem.font.underline)
-        ThemeManager.setDensity("touch")
-        verify(l.labelItem.font.underline)
-    }
-
-    ListModel {
-        id: rows
-        ListElement { name: "a" }
-        ListElement { name: "b" }
-    }
-
-    Component {
-        id: table
-        LogosTable {
-            width: 400
-            height: 300
-            selectionMode: LogosTable.Multi
-            model: rows
-            columns: [ LogosTableColumn { title: "Name"; role: "name" } ]
-        }
-    }
-
-    // Next to the checkbox, inside its cell: the top-left corner of row 0.
-    function clickBesideCheckbox(t) {
-        const p = t.view.itemAtIndex(0).mapToItem(t, 2, 2)
-        mouseClick(t, p.x, p.y)
-    }
-
-    function test_checkboxCellTogglesRowOnTouch() {
-        ThemeManager.setDensity("touch")
-        const t = create(table)
-        const clicked = createTemporaryObject(rowClickSpy, tc, { target: t })
-        clickBesideCheckbox(t)
-        compare(t.selectedIndices, [0])
-        compare(clicked.count, 0)
-    }
-
-    function test_checkboxCellIsRowOnDesktop() {
-        const t = create(table)
-        const clicked = createTemporaryObject(rowClickSpy, tc, { target: t })
-        clickBesideCheckbox(t)
-        compare(t.selectedIndices, [])
-        compare(clicked.count, 1)
-    }
-
-    Component { id: rowClickSpy; SignalSpy { signalName: "rowClicked" } }
 }

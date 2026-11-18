@@ -3,6 +3,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 // Locks LogosTile's interaction states.
 //
@@ -41,6 +42,10 @@ TestCase {
         tile.label = "wallet_ui"
         tile.fallbackColor = Theme.palette.surface
         clickSpy.clear()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     // ── Structure ───────────────────────────────────────────────────────
@@ -298,5 +303,27 @@ TestCase {
         compare(tile.hasArtwork, false)
         tile.source = "qrc:/test-icon.png"
         compare(tile.hasArtwork, true)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: sizedTile; LogosTile { label: "AB" } }
+
+    function test_touch_makes_the_default_tile_bigger() {
+        ThemeManager.setDensity("touch")
+        compare(createTemporaryObject(sizedTile, tc).implicitWidth, Theme.controls.tile.size)
+        compare(Theme.controls.tile.size, 48)
+    }
+
+    function test_touch_pads_a_small_tile_and_keeps_its_look() {
+        ThemeManager.setDensity("touch")
+        const t = createTemporaryObject(sizedTile, tc, { tileSize: 24 })
+        compare(t.implicitWidth, Theme.size.touchTarget)
+        compare(t.implicitHeight, Theme.size.touchTarget)
+        compare(t.background.width, 24)
+    }
+
+    function test_desktop_tile_is_its_size() {
+        compare(createTemporaryObject(sizedTile, tc, { tileSize: 24 }).implicitWidth, 24)
     }
 }

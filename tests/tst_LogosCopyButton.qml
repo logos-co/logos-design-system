@@ -4,11 +4,15 @@ import QtTest
 import Logos.Theme
 import Logos.Controls
 import Logos.Icons
+import LogosTests
 
 TestCase {
+    id: root
     name: "LogosCopyButton"
     width: 400
     height: 200
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     // Positioned mid-window so the feedback tip has room to float above
@@ -43,6 +47,11 @@ TestCase {
         btn.feedbackTipItem.close()
         copySpy.clear()
         clickSpy.clear()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
     }
 
     function test_aliases_resolve() {
@@ -128,5 +137,44 @@ TestCase {
         keyClick(Qt.Key_Space)
         compare(copySpy.count, 1)
         compare(copySpy.signalArguments[0][0], "QmAbc123")
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    function test_touch_target_keeps_the_icon_size() {
+        ThemeManager.setDensity("touch")
+        compare(btn.implicitWidth, Theme.size.touchTarget)
+        compare(btn.implicitHeight, Theme.size.touchTarget)
+        compare(btn.iconImage.width, Theme.controls.copyButton.iconSize)
+    }
+
+    Component { id: plainCopyButton; LogosCopyButton { value: "0xabc" } }
+
+    // Its own "Copied" tip opens itself, so a long-press still copies.
+    function test_touch_long_press_still_copies() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(plainCopyButton)
+        const spy = spyFor(c, "copied")
+        holdOn(c)
+        compare(spy.count, 1)
     }
 }

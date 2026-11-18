@@ -2,11 +2,15 @@ import QtQuick
 import QtTest
 
 import Logos.Controls
+import LogosTests
 
 TestCase {
+    id: root
     name: "LogosToolTip"
     width: 200
     height: 100
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     // Mid-window anchor: popups can never leave the window, so "above the
@@ -29,6 +33,11 @@ TestCase {
         tip.text = "Hint"
         tip.placement = LogosToolTip.Top
         tip.delay = 200
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
     }
 
     function test_aliases_resolve() {
@@ -126,4 +135,104 @@ TestCase {
         tryCompare(manualTip, "opened", false)
     }
 
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    Component {
+        id: labelWithTip
+        LogosText {
+            text: "A long name"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "A long name, in full" }
+        }
+    }
+    Component {
+        id: labelWithLongPressOff
+        LogosText {
+            text: "A long name"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "Tip"; openOnLongPress: false }
+        }
+    }
+    Component {
+        id: labelWithEmptyTip
+        LogosText {
+            text: "A name"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "" }
+        }
+    }
+    Component {
+        id: buttonWithLongPressOff
+        LogosIconButton {
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "Tip"; openOnLongPress: false }
+        }
+    }
+
+    function test_open_on_long_press_by_default() {
+        compare(tip.openOnLongPress, true)
+    }
+
+    // On something that isn't a button, e.g. a cut-off label.
+    function test_touch_long_press_opens_and_a_tap_closes() {
+        ThemeManager.setDensity("touch")
+        const l = createRendered(labelWithTip)
+        holdOn(l)
+        tryCompare(l.tip, "opened", true)
+        mouseClick(l)
+        tryCompare(l.tip, "opened", false)
+    }
+
+    function test_desktop_long_press_does_nothing() {
+        const l = createRendered(labelWithTip)
+        holdOn(l)
+        wait(400)
+        verify(!l.tip.opened)
+    }
+
+    function test_touch_long_press_respects_open_on_long_press_off() {
+        ThemeManager.setDensity("touch")
+        const l = createRendered(labelWithLongPressOff)
+        holdOn(l)
+        wait(400)
+        verify(!l.tip.opened)
+    }
+
+    function test_touch_long_press_does_not_open_an_empty_tip() {
+        ThemeManager.setDensity("touch")
+        const l = createRendered(labelWithEmptyTip)
+        holdOn(l)
+        wait(400)
+        verify(!l.tip.opened)
+    }
+
+    // A tip that doesn't open on long-press doesn't take the click either.
+    function test_touch_tip_with_long_press_off_does_not_swallow_the_click() {
+        ThemeManager.setDensity("touch")
+        const b = createRendered(buttonWithLongPressOff)
+        const clicked = spyFor(b, "clicked")
+        holdOn(b)
+        compare(clicked.count, 1)
+        verify(!b.tip.opened)
+    }
 }

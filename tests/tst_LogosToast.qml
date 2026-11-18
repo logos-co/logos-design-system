@@ -3,13 +3,17 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 // LogosToast is LogosNotice plus transient behaviour, so this covers only what it
 // adds — the surface itself is tested in tst_LogosNotice.
 TestCase {
+    id: root
     name: "LogosToast"
     width: 400
     height: 200
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     LogosToast {
@@ -31,6 +35,11 @@ TestCase {
         toast.duration = 4000
         toast.shown = false
         dismissedSpy.clear()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
     }
 
     // A toast appears in response to an event; a banner is part of the page. If it
@@ -92,5 +101,49 @@ TestCase {
         toast.severity = LogosNotice.Error
         compare(toast.backgroundItem.border.color.toString(), Theme.palette.errorBorder.toString())
         compare(toast.backgroundItem.color.a, 1.0)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    Component { id: shortToast; LogosToast { duration: 300; title: "Saved" } }
+
+    // Without hover, a tap is what keeps a toast on screen.
+    function test_touch_tap_holds_the_toast() {
+        ThemeManager.setDensity("touch")
+        const t = createRendered(shortToast)
+        t.show()
+        mouseClick(t.titleItem)
+        mouseMove(root, root.width - 1, root.height - 1)  // not held by hover
+        wait(t.duration * 2)
+        verify(t.shown)
+        t.show()
+        tryCompare(t, "shown", false, t.duration * 10)
+    }
+
+    function test_desktop_click_does_not_hold_the_toast() {
+        const t = createRendered(shortToast)
+        t.show()
+        mouseClick(t.titleItem)
+        mouseMove(root, root.width - 1, root.height - 1)
+        tryCompare(t, "shown", false, t.duration * 10)
     }
 }

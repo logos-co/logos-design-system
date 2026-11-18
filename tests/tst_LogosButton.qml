@@ -10,6 +10,8 @@ TestCase {
     name: "LogosButton"
     width: 400
     height: 200
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     LogosButton {
@@ -76,8 +78,10 @@ TestCase {
         btn.focus = false
     }
 
-    // A test that switches theme and fails must not leave it switched.
+    // A test that switches theme or density and fails must not leave it switched.
     function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
         ThemeManager.select("dark")
     }
 
@@ -300,5 +304,103 @@ TestCase {
         tryCompare(btn, "activeFocus", true)
         tryCompare(btn.backgroundItem, "color", Theme.palette.backgroundMuted)
         tryCompare(btn.backgroundItem.border, "color", Theme.palette.overlayOrange)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    function test_density_scales_the_side_padding_data() {
+        return [
+            { tag: "compact",     density: "compact",     paddingX: 14, compactPaddingX: 10 },
+            { tag: "comfortable", density: "comfortable", paddingX: 16, compactPaddingX: 12 },
+            { tag: "touch",       density: "touch",       paddingX: 19, compactPaddingX: 14 },
+        ]
+    }
+
+    function test_density_scales_the_side_padding(data) {
+        ThemeManager.setDensity(data.density)
+        compare(btn.leftPadding, data.paddingX)
+        compare(btn.rightPadding, data.paddingX)
+        btn.compact = true
+        compare(btn.leftPadding, data.compactPaddingX)
+        compare(btn.rightPadding, data.compactPaddingX)
+    }
+
+    function test_density_scales_the_height_floor() {
+        btn.text = "OK"
+        compare(btn.implicitHeight, 44)
+        ThemeManager.setDensity("touch")
+        compare(btn.implicitHeight, 53)
+        // The label and its padding need more than compact's 37.
+        ThemeManager.setDensity("compact")
+        verify(btn.implicitHeight < 44)
+    }
+
+    function test_touch_keeps_a_compact_button_at_the_touch_target() {
+        btn.text = "OK"
+        btn.compact = true
+        ThemeManager.setDensity("touch")
+        compare(btn.implicitHeight, Theme.size.touchTarget)
+    }
+
+    Component {
+        id: withTooltip
+        LogosButton {
+            text: "OK"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "Tip" }
+        }
+    }
+    Component {
+        id: withoutTooltip
+        LogosButton { text: "OK" }
+    }
+
+    // At touch density a long-press shows the tooltip instead of doing the
+    // action; a tap still does it.
+    function test_touch_long_press_opens_the_tooltip_instead_of_clicking() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        tryCompare(c.tip, "opened", true)
+        compare(spy.count, 0)
+        mouseClick(c)
+        compare(spy.count, 1)
+    }
+
+    // Without a tooltip a long-press is a click, so a slow press still works.
+    function test_touch_long_press_without_a_tooltip_clicks() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withoutTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+    }
+
+    function test_desktop_long_press_clicks() {
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+        verify(!c.tip.opened)
     }
 }

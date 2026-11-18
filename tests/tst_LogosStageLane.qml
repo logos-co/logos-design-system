@@ -3,6 +3,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -65,6 +66,10 @@ TestCase {
         lane.failed = false
         lane.interactive = false
         lane.height = 30
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     // ---- Public surface ----
@@ -261,5 +266,17 @@ TestCase {
         const last = lane.hitAreaAt(lane.count - 1)
         fuzzyCompare(last.x + last.width, lane.width, 0.5)
         lane.height = 30
+    }
+
+    // ---- Density and touch ----
+
+    function test_touch_makes_an_interactive_lane_touch_tall() {
+        ThemeManager.setDensity("touch")
+        compare(clickable.implicitHeight, Theme.size.touchTarget)
+        compare(lane.implicitHeight, Theme.controls.stageLane.height)
+    }
+
+    function test_desktop_interactive_lane_keeps_its_height() {
+        compare(clickable.implicitHeight, Theme.controls.stageLane.height)
     }
 }

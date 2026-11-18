@@ -6,9 +6,12 @@ import LogosTests
 import Logos.Theme
 
 TestCase {
+    id: root
     name: "LogosSwitch"
     width: 200
     height: 100
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     LogosSwitch {
@@ -29,8 +32,10 @@ TestCase {
         sw.text = "Toggle"
     }
 
-    // A test that switches theme and fails must not leave it switched.
+    // A test that switches theme or density and fails must not leave it switched.
     function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
         ThemeManager.select("dark")
     }
 
@@ -97,5 +102,83 @@ TestCase {
         keyClick(Qt.Key_Space)
         compare(sw.checked, true)
         compare(clickedSpy.count, 1)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    function test_touch_row_reaches_the_touch_target_and_the_track_keeps_its_size() {
+        ThemeManager.setDensity("touch")
+        const s = createRendered(withoutTooltip)
+        verify(s.implicitWidth >= Theme.size.touchTarget)
+        verify(s.implicitHeight >= Theme.size.touchTarget)
+        compare(s.indicatorItem.width, Theme.controls.toggle.trackWidth)
+        compare(s.indicatorItem.height, Theme.controls.toggle.trackHeight)
+    }
+
+    function test_desktop_row_is_not_touch_tall() {
+        verify(createRendered(withoutTooltip).implicitHeight < Theme.size.touchTarget)
+    }
+
+    Component {
+        id: withTooltip
+        LogosSwitch {
+            text: "Switch"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "Tip" }
+        }
+    }
+    Component {
+        id: withoutTooltip
+        LogosSwitch { text: "Switch" }
+    }
+
+    // At touch density a long-press shows the tooltip instead of doing the
+    // action; a tap still does it.
+    function test_touch_long_press_opens_the_tooltip_instead_of_clicking() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        tryCompare(c.tip, "opened", true)
+        compare(spy.count, 0)
+        verify(!c.checked)
+        mouseClick(c)
+        compare(spy.count, 1)
+    }
+
+    // Without a tooltip a long-press is a click, so a slow press still works.
+    function test_touch_long_press_without_a_tooltip_clicks() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withoutTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+    }
+
+    function test_desktop_long_press_clicks() {
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+        verify(!c.tip.opened)
     }
 }
