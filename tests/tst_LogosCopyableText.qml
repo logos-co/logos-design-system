@@ -4,8 +4,10 @@ import QtTest
 import Logos.Theme
 import Logos.Controls
 import Logos.Icons
+import LogosTests
 
 TestCase {
+    id: root
     name: "LogosCopyableText"
     width: 400
     height: 200
@@ -33,6 +35,10 @@ TestCase {
         copyable.textColor = Theme.palette.text
         copyable.feedbackText = "Copied"
         copySpy.clear()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_aliases_resolve() {
@@ -127,5 +133,17 @@ TestCase {
         compare(copyable.focusPolicy, Qt.NoFocus)
         compare(copyable.textItem.activeFocusOnTab, true)
         compare(copyable.copyButtonItem.activeFocusOnTab, true)
+    }
+
+    // ---- Density and touch ----
+
+    function test_touch_gives_the_copy_button_a_touch_target() {
+        ThemeManager.setDensity("touch")
+        tryCompare(copyable.copyButtonItem, "width", Theme.size.touchTarget)
+        verify(copyable.implicitHeight >= Theme.size.touchTarget)
+    }
+
+    function test_desktop_copy_button_keeps_its_size() {
+        compare(copyable.copyButtonItem.width, Theme.controls.copyButton.size)
     }
 }

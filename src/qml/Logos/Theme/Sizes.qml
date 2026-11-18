@@ -16,4 +16,7 @@ QtObject {
     // Strokes
     readonly property int borderWidth: 1
     readonly property int focusWidth: 2
+
+    // Smallest area a finger can reliably tap (iOS 44 pt, Android 48 dp)
+    readonly property int touchTarget: 44
 }

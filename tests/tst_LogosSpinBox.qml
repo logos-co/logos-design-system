@@ -1,9 +1,12 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
+    id: root
     name: "LogosSpinBox"
     width: 200
     height: 50
@@ -18,6 +21,10 @@ TestCase {
 
     function init() {
         spin.value = 3
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_aliases_resolve() {
@@ -45,5 +52,20 @@ TestCase {
         compare(spin.activeFocusOnTab, true)
         compare(spin.focusPolicy, Qt.StrongFocus)
         compare(spin.contentLabel.activeFocusOnTab, true)
+    }
+
+    // ---- Density and touch ----
+
+    function test_touch_makes_the_box_and_its_buttons_touch_sized() {
+        ThemeManager.setDensity("touch")
+        compare(spin.implicitHeight, 48)
+        compare(spin.up.indicator.width, Theme.size.touchTarget)
+        compare(spin.down.indicator.width, Theme.size.touchTarget)
+    }
+
+    function test_desktop_box_and_buttons_keep_their_size() {
+        compare(spin.implicitHeight, Theme.controls.spinBox.height)
+        compare(spin.up.indicator.width, 28)
+        compare(spin.down.indicator.width, 28)
     }
 }

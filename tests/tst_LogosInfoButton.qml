@@ -4,6 +4,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -60,6 +61,7 @@ TestCase {
     }
 
     function cleanup() {
+        ThemeManager.setDensity("")
         info.close()
         nested.close()
     }
@@ -93,11 +95,19 @@ TestCase {
         tryCompare(info, "opened", false)
     }
 
-    function test_is_glyph_sized_not_touch_target_sized() {
+    function test_is_glyph_sized_on_desktop() {
         // 16px so it sits inline with the label it annotates. An icon-button
         // footprint (24px+) would push the ring out of alignment with it.
         compare(info.implicitWidth, 16)
         compare(info.implicitHeight, 16)
+    }
+
+    // At touch density the ring keeps its size inside a touch-sized button.
+    function test_touch_keeps_the_ring_glyph_sized() {
+        ThemeManager.setDensity("touch")
+        compare(info.implicitWidth, Theme.size.touchTarget)
+        compare(info.implicitHeight, Theme.size.touchTarget)
+        compare(info.ringItem.width, Theme.controls.infoButton.size)
     }
 
     function test_ring_is_a_circle() {

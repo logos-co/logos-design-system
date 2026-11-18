@@ -3,12 +3,15 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
     name: "LogosRadioButton"
     width: 200
     height: 100
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     LogosRadioButton {
@@ -29,6 +32,11 @@ TestCase {
         rb.text = "Pick me"
         rb.focus = false
         root.forceActiveFocus()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
     }
 
     function test_aliases_resolve() {
@@ -88,5 +96,83 @@ TestCase {
         keyClick(Qt.Key_Space)
         compare(rb.checked, false)
         compare(clickedSpy.count, 0)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    function test_touch_row_reaches_the_touch_target_and_the_dot_keeps_its_size() {
+        ThemeManager.setDensity("touch")
+        const r = createRendered(withoutTooltip)
+        verify(r.implicitWidth >= Theme.size.touchTarget)
+        verify(r.implicitHeight >= Theme.size.touchTarget)
+        compare(r.indicator.width, Theme.controls.radio.indicatorSize)
+    }
+
+    function test_desktop_row_hugs_the_indicator() {
+        const r = createRendered(withoutTooltip)
+        compare(r.implicitHeight, Theme.controls.radio.indicatorSize + r.topPadding + r.bottomPadding)
+    }
+
+    Component {
+        id: withTooltip
+        LogosRadioButton {
+            text: "Radio"
+            readonly property alias tip: tooltip
+            LogosToolTip { id: tooltip; text: "Tip" }
+        }
+    }
+    Component {
+        id: withoutTooltip
+        LogosRadioButton { text: "Radio" }
+    }
+
+    // At touch density a long-press shows the tooltip instead of doing the
+    // action; a tap still does it.
+    function test_touch_long_press_opens_the_tooltip_instead_of_clicking() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        tryCompare(c.tip, "opened", true)
+        compare(spy.count, 0)
+        verify(!c.checked)
+        mouseClick(c)
+        compare(spy.count, 1)
+    }
+
+    // Without a tooltip a long-press is a click, so a slow press still works.
+    function test_touch_long_press_without_a_tooltip_clicks() {
+        ThemeManager.setDensity("touch")
+        const c = createRendered(withoutTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+    }
+
+    function test_desktop_long_press_clicks() {
+        const c = createRendered(withTooltip)
+        const spy = spyFor(c, "clicked")
+        holdOn(c)
+        compare(spy.count, 1)
+        verify(!c.tip.opened)
     }
 }

@@ -1,7 +1,9 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -31,6 +33,10 @@ TestCase {
         bar.shortcutHint = ""
         bar.iconSource = defaultIconSource
         bar.clearable = true
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_text_alias_round_trips() {
@@ -124,5 +130,31 @@ TestCase {
     function test_focus_forwards_to_text_input() {
         bar.forceActiveFocus()
         tryCompare(bar.textInput, "activeFocus", true)
+    }
+
+    // ---- Density and touch ----
+
+    function test_density_scales_the_height_data() {
+        return [
+            { tag: "compact",     density: "compact",     height: 46 },
+            { tag: "comfortable", density: "comfortable", height: 54 },
+            { tag: "touch",       density: "touch",       height: 65 },
+        ]
+    }
+
+    function test_density_scales_the_height(data) {
+        ThemeManager.setDensity(data.density)
+        compare(bar.implicitHeight, data.height)
+    }
+
+    function test_touch_gives_the_clear_button_a_touch_target() {
+        ThemeManager.setDensity("touch")
+        compare(bar.clearItem.implicitWidth, Theme.size.touchTarget)
+        compare(bar.clearItem.implicitHeight, Theme.size.touchTarget)
+        compare(bar.clearItem.iconSize, Theme.controls.search.clearIconSize)
+    }
+
+    function test_desktop_clear_button_keeps_its_size() {
+        compare(bar.clearItem.implicitWidth, Theme.controls.search.clearButtonSize)
     }
 }

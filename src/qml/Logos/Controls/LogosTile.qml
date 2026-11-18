@@ -19,7 +19,9 @@ import Logos.Theme
 //     fallbackColor  plate colour when there is no artwork. Defaults to the
 //                    theme grey. Callers wanting a per-item colour compute it
 //                    and pass it in
-//     tileSize       edge length in px
+//     tileSize       edge length in px. At touch density a smaller tile keeps
+//                    its look inside a transparent margin that makes it
+//                    Theme.size.touchTarget to tap
 //     radius         corner radius; artwork is masked to it
 //     highlighted    force hovered chrome (selected/current tile)
 //     dimOpacity     externally-driven dim (e.g. not-yet-loaded plugins)
@@ -104,11 +106,17 @@ LogosAbstractButton {
         readonly property real artworkBrightness:
             d.isPressed ? -0.06 : (d.isHovered ? 0.08 : 0)
 
+        readonly property real touchMargin: Theme.touch
+            ? Math.max(0, (Theme.size.touchTarget - root.tileSize) / 2) : 0
     }
 
-    implicitWidth: tileSize
-    implicitHeight: tileSize
-    padding: 0
+    implicitWidth: tileSize + 2 * d.touchMargin
+    implicitHeight: tileSize + 2 * d.touchMargin
+    padding: d.touchMargin
+    topInset: d.touchMargin
+    bottomInset: d.touchMargin
+    leftInset: d.touchMargin
+    rightInset: d.touchMargin
     opacity: dimOpacity * (enabled ? 1.0 : 0.4)
     Behavior on opacity { NumberAnimation { duration: 150 } }
 

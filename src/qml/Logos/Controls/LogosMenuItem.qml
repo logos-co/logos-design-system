@@ -20,8 +20,8 @@ MenuItem {
 
     contentItem: LogosText {
         id: label
-        leftPadding: Theme.spacing.medium
-        rightPadding: Theme.spacing.medium
+        leftPadding: Theme.controls.menuItem.paddingX
+        rightPadding: Theme.controls.menuItem.paddingX
         verticalAlignment: Text.AlignVCenter
         text: root.text
         color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
@@ -37,5 +37,9 @@ MenuItem {
 
     HoverHandler {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }

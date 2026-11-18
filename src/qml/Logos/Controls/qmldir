@@ -51,3 +51,4 @@ LogosListView 1.0 LogosListView.qml
 LogosMenuSeparator 1.0 LogosMenuSeparator.qml
 LogosToolSeparator 1.0 LogosToolSeparator.qml
 LogosDotMatrix 1.0 LogosDotMatrix.qml
+internal LongPressToolTips LongPressToolTips.qml

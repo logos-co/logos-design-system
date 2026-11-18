@@ -258,6 +258,7 @@ void warnUnknownKeys(const QJsonObject& doc, QStringList& warnings)
 }
 
 const QString kChoiceKey = QStringLiteral("theme");
+const QString kDensityKey = QStringLiteral("density");
 
 } // namespace
 
@@ -319,11 +320,19 @@ void Logos::ThemeStore::setChoiceFile(const QString& path)
     if (path == m_choiceFile)
         return;
     const QString shownBefore = current();
+    const QString densityBefore = density();
     m_choiceFile = path;
-    m_saved = path.isEmpty()
-        ? QStringLiteral("dark")
-        : QSettings(path, QSettings::IniFormat).value(kChoiceKey, QStringLiteral("dark")).toString();
+    if (path.isEmpty()) {
+        m_saved = QStringLiteral("dark");
+        m_density.clear();
+    } else {
+        const QSettings settings(path, QSettings::IniFormat);
+        m_saved = settings.value(kChoiceKey, QStringLiteral("dark")).toString();
+        m_density = settings.value(kDensityKey).toString();
+    }
     settle(shownBefore);
+    if (density() != densityBefore)
+        emit densityChanged();
 }
 
 QStringList Logos::ThemeStore::paletteTokens()
@@ -374,6 +383,48 @@ bool Logos::ThemeStore::setCurrent(const QString& id)
             qCWarning(lcTheme, "couldn't save the theme choice to %s", qPrintable(m_choiceFile));
     }
     settle(shownBefore);
+    return true;
+}
+
+QStringList Logos::ThemeStore::densities()
+{
+    return { QStringLiteral("compact"), QStringLiteral("comfortable"), QStringLiteral("touch") };
+}
+
+QString Logos::ThemeStore::defaultDensity()
+{
+#if defined(Q_OS_ANDROID) || defined(Q_OS_IOS)
+    return QStringLiteral("touch");
+#else
+    return QStringLiteral("comfortable");
+#endif
+}
+
+QString Logos::ThemeStore::density() const
+{
+    // The saved value comes from a file anyone can edit.
+    return densities().contains(m_density) ? m_density : defaultDensity();
+}
+
+bool Logos::ThemeStore::setDensity(const QString& density)
+{
+    if (!density.isEmpty() && !densities().contains(density))
+        return false;
+    const QString shownBefore = this->density();
+    m_density = density;
+    if (!m_choiceFile.isEmpty()) {
+        QSettings settings(m_choiceFile, QSettings::IniFormat);
+        if (density.isEmpty())
+            settings.remove(kDensityKey);
+        else
+            settings.setValue(kDensityKey, density);
+        settings.sync();
+        // Still applied for this run; it just won't survive a restart.
+        if (settings.status() != QSettings::NoError)
+            qCWarning(lcTheme, "couldn't save the density to %s", qPrintable(m_choiceFile));
+    }
+    if (this->density() != shownBefore)
+        emit densityChanged();
     return true;
 }
 

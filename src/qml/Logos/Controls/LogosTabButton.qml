@@ -23,10 +23,13 @@ TabButton {
     readonly property alias labelItem: labelText
     readonly property alias underlineItem: underline
 
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding,
+                            Theme.touch ? Theme.size.touchTarget : 0)
     implicitHeight: Theme.controls.tab.height
     spacing: Theme.controls.tab.spacing
-    leftPadding: Theme.spacing.small
-    rightPadding: Theme.spacing.small
+    leftPadding: Theme.controls.tab.paddingX
+    rightPadding: Theme.controls.tab.paddingX
     topPadding: Theme.spacing.tiny
     bottomPadding: Theme.spacing.tiny
 
@@ -102,5 +105,9 @@ TabButton {
 
     HoverHandler {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }

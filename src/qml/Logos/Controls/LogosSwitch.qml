@@ -19,6 +19,13 @@ Switch {
     readonly property alias focusRingItem: focusRing
 
     spacing: Theme.spacing.small
+    implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
+                            implicitContentWidth + leftPadding + rightPadding,
+                            Theme.touch ? Theme.size.touchTarget : 0)
+    implicitHeight: Math.max(implicitBackgroundHeight + topInset + bottomInset,
+                             implicitContentHeight + topPadding + bottomPadding,
+                             implicitIndicatorHeight + topPadding + bottomPadding,
+                             Theme.touch ? Theme.size.touchTarget : 0)
     opacity: enabled ? 1.0 : 0.5
 
     focusPolicy: Qt.StrongFocus
@@ -74,5 +81,9 @@ Switch {
         verticalAlignment: Text.AlignVCenter
         text: root.text
         color: root.enabled ? Theme.palette.text : Theme.palette.textMuted
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }

@@ -27,7 +27,9 @@ import Logos.Icons
 // emits sortRequested(role, order)
 //
 // Selection (when selectionMode !== None): a checkbox column is auto-prepended
-// at index 0. In Multi mode the header gets a select-all checkbox.
+// at index 0. In Multi mode the header gets a select-all checkbox. At touch
+// density a tap anywhere in a checkbox cell toggles it, and a row shows when
+// it is pressed or selected.
 //
 // Example:
 //     LogosTable {
@@ -356,6 +358,14 @@ Rectangle {
             readonly property var capturedRowItem: rowItem
             readonly property int capturedRowIndex: rowIndex
 
+            Rectangle {
+                anchors.fill: parent
+                visible: Theme.touch && color.a > 0
+                color: rowMouse.pressed ? Theme.palette.pressed
+                     : d._isSelected(_rowRoot.capturedRowIndex)
+                       ? Theme.colors.getColor(Theme.palette.primary, 0.18) : "transparent"
+            }
+
             RowLayout {
                 anchors.fill: parent
                 spacing: 0
@@ -428,7 +438,10 @@ Rectangle {
     Component {
         id: _selectionCell
 
-        Item {
+        MouseArea {
+            enabled: Theme.touch
+            onClicked: d._toggleRow(rowIndex)
+
             LogosCheckbox {
                 anchors.centerIn: parent
                 checked: d._isSelected(rowIndex)
@@ -440,7 +453,10 @@ Rectangle {
     Component {
         id: _selectionHeader
 
-        Item {
+        MouseArea {
+            enabled: Theme.touch && root.selectionMode === LogosTable.Multi
+            onClicked: d._toggleAll()
+
             LogosCheckbox {
                 anchors.centerIn: parent
                 visible: root.selectionMode === LogosTable.Multi

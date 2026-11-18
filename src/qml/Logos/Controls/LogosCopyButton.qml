@@ -95,6 +95,7 @@ LogosIconButton {
         delay: 0
         timeout: -1
         closePolicy: Popup.NoAutoClose
+        openOnLongPress: false
         onClosed: {
             d.recentlyCopied = false
             d.resetTimer.stop()

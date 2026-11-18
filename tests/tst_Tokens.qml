@@ -25,13 +25,14 @@ TestCase {
         compare(s.iconMedium, 20)
         compare(s.borderWidth, 1)
         compare(s.focusWidth, 2)
+        compare(s.touchTarget, 44)
     }
 
     function test_controlTokens_data() {
         return [
             { tag: "artwork",       group: "artwork",       values: { size: 40 } },
             { tag: "badge",         group: "badge",         values: { iconSize: 12, fontSize: 11, letterSpacing: 0.22 } },
-            { tag: "button",        group: "button",        values: { height: 44, compactHeight: 32, minWidth: 100, compactMinWidth: 72, iconSize: 20 } },
+            { tag: "button",        group: "button",        values: { height: 44, compactHeight: 32, paddingX: 16, compactPaddingX: 12, paddingY: 12, compactPaddingY: 8, minWidth: 100, compactMinWidth: 72, iconSize: 20 } },
             { tag: "checkbox",      group: "checkbox",      values: { indicatorSize: 24 } },
             { tag: "combo",         group: "combo",         values: { height: 32, paddingX: 10, indicatorSize: 20, popupGap: 2 } },
             { tag: "copyButton",    group: "copyButton",    values: { size: 24, iconSize: 16 } },
@@ -40,9 +41,9 @@ TestCase {
             { tag: "icon",          group: "icon",          values: { size: 20 } },
             { tag: "iconButton",    group: "iconButton",    values: { size: 40, iconSize: 20 } },
             { tag: "infoButton",    group: "infoButton",    values: { size: 16, fontSize: 9, dialogWidth: 560 } },
-            { tag: "listItem",      group: "listItem",      values: { height: 36 } },
+            { tag: "listItem",      group: "listItem",      values: { height: 36, paddingX: 12 } },
             { tag: "menu",          group: "menu",          values: { width: 200 } },
-            { tag: "menuItem",      group: "menuItem",      values: { height: 32 } },
+            { tag: "menuItem",      group: "menuItem",      values: { height: 32, paddingX: 12 } },
             { tag: "notice",        group: "notice",        values: { iconPlateSize: 28, iconSize: 16, closeButtonSize: 20, closeIconSize: 12 } },
             { tag: "paginator",     group: "paginator",     values: { height: 36, buttonSize: 36, buttonMinWidth: 24, pageSizeMinWidth: 80, pageSizeWidth: 130 } },
             { tag: "progressBar",   group: "progressBar",   values: { width: 200, height: 8 } },
@@ -54,7 +55,7 @@ TestCase {
             { tag: "spinner",       group: "spinner",       values: { size: 36, thickness: 3, dotSize: 6, dotInset: 2 } },
             { tag: "stageLane",     group: "stageLane",     values: { width: 200, height: 30, notch: 14, gap: 2, cornerRadius: 3 } },
             { tag: "statCard",      group: "statCard",      values: { minHeight: 108, iconSize: 16 } },
-            { tag: "tab",           group: "tab",           values: { height: 40, spacing: 6, iconSize: 20, underlineHeight: 2 } },
+            { tag: "tab",           group: "tab",           values: { height: 40, paddingX: 8, spacing: 6, iconSize: 20, underlineHeight: 2 } },
             { tag: "tabBar",        group: "tabBar",        values: { indicatorHeight: 3 } },
             { tag: "table",         group: "table",         values: { rowHeight: 64, headerHeight: 36, columnMinWidth: 80, selectionColumnWidth: 40, sortIconWidth: 12, sortIconHeight: 8 } },
             { tag: "tile",          group: "tile",          values: { size: 40 } },

@@ -3,12 +3,15 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
     name: "LogosTable"
     width: 800
     height: 400
+    // Input can't reach anything in an invisible TestCase, the default.
+    visible: true
     when: windowShown
 
     ListModel {
@@ -33,6 +36,11 @@ TestCase {
 
     function _create(parent) {
         return createTemporaryObject(tableComp, parent || root)
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
+        mouseMove(root, root.width - 1, root.height - 1)
     }
 
     // ─── Defaults ───
@@ -237,4 +245,90 @@ TestCase {
     Component { id: headerSpy;     SignalSpy { signalName: "headerClicked"  } }
     Component { id: selectionSpy;  SignalSpy { signalName: "selectionChanged" } }
     Component { id: rowClickSpy;   SignalSpy { signalName: "rowClicked"     } }
+
+    // ---- Density and touch ----
+
+    Component { id: longPressSpy; SignalSpy {} }
+
+    // Input reaches a new item once it has been rendered.
+    function createRendered(component, properties) {
+        const item = createTemporaryObject(component, root, properties || {})
+        waitForRendering(item)
+        return item
+    }
+
+    function holdOn(item) {
+        mousePress(item)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(item)
+    }
+
+    function spyFor(target, signalName) {
+        return createTemporaryObject(longPressSpy, root, { target: target, signalName: signalName })
+    }
+
+    ListModel {
+        id: touchRows
+        ListElement { name: "a" }
+        ListElement { name: "b" }
+    }
+
+    Component {
+        id: selectableTable
+        LogosTable {
+            width: 400
+            height: 300
+            selectionMode: LogosTable.Multi
+            model: touchRows
+            columns: [ LogosTableColumn { title: "Name"; role: "name" } ]
+        }
+    }
+
+    // Next to the checkbox, inside its cell: the top-left corner of row 0.
+    function clickBesideTheCheckbox(t) {
+        const p = t.view.itemAtIndex(0).mapToItem(t, 2, 2)
+        mouseClick(t, p.x, p.y)
+    }
+
+    function test_touch_header_is_touch_tall() {
+        ThemeManager.setDensity("touch")
+        compare(createRendered(selectableTable).headerHeight, Theme.size.touchTarget)
+    }
+
+    function test_touch_tap_beside_the_checkbox_toggles_the_row() {
+        ThemeManager.setDensity("touch")
+        const t = createRendered(selectableTable)
+        const clicked = spyFor(t, "rowClicked")
+        clickBesideTheCheckbox(t)
+        compare(t.selectedIndices, [0])
+        compare(clicked.count, 0)
+    }
+
+    function test_desktop_click_beside_the_checkbox_is_a_row_click() {
+        const t = createRendered(selectableTable)
+        const clicked = spyFor(t, "rowClicked")
+        clickBesideTheCheckbox(t)
+        compare(t.selectedIndices, [])
+        compare(clicked.count, 1)
+    }
+
+    // A pixel at the empty right end of each row, selected row 0 vs row 1.
+    function selectedRowLooksDifferent(t) {
+        t.selectedIndices = [0]
+        waitForRendering(t)
+        const image = grabImage(t)
+        const x = t.width - 5
+        const y0 = t.view.itemAtIndex(0).mapToItem(t, 0, t.rowHeight / 2).y
+        const y1 = t.view.itemAtIndex(1).mapToItem(t, 0, t.rowHeight / 2).y
+        return !Qt.colorEqual(image.pixel(x, y0), image.pixel(x, y1))
+    }
+
+    function test_touch_shows_the_selected_row() {
+        ThemeManager.setDensity("touch")
+        verify(selectedRowLooksDifferent(createRendered(selectableTable)))
+    }
+
+    function test_desktop_does_not_highlight_the_selected_row() {
+        verify(!selectedRowLooksDifferent(createRendered(selectableTable)))
+    }
 }

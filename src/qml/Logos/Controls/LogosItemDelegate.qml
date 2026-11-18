@@ -43,8 +43,8 @@ ItemDelegate {
 
     implicitHeight: Theme.controls.listItem.height
 
-    leftPadding: Theme.spacing.medium
-    rightPadding: Theme.spacing.medium
+    leftPadding: Theme.controls.listItem.paddingX
+    rightPadding: Theme.controls.listItem.paddingX
 
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.primaryText
@@ -77,5 +77,9 @@ ItemDelegate {
 
     HoverHandler {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+    }
+
+    LongPressToolTips {
+        control: root
     }
 }

@@ -18,7 +18,9 @@ import Logos.Controls
 // The trigger is drawn as a hairline ring around a lowercase "i", sized to the
 // glyph (16px) rather than to a touch target, so it sits inline with the label
 // it annotates. An icon-button footprint would push it out of alignment. That
-// is also why it does not use LogosIcons.info.
+// is also why it does not use LogosIcons.info. At touch density the ring keeps
+// its look inside a transparent margin that makes it Theme.size.touchTarget
+// to tap.
 //
 // Public API:
 //     text         the explanation. Wraps. Empty renders an empty dialog
@@ -84,11 +86,17 @@ LogosAbstractButton {
         id: d
 
         readonly property bool lit: root.hovered || dialog.visible
+        readonly property real touchMargin: Theme.touch
+            ? (Theme.size.touchTarget - Theme.controls.infoButton.size) / 2 : 0
     }
 
-    implicitWidth: Theme.controls.infoButton.size
-    implicitHeight: Theme.controls.infoButton.size
-    padding: 0
+    implicitWidth: Theme.controls.infoButton.size + 2 * d.touchMargin
+    implicitHeight: Theme.controls.infoButton.size + 2 * d.touchMargin
+    padding: d.touchMargin
+    topInset: d.touchMargin
+    bottomInset: d.touchMargin
+    leftInset: d.touchMargin
+    rightInset: d.touchMargin
 
     Accessible.role: Accessible.Button
     Accessible.name: qsTr("More information")

@@ -13,7 +13,8 @@ import Logos.Controls
 //     linkColor        Idle text color (default Theme.palette.primary).
 //     hoverColor       Hover/press text color (default Theme.palette.primaryHover).
 //     underline        Always show underline when true (default). When false,
-//                      underline appears only while hovered/pressed.
+//                      underline appears only while hovered/pressed, and
+//                      always at touch density, where there is no hover.
 //     elide            Text elide mode (default Text.ElideNone).
 //     activated(url href)  Emitted on every enabled click / activate().
 //     activate()           Imperative activate (same as a click / Enter / Space).
@@ -57,8 +58,12 @@ Control {
     activeFocusOnTab: true
     opacity: enabled ? 1.0 : 0.4
 
-    implicitWidth: label.implicitWidth
-    implicitHeight: label.implicitHeight
+    topPadding: Theme.touch ? Math.max(0, (Theme.size.touchTarget - label.implicitHeight) / 2) : 0
+    bottomPadding: topPadding
+    leftPadding: Theme.touch ? Math.max(0, (Theme.size.touchTarget - label.implicitWidth) / 2) : 0
+    rightPadding: leftPadding
+    implicitWidth: label.implicitWidth + leftPadding + rightPadding
+    implicitHeight: label.implicitHeight + topPadding + bottomPadding
 
     Accessible.role: Accessible.Link
     Accessible.name: root.text
@@ -93,7 +98,7 @@ Control {
         readonly property bool isActive: root.enabled
                                          && (mouseArea.pressed || d.keyboardPressed
                                              || root.hovered || root.activeFocus)
-        readonly property bool showUnderline: root.underline || isActive
+        readonly property bool showUnderline: root.underline || isActive || Theme.touch
 
         function isActivateKey(key) {
             return key === Qt.Key_Return || key === Qt.Key_Enter || key === Qt.Key_Space
@@ -122,5 +127,10 @@ Control {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
         onPressed: root.forceActiveFocus()
         onClicked: d.activate()
+    }
+
+    LongPressToolTips {
+        control: root
+        source: mouseArea
     }
 }

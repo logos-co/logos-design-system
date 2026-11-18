@@ -15,14 +15,14 @@ nix flake check              # CI: build + test
 
 | File | Provides |
 |---|---|
-| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, theme switching |
+| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, `Theme.density` / `Theme.touch`, theme switching |
 | `ColorPalette.qml` | Raw color values (gray, orange, red, green, …) — single source of truth |
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
-| `Sizes.qml` | Shared size scale: control heights (`controlXSmall:24` … `controlXLarge:44`), icon sizes, `borderWidth`, `focusWidth` |
-| `ControlTokens.qml` | Each control's own dimensions (`Theme.controls.button.height`, `Theme.controls.toggle.trackWidth`, …), defaulting to the shared scale where a value is shared |
-| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
+| `Sizes.qml` | Shared size scale: control heights (`controlXSmall:24` … `controlXLarge:44`), icon sizes, `borderWidth`, `focusWidth`, `touchTarget` |
+| `ControlTokens.qml` | Each control's own dimensions (`Theme.controls.button.height`, `Theme.controls.toggle.trackWidth`, …), defaulting to the shared scale where a value is shared; density scales the tappable ones |
+| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses, and the density; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
 
@@ -190,7 +190,14 @@ For verbose runs:
 
 `Theme.spacing.*`: `tiny:4`, `small:8`, `medium:12`, `large:16`, `xlarge:20`, `xxlarge:40`, plus `radiusSmall:4`, `radiusMedium:6`, `radiusLarge:8`, `radiusXlarge:16`, `radiusPill:999`.
 
-`Theme.size.*`: control heights `controlXSmall:24`, `controlSmall:32`, `controlMedium:36`, `controlLarge:40`, `controlXLarge:44`; icons `iconXSmall:12`, `iconSmall:16`, `iconMedium:20`; strokes `borderWidth:1`, `focusWidth:2`.
+`Theme.size.*`: control heights `controlXSmall:24`, `controlSmall:32`, `controlMedium:36`, `controlLarge:40`, `controlXLarge:44`; icons `iconXSmall:12`, `iconSmall:16`, `iconMedium:20`; strokes `borderWidth:1`, `focusWidth:2`; `touchTarget:44`, the smallest area a finger can reliably tap.
+
+`Theme.density` is `compact`, `comfortable` or `touch`. The host picks it with `ThemeManager.setDensity()`, and it is saved with the theme choice; the default is comfortable (the desktop's sizes), or touch on Android and iOS. Density scales the tappable controls' sizes in `Theme.controls` (×0.85, ×1, ×1.2). At touch density (`Theme.touch`):
+- every tappable part is at least `Theme.size.touchTarget` each way; a small visual (checkbox box, info ring, flat icon) keeps its size inside a transparent margin;
+- a long-press on a `LogosToolTip`'s parent opens the tip, and on a Logos control that long-press is not also a click; on a control without a tip, a long-press is still a click;
+- links are always underlined, a tap holds a toast, and a tap anywhere in a table's checkbox cell toggles the row.
+
+Tooltips stay extras: never put something only in a tooltip, since touch users have to know to long-press.
 
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 

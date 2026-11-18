@@ -67,6 +67,10 @@ view->rootContext()->setContextProperty("themeManager", themes);
   choice in `<dir>/theme.ini` (a failed save is logged; the switch still holds
   until restart), so an isolated instance with its own directory
   keeps its own choice.
+- `themes->setDensity(density)` sizes every view's controls for `compact`,
+  `comfortable` or `touch` and saves it in the same file; `""` goes back to
+  the platform's default (comfortable, or touch on Android and iOS). Apps read
+  it as `Theme.density`; see the README.
 
 `Logos::ThemeStore` holds the themes and the current one once per process.
 More directories can be added with `ThemeStore::instance()->addDirectory()`;

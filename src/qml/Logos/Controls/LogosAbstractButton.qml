@@ -115,4 +115,9 @@ Control {
         onPressed: root.forceActiveFocus()
         onClicked: impl.emitClicked()
     }
+
+    LongPressToolTips {
+        control: root
+        source: mouseArea
+    }
 }

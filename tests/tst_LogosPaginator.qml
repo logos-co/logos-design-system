@@ -1,7 +1,9 @@
 import QtQuick
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -45,6 +47,10 @@ TestCase {
         pager.pageInfoText = ""
         pager.pageSizeOptions = []
         pager.pageSizeLabel = "/ page"
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_totalCount_round_trips() {
@@ -415,5 +421,23 @@ TestCase {
         keyClick(Qt.Key_Space)
         compare(requestedSpy.count, 1)
         verify(requestedSpy.signalArguments[0][0] >= 2)
+    }
+
+    // ---- Density and touch ----
+
+    function test_touch_makes_the_buttons_and_cells_touch_sized() {
+        ThemeManager.setDensity("touch")
+        for (const b of [pager.firstButton, pager.prevButton, pager.nextButton, pager.lastButton]) {
+            compare(b.implicitWidth, Theme.size.touchTarget)
+            compare(b.implicitHeight, Theme.size.touchTarget)
+        }
+        const cell = pager.pageCells.itemAt(0)
+        compare(cell.width, Theme.size.touchTarget)
+        compare(cell.height, Theme.size.touchTarget)
+    }
+
+    function test_desktop_buttons_and_cells_keep_their_size() {
+        compare(pager.firstButton.implicitWidth, Theme.controls.paginator.buttonSize)
+        compare(pager.pageCells.itemAt(0).width, Theme.controls.paginator.buttonSize)
     }
 }

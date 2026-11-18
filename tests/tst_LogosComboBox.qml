@@ -3,7 +3,9 @@ import QtQuick.Controls
 import QtQuick.Window
 import QtTest
 
+import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -39,6 +41,11 @@ TestCase {
         cbox.placeholderText = ""
         cbox.textRole = ""
         cbox.enabled = true
+    }
+
+    function cleanup() {
+        cbox.popupItem.close()
+        ThemeManager.setDensity("")
     }
 
     function test_model_round_trips() {
@@ -299,5 +306,27 @@ TestCase {
         keyClick(Qt.Key_Space)
         tryCompare(cbox.popupItem, "opened", true)
         cbox.popupItem.close()
+    }
+
+    // ---- Density and touch ----
+
+    function firstRowHeight() {
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        tryVerify(() => cbox.popupListView.itemAtIndex(0) !== null)
+        return cbox.popupListView.itemAtIndex(0).height
+    }
+
+    function test_touch_makes_the_box_and_its_rows_touch_sized() {
+        ThemeManager.setDensity("touch")
+        cbox.model = ["a", "b"]
+        compare(cbox.implicitHeight, Theme.size.touchTarget)
+        verify(firstRowHeight() >= Theme.size.touchTarget)
+    }
+
+    function test_desktop_box_and_rows_keep_their_size() {
+        cbox.model = ["a", "b"]
+        compare(cbox.implicitHeight, Theme.controls.combo.height)
+        verify(firstRowHeight() < Theme.size.touchTarget)
     }
 }

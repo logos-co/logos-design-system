@@ -5,12 +5,14 @@ import QtTest
 import Logos.Theme
 import Logos.Controls
 import Logos.Icons
+import LogosTests
 
 // Note: assertions here go through `shown`, never `visible`. QtTest's TestCase
 // is an invisible Item (TestCase.qml sets `visible: false`), and QQuickItem's
 // visible property reports *effective* visibility, so every child of a TestCase
 // reads false regardless of what it was set to.
 TestCase {
+    id: root
     name: "LogosNotice"
     width: 400
     height: 200
@@ -44,6 +46,10 @@ TestCase {
         notice.actions = []
         notice.shown = true
         dismissedSpy.clear()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_aliases_resolve() {
@@ -205,5 +211,22 @@ TestCase {
         // false direction is unaffected by ancestors and still proves the link.
         notice.shown = false
         compare(notice.visible, false)
+    }
+
+    // ---- Density and touch ----
+
+    Component { id: closableNotice; LogosNotice { title: "Saved"; closable: true } }
+
+    function test_touch_gives_the_close_button_a_touch_target() {
+        ThemeManager.setDensity("touch")
+        const n = createTemporaryObject(closableNotice, root)
+        compare(n.closeButtonItem.implicitWidth, Theme.size.touchTarget)
+        compare(n.closeButtonItem.implicitHeight, Theme.size.touchTarget)
+        compare(n.closeButtonItem.iconSize, Theme.controls.notice.closeIconSize)
+    }
+
+    function test_desktop_close_button_keeps_its_size() {
+        const n = createTemporaryObject(closableNotice, root)
+        compare(n.closeButtonItem.implicitWidth, Theme.controls.notice.closeButtonSize)
     }
 }

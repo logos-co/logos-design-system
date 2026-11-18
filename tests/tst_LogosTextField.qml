@@ -3,6 +3,7 @@ import QtTest
 
 import Logos.Theme
 import Logos.Controls
+import LogosTests
 
 TestCase {
     id: root
@@ -33,6 +34,10 @@ TestCase {
         // QtTest runs alphabetically; take focus back so a focus test does not
         // leak a focused border into later ones.
         root.forceActiveFocus()
+    }
+
+    function cleanup() {
+        ThemeManager.setDensity("")
     }
 
     function test_text_alias_get_set() {
@@ -105,5 +110,22 @@ TestCase {
         // The TextInput set no family, so it rendered in the system sans
         // instead of Public Sans.
         compare(field.textInput.font.family, Theme.typography.publicSans)
+    }
+
+    // ---- Density and touch ----
+
+    function test_density_scales_height_and_side_padding_data() {
+        return [
+            { tag: "compact", density: "compact", height: 34, paddingX: 10 },
+            { tag: "comfortable", density: "comfortable", height: 40, paddingX: 12 },
+            { tag: "touch", density: "touch", height: 48, paddingX: 14 },
+        ]
+    }
+
+    function test_density_scales_height_and_side_padding(data) {
+        ThemeManager.setDensity(data.density)
+        compare(field.implicitHeight, data.height)
+        compare(field.leftPadding, data.paddingX)
+        compare(field.rightPadding, data.paddingX)
     }
 }

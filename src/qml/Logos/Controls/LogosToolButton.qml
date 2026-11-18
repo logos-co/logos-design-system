@@ -40,4 +40,8 @@ ToolButton {
     HoverHandler {
         cursorShape: root.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
     }
+
+    LongPressToolTips {
+        control: root
+    }
 }
