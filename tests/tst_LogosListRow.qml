@@ -105,9 +105,11 @@ TestCase {
     function test_row_tap_toggles_the_accessory() {
         const r = createRendered(switchRow)
         const toggled = createTemporaryObject(spyComponent, root, { target: r.accessory, signalName: "toggled" })
+        const clicked = createTemporaryObject(spyComponent, root, { target: r.accessory, signalName: "clicked" })
         mouseClick(r, 20, r.height / 2)
         verify(r.accessory.checked)
         compare(toggled.count, 1)
+        compare(clicked.count, 1)
     }
 
     // A row tap is a tap on the switch, so a disabled switch stays as it is.

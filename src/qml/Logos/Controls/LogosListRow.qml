@@ -72,10 +72,14 @@ AbstractButton {
     Accessible.name: title
     Accessible.description: subtitle
 
+    // Not click(): it needs Qt 6.8, and the Windows build uses Qt 6.7.
     onClicked: {
         const button = root.accessory as T.AbstractButton
-        if (button && button.checkable)
-            button.click()
+        if (!button || !button.checkable || !button.enabled)
+            return
+        button.toggle()
+        button.toggled()
+        button.clicked()
     }
 
     onAccessoryChanged: if (accessory) accessory.parent = accessorySlot

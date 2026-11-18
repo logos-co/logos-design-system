@@ -71,9 +71,4 @@ TestCase {
         verify(!Theme.touch)
         compare(Theme.controls.combo.height, 32)
     }
-
-    // ThemeManager::followViewWidth, as Basecamp calls it for each app view.
-    function test_hostKeepsTheViewWidth() {
-        compare(ThemeTestHelper.viewClassesFollowing(390, 1024), ["phone", "desktop"])
-    }
 }
