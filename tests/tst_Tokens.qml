@@ -80,6 +80,7 @@ TestCase {
         return [
             { tag: "listDetail", group: "listDetail", values: { tabletListWidth: 320, desktopListWidth: 360 } },
             { tag: "pageBar",    group: "pageBar",    values: { height: 56, phoneHeight: 44 } },
+            { tag: "sections",   group: "sections",   values: { listWidth: 240 } },
         ]
     }
 

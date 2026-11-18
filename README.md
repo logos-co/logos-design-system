@@ -43,6 +43,7 @@ The bars and panes a page is built from; controls go inside them. Each arranges 
 
 - `LogosPageBar` — the page's top row: title, ‹ back, search, actions and a ⋯ menu. At phone width search folds into an icon.
 - `LogosListDetail` — a list and the detail of its open item: side by side from tablet width; at phone width the detail replaces the list.
+- `LogosSections` — an app with several sections: a list of them beside the current one from tablet width; on a phone the app opens on its current section and ‹ goes back to the list. There is no ☰ drawer.
 
 All are placeholders for now, under **Layouts (not designed)** in the storybook.
 
@@ -215,7 +216,7 @@ Layout follows the width of an app's own area, not the screen. `Theme.windowClas
 
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 
-`Theme.layouts.<layout>.*`: the same for `Logos.Layouts`, for example `pageBar.height`, `listDetail.tabletListWidth` (`LayoutTokens.qml`). Density doesn't scale them; it scales the controls inside.
+`Theme.layouts.<layout>.*`: the same for `Logos.Layouts`, for example `pageBar.height`, `listDetail.tabletListWidth`, `sections.listWidth` (`LayoutTokens.qml`). Density doesn't scale them; it scales the controls inside.
 
 `Theme.typography.*`: `weightRegular:400`, `weightMedium:500`, `weightBold:700`, sizes `secondaryText:12`, `primaryText:14`, `titleText:30`, `mainTitleText:256`.
 

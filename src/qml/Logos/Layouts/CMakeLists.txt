@@ -12,6 +12,7 @@ qt_add_qml_module(logos_layouts_qml
     QML_FILES
         LogosPageBar.qml
         LogosListDetail.qml
+        LogosSections.qml
 )
 
 target_link_libraries(logos_layouts_qml PRIVATE logos_theme_qml logos_icons_qml logos_controls_qml)

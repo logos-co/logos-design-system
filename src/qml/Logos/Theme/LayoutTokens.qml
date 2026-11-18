@@ -16,4 +16,8 @@ QtObject {
         readonly property int height: 56
         readonly property int phoneHeight: tokens.size.touchTarget
     }
+
+    readonly property QtObject sections: QtObject {
+        readonly property int listWidth: 240
+    }
 }

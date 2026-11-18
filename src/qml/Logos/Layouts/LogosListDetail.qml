@@ -7,13 +7,14 @@ import Logos.Theme
 // detail filling the rest; the detail always shows something (the first item
 // by default). At phone width the list is the page and the detail replaces
 // it while `detailOpen` is true; a page bar shows ‹ from `showingDetail` and
-// sets `detailOpen` back to false. Narrowing to phone width with a detail open
-// keeps it open.
+// sets `detailOpen` back to false, as Esc and the phone's Back key do.
+// Narrowing to phone width with a detail open keeps it open.
 //
 // Public API:
 //     list            the list pane's item
 //     detail          the detail pane's item
 //     detailOpen      the user opened an item (matters at phone width)
+//     listWidth       the list pane's width beside the detail
 //     twoPane         read-only; list and detail side by side
 //     showingDetail   read-only; the detail fills the page (phone width)
 //
@@ -32,6 +33,8 @@ Item {
     property Item list: null
     property Item detail: null
     property bool detailOpen: false
+    property int listWidth: Theme.windowClass(width) === "tablet" ? Theme.layouts.listDetail.tabletListWidth
+                                                                  : Theme.layouts.listDetail.desktopListWidth
     readonly property bool twoPane: Theme.windowClass(width) !== "phone"
     readonly property bool showingDetail: !twoPane && detailOpen
 
@@ -41,6 +44,9 @@ Item {
     onListChanged: d.adopt(list, listPane)
     onDetailChanged: d.adopt(detail, detailPane)
 
+    Keys.onEscapePressed: function(event) { d.back(event) }
+    Keys.onBackPressed: function(event) { d.back(event) }
+
     QtObject {
         id: d
         function adopt(item, pane) {
@@ -48,6 +54,17 @@ Item {
                 return
             item.parent = pane
             item.anchors.fill = pane
+        }
+
+        // Closes the detail at phone width; otherwise the key goes on to the
+        // parent. Focus leaves the hidden detail, so what is typed next
+        // doesn't go into it.
+        function back(event) {
+            event.accepted = root.showingDetail
+            if (!root.showingDetail)
+                return
+            root.detailOpen = false
+            root.forceActiveFocus()
         }
     }
 
@@ -57,9 +74,7 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         anchors.bottom: parent.bottom
-        width: !root.twoPane ? root.width
-             : Theme.windowClass(root.width) === "tablet" ? Theme.layouts.listDetail.tabletListWidth
-             : Theme.layouts.listDetail.desktopListWidth
+        width: root.twoPane ? root.listWidth : root.width
         color: root.twoPane ? Theme.palette.backgroundSecondary : "transparent"
         clip: true
 
