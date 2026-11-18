@@ -93,6 +93,18 @@ TestCase {
         m.menu.close()
     }
 
+    // At phone width, text that starts the bar lines up with the page's
+    // margin; ‹ sits at the edge.
+    function test_phone_text_lines_up_with_the_page_margin() {
+        const b = createRendered(pageBar, 390)
+        compare(b.titleItem.mapToItem(b, 0, 0).x, Theme.pageMargin(390))
+        const p = createRendered(withPicker, 390)
+        compare(p.leading.mapToItem(p, 0, 0).x, Theme.pageMargin(390))
+        b.canGoBack = true
+        waitForRendering(b)
+        compare(b.backButtonItem.mapToItem(b, 0, 0).x, Theme.spacing.tiny)
+    }
+
     function test_leading_replaces_the_title() {
         const b = createRendered(withPicker, 900)
         verify(!b.titleItem.visible)

@@ -60,6 +60,9 @@ Control {
         id: d
         // The folded search is open: it takes the bar, back excepted.
         readonly property bool searching: search.folds && search.expanded
+        // At phone width the padding is for the edge buttons; text that starts
+        // the bar lines up with the page's margin instead.
+        readonly property real textInset: root.phone && !root.canGoBack ? Theme.pageMargin(root.width) - root.leftPadding : 0
     }
 
     onLeadingChanged: if (leading) leading.parent = leadingSlot
@@ -97,12 +100,14 @@ Control {
             id: leadingSlot
             visible: root.leading !== null && !d.searching
             Layout.fillWidth: true
+            Layout.leftMargin: d.textInset
         }
 
         LogosText {
             id: titleText
             visible: root.leading === null && !d.searching
             Layout.fillWidth: true
+            Layout.leftMargin: d.textInset
             text: root.title
             elide: Text.ElideRight
             font.pixelSize: root.phone ? Theme.typography.subtitleText : Theme.typography.panelTitleText

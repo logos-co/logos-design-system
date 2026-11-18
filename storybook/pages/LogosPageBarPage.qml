@@ -33,20 +33,24 @@ Rectangle {
     component Framed: ColumnLayout {
         id: framed
         property int frameWidth: 390
-        default property alias content: frame.data
+        default property alias content: holder.data
         spacing: Theme.spacing.tiny
         LogosText {
             text: framed.frameWidth + " px · " + Theme.windowClass(framed.frameWidth)
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textSecondary
         }
-        Rectangle {
-            id: frame
+        Item {
             Layout.preferredWidth: framed.frameWidth
-            Layout.preferredHeight: 72
-            color: Theme.palette.background
-            border.color: Theme.palette.borderSubtle
+            Layout.preferredHeight: holder.childrenRect.height
             clip: true
+            Item { id: holder; anchors.fill: parent }
+            // Over the bar, whose background is opaque.
+            Rectangle {
+                anchors.fill: parent
+                color: "transparent"
+                border.color: Theme.palette.borderSubtle
+            }
         }
     }
 
