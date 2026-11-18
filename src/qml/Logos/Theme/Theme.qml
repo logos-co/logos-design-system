@@ -23,8 +23,27 @@ QtObject {
     // "compact", "comfortable" or "touch"; the host chooses it (ThemeManager).
     // Comfortable where there is no ThemeRegistry.
     readonly property string density: _hasRegistry ? ThemeRegistry.density : "comfortable"
-    // Every tappable part is at least size.touchTarget each way.
-    readonly property bool touch: density === "touch"
+    // Every tappable part is at least size.touchTarget each way: at touch
+    // density, and in a phone-width view at any density.
+    readonly property bool touch: density === "touch" || viewClass === "phone"
+
+    // ===== WIDTH CLASSES =====
+    // Layout follows the width of the app's own area, not the screen:
+    // phone < 600 ≤ tablet < 840 ≤ desktop (Android's window size classes).
+    readonly property var breakpoints: ({ tablet: 600, desktop: 840 })
+    function windowClass(width) {
+        return width < breakpoints.tablet ? "phone"
+             : width < breakpoints.desktop ? "tablet" : "desktop"
+    }
+    // This engine's view width, kept up to date by the host
+    // (ThemeManager::followViewWidth). Until it is set the view is a desktop one.
+    property real viewWidth: 0
+    readonly property string viewClass: viewWidth > 0 ? windowClass(viewWidth) : "desktop"
+    // The side margin of a page that is `width` wide.
+    function pageMargin(width) {
+        const cls = windowClass(width)
+        return cls === "phone" ? spacing.large : cls === "tablet" ? spacing.xlarge : spacing.xxlarge
+    }
     
     // ===== THEME INSTANCES =====
     // Dark's colours in QML. The palette comes from ThemeStore (C++), whose

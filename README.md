@@ -15,14 +15,14 @@ nix flake check              # CI: build + test
 
 | File | Provides |
 |---|---|
-| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, `Theme.density` / `Theme.touch`, theme switching |
+| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, `Theme.density` / `Theme.touch`, width classes, theme switching |
 | `ColorPalette.qml` | Raw color values (gray, orange, red, green, …) — single source of truth |
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
 | `Sizes.qml` | Shared size scale: control heights (`controlXSmall:24` … `controlXLarge:44`), icon sizes, `borderWidth`, `focusWidth`, `touchTarget` |
 | `ControlTokens.qml` | Each control's own dimensions (`Theme.controls.button.height`, `Theme.controls.toggle.trackWidth`, …), defaulting to the shared scale where a value is shared; density scales the tappable ones |
-| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses, and the density; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
+| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses, and the density; only the host installs and switches. `ThemeManager::followViewWidth()` tells each view's engine its width. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
 
@@ -198,6 +198,8 @@ For verbose runs:
 - links are always underlined, a tap holds a toast, and a tap anywhere in a table's checkbox cell toggles the row.
 
 Tooltips stay extras: never put something only in a tooltip, since touch users have to know to long-press.
+
+Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes.
 
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 
