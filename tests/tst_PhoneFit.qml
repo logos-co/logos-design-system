@@ -29,12 +29,6 @@ TestCase {
         Theme.viewWidth = 0
     }
 
-    ListModel {
-        id: packages
-        ListElement { name: "wallet"; version: "1.2.0"; status: "Installed" }
-        ListElement { name: "chat"; version: "0.9.1"; status: "Upgrade" }
-    }
-
     Component {
         id: pageBar
         LogosPageBar {
@@ -137,34 +131,6 @@ TestCase {
     }
 
     Component {
-        id: tableCards
-        LogosTable {
-            height: 400
-            phoneCards: true
-            selectionMode: LogosTable.Multi
-            model: packages
-            columns: [
-                LogosTableColumn { title: "Name"; role: "name" },
-                LogosTableColumn { title: "Status"; role: "status" }
-            ]
-        }
-    }
-
-    Component {
-        id: tableRows
-        LogosTable {
-            height: 400
-            selectionMode: LogosTable.Multi
-            model: packages
-            columns: [
-                LogosTableColumn { title: "Name"; role: "name"; minWidth: 120; sortable: true },
-                LogosTableColumn { title: "Version"; role: "version"; minWidth: 100; priority: 1 },
-                LogosTableColumn { title: "Status"; role: "status"; minWidth: 100; fillWidth: true }
-            ]
-        }
-    }
-
-    Component {
         id: paginator
         LogosPaginator {
             totalCount: 150
@@ -250,8 +216,6 @@ TestCase {
             { tag: "LogosFormLayout", component: form },
             { tag: "LogosWizard", component: wizard },
             { tag: "LogosStateView", component: stateView },
-            { tag: "LogosTable cards", component: tableCards },
-            { tag: "LogosTable rows", component: tableRows },
             { tag: "LogosPaginator", component: paginator },
             { tag: "controls", component: controls },
         ]

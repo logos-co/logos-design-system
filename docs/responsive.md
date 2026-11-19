@@ -124,10 +124,6 @@ An app with several sections (a wallet: assets, activity, settings) uses
 - **`LogosMenu`**: in a phone-wide window a sheet across the bottom, however
   it is opened. It goes by its window, since its parent is the button that
   opens it.
-- **`LogosTable`**: give columns that can go a `priority` (higher drops
-  first) and they drop out before the table scrolls sideways. With
-  `phoneCards` a phone-wide table shows a card per row instead (the first
-  column as the title, the others under it), or your own `cardDelegate`.
 - **`LogosPaginator`**: short of room it drops the page-size selector, then
   the info text, then shows ‹ 4 / 10 › instead of the page numbers.
 - **`LogosSearchToggle`**: a search that folds into an icon, for a bar.
