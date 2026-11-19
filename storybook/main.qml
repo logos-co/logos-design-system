@@ -131,7 +131,7 @@ ApplicationWindow {
             LogosButton {
                 text: "Open in Figma"
                 implicitWidth: 140
-                implicitHeight: 36
+                compact: true
                 visible: pageLoader.item && pageLoader.item.figmaUrl
                 onClicked: Qt.openUrlExternally(pageLoader.item.figmaUrl)
             }
@@ -139,14 +139,14 @@ ApplicationWindow {
             LogosButton {
                 text: "Reload"
                 implicitWidth: 100
-                implicitHeight: 36
+                compact: true
                 onClicked: Hot.reload()
             }
 
             LogosButton {
                 text: "Next theme"
                 implicitWidth: 120
-                implicitHeight: 36
+                compact: true
                 visible: Theme.themeNames.length > 1
                 onClicked: {
                     const names = Theme.themeNames
@@ -157,7 +157,7 @@ ApplicationWindow {
             LogosButton {
                 text: "Density: " + Theme.density
                 implicitWidth: 170
-                implicitHeight: 36
+                compact: true
                 onClicked: {
                     const order = ["compact", "comfortable", "touch"]
                     themeManager.setDensity(order[(order.indexOf(Theme.density) + 1) % order.length])
@@ -167,7 +167,7 @@ ApplicationWindow {
             LogosButton {
                 text: "Preview: " + window.previews[window.previewIndex].name
                 implicitWidth: 150
-                implicitHeight: 36
+                compact: true
                 onClicked: window.previewIndex = (window.previewIndex + 1) % window.previews.length
             }
         }
