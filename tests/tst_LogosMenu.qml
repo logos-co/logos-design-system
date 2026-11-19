@@ -132,4 +132,57 @@ TestCase {
         tryCompare(buttonMenu, "opened", true)
         compare(clicked.count, 0, "a long press isn't also a click")
     }
+
+    Component {
+        id: repeatedMenus
+        Column {
+            Repeater {
+                model: 3
+                Rectangle {
+                    width: 100
+                    height: 40
+                    LogosMenu {
+                        contextFor: parent
+                        LogosMenuItem { text: "Copy" }
+                    }
+                }
+            }
+        }
+    }
+
+    function tapHandlersIn(list) {
+        let n = 0
+        for (let i = 0; i < list.length; ++i)
+            if (list[i] instanceof TapHandler)
+                ++n
+        return n
+    }
+
+    function contextAreaOf(item) {
+        for (let i = 0; i < item.children.length; ++i)
+            if (tapHandlersIn(item.children[i].data) > 0)
+                return item.children[i]
+        return null
+    }
+
+    // A pointer handler declared in the popup and bound onto the item crashed
+    // Qt on macOS when the menus came from a Repeater (the PageBar page): the
+    // handlers are made on the item instead.
+    function test_its_handlers_live_on_the_item_not_in_the_popup() {
+        compare(tapHandlersIn(contextMenu.contentData), 0)
+        verify(contextAreaOf(contextTarget))
+        const menus = createTemporaryObject(repeatedMenus, root)
+        for (let i = 0; i < 3; ++i)
+            verify(contextAreaOf(menus.children[i]), "row " + i)
+    }
+
+    function test_clearing_contextFor_takes_its_handlers_away() {
+        verify(contextAreaOf(contextTarget))
+        contextMenu.contextFor = null
+        tryVerify(() => contextAreaOf(contextTarget) === null)
+        contextMenu.contextFor = contextTarget
+        verify(contextAreaOf(contextTarget))
+        mouseClick(contextTarget, 30, 20, Qt.RightButton)
+        tryCompare(contextMenu, "opened", true)
+    }
 }

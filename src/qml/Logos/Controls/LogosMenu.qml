@@ -46,30 +46,54 @@ Menu {
         root.popup(a, 0, a.height + Theme.spacing.tiny)
     }
 
-    TapHandler {
-        parent: root.contextFor
-        enabled: root.contextFor !== null
-        acceptedButtons: Qt.RightButton
-        onTapped: point => root.popup(root.contextFor, point.position.x, point.position.y)
-    }
     // A long press: the pressAndHold of whatever takes the item's presses (a
     // Logos button's mouse area, a button, a mouse area), which a handler
-    // beside it wouldn't get; otherwise a handler.
+    // beside it wouldn't get; otherwise the context area's handler.
     Connections {
         target: d.holdSource
         function onPressAndHold() { root.popupUnder(root.contextFor) }
     }
-    TapHandler {
-        id: longPress
-        parent: root.contextFor
-        enabled: root.contextFor !== null && d.holdSource === null
-        onLongPressed: root.popup(root.contextFor, longPress.point.position.x, longPress.point.position.y)
+
+    // Made on contextFor, not declared here: a pointer handler declared in a
+    // popup and bound to another item crashes Qt on macOS
+    // (QQuickPointerHandler::setParentItem, in QQuickPopupPrivate::blockInput).
+    Component {
+        id: contextAreaComponent
+        Item {
+            id: area
+            required property LogosMenu menu
+            // The item has no pressAndHold of its own to open it.
+            required property bool longPressHere
+            anchors.fill: parent
+
+            TapHandler {
+                acceptedButtons: Qt.RightButton
+                onTapped: point => area.menu.popup(area.parent, point.position.x, point.position.y)
+            }
+            TapHandler {
+                id: longPress
+                enabled: area.longPressHere
+                onLongPressed: area.menu.popup(area.parent, longPress.point.position.x, longPress.point.position.y)
+            }
+        }
     }
+    onContextForChanged: d.attachContextArea()
+    Component.onCompleted: d.attachContextArea()
+    Component.onDestruction: if (d.contextArea) d.contextArea.destroy()
 
     QtObject {
         id: d
 
         readonly property Item overlay: root.Overlay.overlay
+        property Item contextArea: null
+
+        function attachContextArea() {
+            if (contextArea)
+                contextArea.destroy()
+            contextArea = root.contextFor ? contextAreaComponent.createObject(root.contextFor, { menu: root, longPressHere: holdSource === null })
+                                       : null
+        }
+
         readonly property Item holdSource: {
             const item = root.contextFor
             if (!item)
