@@ -30,10 +30,12 @@ import Logos.Controls
 //     leftActions, rightActions      footer buttons; the main ones on the right
 //     preferredWidth                 its width when centred (default: its content's)
 //     fullPage                       on a phone, fill the parent instead of a sheet
-//     sheet                          read-only; it is a bottom sheet
-//     dragToClose                    read-only; a sheet that closes when dragged down
 //     borderColor, backgroundColor
 // Setting contentItem replaces the scrolling body; prefer body.
+//
+// Read-only:
+//     sheet                          it is a bottom sheet
+//     dragToClose                    a sheet that closes when dragged down
 //
 // Read-only inspection aliases: backgroundItem, headerItem, footerItem,
 // messageItem, handleItem, dragAreaItem, closeButtonItem, scrollViewItem.
@@ -51,19 +53,19 @@ import Logos.Controls
 Dialog {
     id: root
 
-    property color borderColor: Theme.palette.border
-    property color backgroundColor: Theme.palette.backgroundSecondary
     property string message: ""
     property Item body: null
+    property list<Item> leftActions
+    property list<Item> rightActions
     property real preferredWidth: implicitWidth
     property bool fullPage: false
+    property color borderColor: Theme.palette.border
+    property color backgroundColor: Theme.palette.backgroundSecondary
+
     readonly property bool sheet: d.phone && !fullPage
     readonly property bool dragToClose: sheet && (closePolicy & Popup.CloseOnPressOutside) !== 0
 
-    property list<Item> leftActions
-    property list<Item> rightActions
-
-    // Exposed for inspection (e.g., from tests). Read-only.
+    // Exposed for inspection (e.g., from tests).
     readonly property alias backgroundItem: bg
     readonly property alias headerItem:     titleLabel
     readonly property alias footerItem:     footerWrap
