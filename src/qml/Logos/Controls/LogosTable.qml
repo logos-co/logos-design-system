@@ -12,7 +12,9 @@ import Logos.Icons
 //     sortRole, sortOrder
 //     rowHeight, headerHeight
 //     rowDelegate, headerDelegate, emptyDelegate, loadingDelegate
-//     view (read-only alias to inner ListView)
+//     phoneCards, cardDelegate, showingCards
+//     rowMenu, menuRow, menuRowIndex, rowsOpen
+//     view (read-only alias to inner ListView), cardsView (the cards' ListView)
 //
 // Signals: rowClicked, rowDoubleClicked, selectionChanged, headerClicked,
 //          sortRequested
@@ -21,10 +23,25 @@ import Logos.Icons
 // maxWidth / fillWidth. Wider than total preferred -> columns at preferredWidth,
 // fillWidth columns absorb leftover. Between min and preferred -> columns shrink
 // proportionally. Narrower than total min -> columns pinned to minWidth and a
-// horizontal scrollbar appears; the header scrolls with the body.
+// horizontal scrollbar appears; the header scrolls with the body. Before that,
+// columns with a priority drop out, the highest number first.
+//
+// On a phone: with phoneCards, a phone-wide table shows each row as a card, a
+// LogosListRow titled with the first column and the others below it, or your
+// own cardDelegate (rowItem and rowIndex are in its context). A column's
+// `card` puts it in the title, the line under it, a badge, or nowhere. A tap
+// emits rowClicked; in a table with selection, a tap selects instead. With
+// rowsOpen, a card shows › for the row it opens. There is no header, so no
+// sorting.
+//
+// Row actions: give rowMenu a LogosMenu and each row, and each card, shows a
+// ⋯ that opens it, at the end where a column can't push it out. menuRow and
+// menuRowIndex say which row it was opened for. Nothing needs hover or a
+// double-click: open a row on rowClicked.
 //
 // Sorting is consumer-driven. Clicking a sortable header cycles sortOrder and
-// emits sortRequested(role, order)
+// emits sortRequested(role, order). A titled or sortable header cell is
+// tappable across its whole width; an untitled, non-sortable one is not.
 //
 // Selection (when selectionMode !== None): a checkbox column is auto-prepended
 // at index 0. In Multi mode the header gets a select-all checkbox. At touch
@@ -79,8 +96,20 @@ Rectangle {
     property Component emptyDelegate: null
     property Component loadingDelegate: null
 
-    // ─── Read-only inspection alias ───
+    // ─── Properties: phones ───
+    property bool phoneCards: false
+    property Component cardDelegate: null
+    readonly property bool showingCards: phoneCards && Theme.windowClass(width) === "phone"
+    property bool rowsOpen: false
+
+    // ─── Properties: row actions ───
+    property LogosMenu rowMenu: null
+    readonly property var menuRow: d.menuRow
+    readonly property int menuRowIndex: d.menuRowIndex
+
+    // ─── Read-only inspection aliases ───
     readonly property alias view: list
+    readonly property alias cardsView: cards
 
     // ─── Signals ───
     signal rowClicked(int index, var row)
@@ -93,15 +122,80 @@ Rectangle {
         id: d
 
         readonly property var effectiveColumns: {
-            return root.selectionMode !== LogosTable.None
-                ? [_selectionColumn].concat(root.columns)
-                : root.columns
+            let all = root.columns
+            if (root.selectionMode !== LogosTable.None)
+                all = [_selectionColumn].concat(all)
+            if (root.rowMenu)
+                all = all.concat([_menuColumn])
+            return all
+        }
+
+        property var menuRow: null
+        property int menuRowIndex: -1
+
+        function openMenu(index, row, anchor) {
+            menuRowIndex = index
+            menuRow = row
+            root.rowMenu.popupUnder(anchor)
+        }
+
+        // Indices of the columns dropped for want of width. A string, so the
+        // columns below change only when the set does, not on every resize.
+        readonly property string dropped: {
+            const kept = []
+            for (let i = 0; i < effectiveColumns.length; ++i)
+                kept.push(i)
+            const minOf = () => kept.reduce((sum, i) => sum + effectiveColumns[i].minWidth, 0)
+            while (root.width > 0 && minOf() > root.width) {
+                let worst = -1
+                for (let k = 0; k < kept.length; ++k) {
+                    const p = effectiveColumns[kept[k]].priority || 0
+                    if (p > 0 && (worst < 0 || p > (effectiveColumns[kept[worst]].priority || 0)))
+                        worst = k
+                }
+                if (worst < 0)
+                    break
+                kept.splice(worst, 1)
+            }
+            const gone = []
+            for (let i = 0; i < effectiveColumns.length; ++i)
+                if (kept.indexOf(i) < 0)
+                    gone.push(i)
+            return gone.join(",")
+        }
+
+        readonly property var shownColumns: {
+            if (dropped === "")
+                return effectiveColumns
+            const gone = dropped.split(",").map(Number)
+            return effectiveColumns.filter((column, i) => gone.indexOf(i) < 0)
         }
 
         readonly property int totalMinWidth: {
             var s = 0
-            for (var i = 0; i < effectiveColumns.length; i++) s += effectiveColumns[i].minWidth
+            for (var i = 0; i < shownColumns.length; i++) s += shownColumns[i].minWidth
             return s
+        }
+
+        // The column that took the leftover width has dropped out: the rest share it.
+        readonly property bool shareLeftover: dropped !== "" && !shownColumns.some(column => column.fillWidth)
+
+        function cellText(row, column) {
+            return row && column && column.role !== "" ? String(row[column.role] ?? "") : ""
+        }
+
+        // The card's title is the first column left to it; the line, the rest.
+        readonly property var cardText: Array.prototype.filter.call(root.columns, column => column.card === "")
+        readonly property var cardBadges: Array.prototype.filter.call(root.columns, column => column.card === "badge")
+
+        function cardSubtitle(row) {
+            const parts = []
+            for (let i = 1; i < cardText.length; ++i) {
+                const text = cellText(row, cardText[i])
+                if (text !== "")
+                    parts.push(text)
+            }
+            return parts.join(" · ")
         }
 
         readonly property int _modelCount: {
@@ -109,6 +203,13 @@ Rectangle {
             if (root.model.count !== undefined) return root.model.count
             if (root.model.length !== undefined) return root.model.length
             return list.count
+        }
+
+        property LogosTableColumn _menuColumn: LogosTableColumn {
+            minWidth: Theme.size.touchTarget
+            maxWidth: Theme.size.touchTarget
+            cellPadding: 0
+            cellDelegate: _menuCell
         }
 
         property LogosTableColumn _selectionColumn: LogosTableColumn {
@@ -177,6 +278,7 @@ Rectangle {
     Flickable {
         id: hScroll
         anchors.fill: parent
+        visible: !root.showingCards
         contentWidth: Math.max(width, d.totalMinWidth)
         contentHeight: height
         flickableDirection: Flickable.HorizontalFlick
@@ -201,13 +303,13 @@ Rectangle {
                     spacing: 0
 
                     Repeater {
-                        model: d.effectiveColumns
+                        model: d.shownColumns
 
                         Item {
                             Layout.minimumWidth: modelData.minWidth
                             Layout.preferredWidth: modelData.preferredWidth
                             Layout.maximumWidth: d._maxWidthOrInf(modelData)
-                            Layout.fillWidth: modelData.fillWidth
+                            Layout.fillWidth: modelData.fillWidth || d.shareLeftover
                             Layout.fillHeight: true
 
                             Rectangle {
@@ -260,6 +362,25 @@ Rectangle {
         }
     }
 
+    // ─── Phones: a card per row ───
+    LogosListView {
+        id: cards
+        anchors.fill: parent
+        visible: root.showingCards
+        spacing: 0
+        interactive: !root.loading
+        model: root.showingCards ? root.model : null
+
+        delegate: Loader {
+            width: ListView.view.width
+
+            property var rowItem: model
+            property int rowIndex: index
+
+            sourceComponent: root.cardDelegate || _defaultCard
+        }
+    }
+
     // ─── Empty state overlay ───
     Loader {
         anchors.centerIn: parent
@@ -284,8 +405,14 @@ Rectangle {
             readonly property bool _isAscending: _isSorted
                                                  && root.sortOrder === Qt.AscendingOrder
 
+            // The whole cell, padding included, is the tap target; an untitled,
+            // non-sortable cell (an actions column) is none.
             MouseArea {
+                objectName: "headerTapArea"
                 anchors.fill: parent
+                anchors.leftMargin: -d._cellPadFor(columnDef)
+                anchors.rightMargin: -d._cellPadFor(columnDef)
+                enabled: columnDef.sortable || columnDef.title !== ""
                 cursorShape: columnDef.sortable ? Qt.PointingHandCursor : Qt.ArrowCursor
                 onClicked: d._onHeaderClick(columnDef)
                 z: -1
@@ -371,13 +498,13 @@ Rectangle {
                 spacing: 0
 
                 Repeater {
-                    model: d.effectiveColumns
+                    model: d.shownColumns
 
                     Item {
                         Layout.minimumWidth: modelData.minWidth
                         Layout.preferredWidth: modelData.preferredWidth
                         Layout.maximumWidth: d._maxWidthOrInf(modelData)
-                        Layout.fillWidth: modelData.fillWidth
+                        Layout.fillWidth: modelData.fillWidth || d.shareLeftover
                         Layout.fillHeight: true
 
                         Loader {
@@ -451,6 +578,23 @@ Rectangle {
     }
 
     Component {
+        id: _menuCell
+
+        Item {
+            LogosIconButton {
+                id: rowMenuButton
+                objectName: "rowMenuButton"
+                anchors.centerIn: parent
+                size: Theme.size.touchTarget
+                flat: true
+                iconSource: LogosIcons.more
+                Accessible.name: qsTr("More")
+                onClicked: d.openMenu(rowIndex, rowItem, rowMenuButton)
+            }
+        }
+    }
+
+    Component {
         id: _selectionHeader
 
         MouseArea {
@@ -463,6 +607,70 @@ Rectangle {
                 checked: root.allSelected
                 onClicked: d._toggleAll()
             }
+        }
+    }
+
+    Component {
+        id: _defaultCard
+
+        LogosListRow {
+            id: card
+            readonly property var capturedRowItem: rowItem
+            readonly property int capturedRowIndex: rowIndex
+            readonly property bool selectable: root.selectionMode !== LogosTable.None
+
+            title: d.cellText(capturedRowItem, d.cardText[0])
+            subtitle: d.cardSubtitle(capturedRowItem)
+            selected: selectable && d._isSelected(capturedRowIndex)
+            showChevron: root.rowsOpen && !selectable
+            accessory: selectable || root.rowMenu || d.cardBadges.length > 0 ? trailing : null
+            onClicked: selectable ? d._toggleRow(capturedRowIndex)
+                                  : root.rowClicked(capturedRowIndex, capturedRowItem)
+
+            // Badges, the checkbox and ⋯; unparented until the card shows them.
+            property RowLayout trailing: RowLayout {
+                spacing: Theme.spacing.small
+
+                Repeater {
+                    model: d.cardBadges
+                    Loader {
+                        objectName: "cardBadge"
+                        property var columnDef: modelData
+                        property var rowItem: card.capturedRowItem
+                        property int rowIndex: card.capturedRowIndex
+                        sourceComponent: columnDef.cellDelegate || _defaultCardBadge
+                    }
+                }
+
+                LogosCheckbox {
+                    visible: card.selectable
+                    checked: d._isSelected(card.capturedRowIndex)
+                    onToggled: {
+                        d._toggleRow(card.capturedRowIndex)
+                        checked = Qt.binding(() => d._isSelected(card.capturedRowIndex))
+                    }
+                }
+
+                LogosIconButton {
+                    id: cardMenuButton
+                    objectName: "cardMenuButton"
+                    visible: root.rowMenu !== null
+                    size: Theme.size.touchTarget
+                    flat: true
+                    iconSource: LogosIcons.more
+                    Accessible.name: qsTr("More")
+                    onClicked: d.openMenu(card.capturedRowIndex, card.capturedRowItem, cardMenuButton)
+                }
+            }
+        }
+    }
+
+    Component {
+        id: _defaultCardBadge
+
+        LogosBadge {
+            text: d.cellText(rowItem, columnDef)
+            visible: text !== ""
         }
     }
 
