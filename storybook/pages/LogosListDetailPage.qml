@@ -37,20 +37,24 @@ Rectangle {
         Rectangle { Layout.fillWidth: true; height: 1; color: Theme.palette.borderHairline }
     }
 
-    // One inbox: page bar + list → detail, sized to `frameWidth`.
+    // One inbox: page bar + list → detail, `frameWidth` wide, or as wide as
+    // there is room for.
     component Inbox: ColumnLayout {
         id: inbox
         property int frameWidth: 390
         property int current: 0
+        Layout.fillWidth: true
+        Layout.maximumWidth: inbox.frameWidth
         spacing: Theme.spacing.tiny
 
         LogosText {
-            text: inbox.frameWidth + " px · " + Theme.windowClass(inbox.frameWidth)
+            text: Math.round(box.width) + " px · " + Theme.windowClass(box.width)
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textSecondary
         }
         Rectangle {
-            Layout.preferredWidth: inbox.frameWidth
+            id: box
+            Layout.fillWidth: true
             Layout.preferredHeight: 320
             color: Theme.palette.background
             border.color: Theme.palette.borderSubtle
@@ -121,6 +125,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosListDetail"

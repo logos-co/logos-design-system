@@ -86,7 +86,8 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 ColumnLayout {
@@ -159,8 +160,14 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            RowLayout {
-                spacing: Theme.spacing.large
+            // As many in a row as fit, centred on the row.
+            GridLayout {
+                readonly property real widest: Math.max(...children.map(c => c.implicitWidth))
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                columns: Math.max(1, Math.min(children.length, Math.floor((parent.width + columnSpacing) / (widest + columnSpacing))))
+                columnSpacing: Theme.spacing.large
+                rowSpacing: Theme.spacing.large
 
                 ColumnLayout {
                     spacing: Theme.spacing.tiny
@@ -213,6 +220,7 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    Layout.fillWidth: true
                     spacing: Theme.spacing.tiny
                     LogosText {
                         text: "Short entries, wide control"
@@ -221,7 +229,9 @@ Rectangle {
                     }
                     LogosComboBox {
                         id: wideBox
+                        Layout.fillWidth: true
                         Layout.preferredWidth: 320
+                        Layout.maximumWidth: 320
                         model: ["a", "b", "c"]
                         currentIndex: 0
                     }
@@ -229,7 +239,8 @@ Rectangle {
                 }
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 ColumnLayout {
@@ -247,8 +258,6 @@ Rectangle {
                     }
                     HeightReadout { target: tallBox }
                 }
-
-                Item { Layout.fillWidth: true }
             }
         }
 
@@ -299,13 +308,13 @@ Rectangle {
                 }
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 LogosComboBox {
                     id: liveBox
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredWidth: 140
+                    width: 140
                     model: liveRows
                     textRole: "label"
                     currentIndex: 0
@@ -381,13 +390,13 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 LogosComboBox {
                     id: tryBox
-                    Layout.alignment: Qt.AlignTop
-                    Layout.preferredWidth: 220
+                    width: 220
                     model: itemsModel.text.split(",").map(function(s) { return s.trim() }).filter(function(s) { return s.length > 0 })
                     currentIndex: -1
                     placeholderText: placeholderInput.text || "(empty placeholder)"
@@ -399,10 +408,13 @@ Rectangle {
                     }
                 }
 
+                // Its fields give way when there's no room.
                 ColumnLayout {
+                    width: Math.min(implicitWidth, parent.width)
                     spacing: Theme.spacing.small
 
                     RowLayout {
+                        Layout.fillWidth: true
                         spacing: Theme.spacing.small
                         LogosText {
                             text: "model (CSV):"
@@ -413,10 +425,13 @@ Rectangle {
                         LogosTextField {
                             id: itemsModel
                             text: "alpha, beta, gamma, an entry wider than the control"
-                            implicitWidth: 280
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 280
+                            Layout.maximumWidth: 280
                         }
                     }
                     RowLayout {
+                        Layout.fillWidth: true
                         spacing: Theme.spacing.small
                         LogosText {
                             text: "placeholderText:"
@@ -427,10 +442,13 @@ Rectangle {
                         LogosTextField {
                             id: placeholderInput
                             text: "Choose…"
-                            implicitWidth: 240
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 240
+                            Layout.maximumWidth: 240
                         }
                     }
                     RowLayout {
+                        Layout.fillWidth: true
                         spacing: Theme.spacing.small
                         LogosText {
                             text: "maxPopupWidthFactor:"
@@ -440,7 +458,9 @@ Rectangle {
                         }
                         LogosSlider {
                             id: tryFactor
+                            Layout.fillWidth: true
                             Layout.preferredWidth: 160
+                            Layout.maximumWidth: 160
                             from: 1; to: 4; stepSize: 0.25; value: 3
                             snapMode: LogosSlider.SnapAlways
                         }
@@ -453,7 +473,7 @@ Rectangle {
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: disableSwitch }
+                        LogosSwitch { id: disableSwitch }
                         LogosText {
                             text: "Disabled"
                             font.pixelSize: Theme.typography.secondaryText
@@ -461,6 +481,7 @@ Rectangle {
                         }
                     }
                     RowLayout {
+                        Layout.fillWidth: true
                         spacing: Theme.spacing.small
                         LogosText {
                             text: "activated count:"

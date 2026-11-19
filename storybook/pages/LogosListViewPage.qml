@@ -41,7 +41,8 @@ Rectangle {
 
             // ─── Fits: no overflow, no scroll bar. ───
             Rectangle {
-                Layout.preferredWidth: 220
+                Layout.fillWidth: true
+                Layout.maximumWidth: 220
                 Layout.fillHeight: true
                 color: Theme.palette.surfaceRaised
                 radius: Theme.spacing.radiusLarge
@@ -76,7 +77,8 @@ Rectangle {
 
             // ─── Overflows: scroll bar visible, 4 px from the right border. ───
             Rectangle {
-                Layout.preferredWidth: 220
+                Layout.fillWidth: true
+                Layout.maximumWidth: 220
                 Layout.fillHeight: true
                 color: Theme.palette.surfaceRaised
                 radius: Theme.spacing.radiusLarge
@@ -111,7 +113,8 @@ Rectangle {
 
             // ─── currentIndex + clickable highlight. ───
             Rectangle {
-                Layout.preferredWidth: 220
+                Layout.fillWidth: true
+                Layout.maximumWidth: 220
                 Layout.fillHeight: true
                 color: Theme.palette.surfaceRaised
                 radius: Theme.spacing.radiusLarge

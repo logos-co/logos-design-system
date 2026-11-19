@@ -17,6 +17,7 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosToast"
@@ -46,11 +47,16 @@ Rectangle {
             spacing: Theme.spacing.medium
 
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Trigger one — it appears bottom-right and closes itself."
                 color: Theme.palette.textSecondary
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.medium
                 LogosButton {
                     text: "Success"
@@ -74,7 +80,9 @@ Rectangle {
                 }
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.medium
                 Layout.topMargin: Theme.spacing.medium
                 LogosButton {

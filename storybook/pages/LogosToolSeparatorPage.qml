@@ -35,10 +35,22 @@ Rectangle {
         LogosToolBar {
             Layout.fillWidth: true
 
-            RowLayout {
+            // Scrolls sideways where the buttons don't fit, as on a phone.
+            Flickable {
+                id: toolScroll
                 anchors.fill: parent
                 anchors.leftMargin: Theme.spacing.medium
                 anchors.rightMargin: Theme.spacing.medium
+                implicitHeight: tools.implicitHeight
+                contentWidth: tools.width
+                clip: true
+                flickableDirection: Flickable.HorizontalFlick
+                boundsBehavior: Flickable.StopAtBounds
+
+            RowLayout {
+                id: tools
+                width: Math.max(implicitWidth, toolScroll.width)
+                height: toolScroll.height
                 spacing: Theme.spacing.tiny
 
                 LogosToolButton { text: "Cut" }
@@ -51,6 +63,7 @@ Rectangle {
                 LogosToolButton { text: "Undo" }
                 LogosToolButton { text: "Redo" }
                 Item { Layout.fillWidth: true }
+            }
             }
         }
 

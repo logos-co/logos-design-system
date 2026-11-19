@@ -2,5 +2,6 @@
 <RCC version="1.0">
     <qresource prefix="/">
         <file>main.qml</file>
+        <file>PhoneChecks.js</file>
     </qresource>
 </RCC>

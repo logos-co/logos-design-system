@@ -64,13 +64,11 @@ Rectangle {
             LogosButton {
                 text: "Push B"
                 implicitWidth: 100
-                implicitHeight: 36
                 onClicked: stack.push(pageB)
             }
             LogosButton {
                 text: "Pop"
                 implicitWidth: 80
-                implicitHeight: 36
                 enabled: stack.depth > 1
                 onClicked: stack.pop()
             }

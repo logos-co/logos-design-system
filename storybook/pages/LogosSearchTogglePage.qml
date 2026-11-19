@@ -52,7 +52,8 @@ Rectangle {
         Section {
             title: "In a 390 px bar"
             Rectangle {
-                Layout.preferredWidth: 390
+                Layout.fillWidth: true
+                Layout.maximumWidth: 390
                 Layout.preferredHeight: Theme.size.touchTarget
                 color: Theme.palette.backgroundSecondary
                 RowLayout {

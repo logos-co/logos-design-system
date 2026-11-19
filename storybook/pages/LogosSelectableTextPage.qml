@@ -57,6 +57,8 @@ Rectangle {
 
             LogosText {
                 text: "Default — drag or Tab then Shift+arrows / ⌘A to select (no caret)"
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
             }

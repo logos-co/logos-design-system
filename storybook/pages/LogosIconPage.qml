@@ -17,6 +17,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -187,10 +188,20 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            RowLayout {
-                spacing: Theme.spacing.xlarge
+            // As many in a row as fit.
+            GridLayout {
+                readonly property real widest: {
+                    let w = 0
+                    for (let i = 0; i < tiles.count; ++i)
+                        w = Math.max(w, tiles.itemAt(i) ? tiles.itemAt(i).implicitWidth : 0)
+                    return w
+                }
+                columns: Math.max(1, Math.min(tiles.count, Math.floor((parent.width + columnSpacing) / (widest + columnSpacing))))
+                columnSpacing: Theme.spacing.xlarge
+                rowSpacing: Theme.spacing.xlarge
 
                 Repeater {
+                    id: tiles
                     model: [
                         { label: "brightness: 0",  brightness: 0,   tile: Theme.palette.info },
                         { label: "brightness: 1.0", brightness: 1.0, tile: Theme.palette.info },
@@ -251,10 +262,14 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
-                spacing: Theme.spacing.large
+            // The tile beside the knobs, or above them when both don't fit.
+            GridLayout {
+                columns: parent.width >= liveTile.Layout.preferredWidth + columnSpacing + knobs.implicitWidth ? 2 : 1
+                columnSpacing: Theme.spacing.large
+                rowSpacing: Theme.spacing.large
 
                 Rectangle {
+                    id: liveTile
                     Layout.preferredWidth: sizeSpin.value + 40
                     Layout.preferredHeight: sizeSpin.value + 40
                     radius: Theme.spacing.radiusXlarge
@@ -272,6 +287,7 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    id: knobs
                     spacing: Theme.spacing.small
 
                     RowLayout {
@@ -332,7 +348,7 @@ Rectangle {
                             font.pixelSize: Theme.typography.secondaryText
                             color: Theme.palette.textSecondary
                         }
-                        CheckBox {
+                        LogosCheckbox {
                             id: brightnessCheck
                             text: "1.0 (package icon mode)"
                             checked: true

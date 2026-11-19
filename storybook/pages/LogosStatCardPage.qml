@@ -19,6 +19,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -29,6 +31,7 @@ Rectangle {
             }
             LogosText {
                 text: "Public API: label, value, caption, labelTrailing, valueTrailing, captionTrailing, severity, valueColor, valueFontSizeMode, valueMinimumPixelSize, interactive, flashOnChange, flashColor, clicked(). A labelled metric — not a general container; for that use LogosFrame."
+                Layout.fillWidth: true
                 Layout.maximumWidth: 720
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -51,22 +54,24 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "Height"
                     value: "151548"
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "Epoch"
                     value: "174"
                     caption: "6h of 10h"
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "At Headslot"
                     value: "-12"
                     caption: "12 slots behind"
@@ -85,7 +90,7 @@ Rectangle {
                 // caption a formatted slot, which is exactly why these are
                 // buttons with their own strings rather than selectable text.
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "LiB"
                     value: "0x71bd…9e4a"
                     caption: "slot 151548"
@@ -111,6 +116,9 @@ Rectangle {
             spacing: Theme.spacing.medium
 
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Severity — the value carries the state, the surface stays flat"
                 font.pixelSize: Theme.typography.primaryText
                 font.weight: Theme.typography.weightBold
@@ -120,43 +128,51 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "None"; value: "151548"
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "Info"; value: "Core"
                     severity: LogosStatCard.Info
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "Success"; value: "Online"
                     severity: LogosStatCard.Success
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "Warning"; value: "-12"
                     caption: "12 slots behind"
                     severity: LogosStatCard.Warning
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "Error"; value: "Stalled"
                     caption: "No block progress"
                     severity: LogosStatCard.Error
                 }
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Opt into a stronger signal with borderColor: Theme.palette.warningBorder — flat is the default, not a rule."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
             }
 
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "valueColor — tint without a verdict"
                 font.pixelSize: Theme.typography.subtitleText
                 font.weight: Theme.typography.weightBold
@@ -169,11 +185,13 @@ Rectangle {
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
-                    Layout.preferredWidth: 220
+                    width: 220
                     label: "Blend"; value: "Core"
                     valueColor: Theme.palette.info
                     labelTrailing: [
@@ -181,7 +199,7 @@ Rectangle {
                     ]
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 220
+                    width: 220
                     label: "Blend (severity: Info)"; value: "Core"
                     severity: LogosStatCard.Info
                     labelTrailing: [
@@ -189,7 +207,7 @@ Rectangle {
                     ]
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: 220
+                    width: 220
                     label: "Total Balance"; value: "1 530"
                     caption: "3 of 6 accounts reported"
                     severity: LogosStatCard.Warning
@@ -198,10 +216,12 @@ Rectangle {
                     ]
                 }
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
                 LogosStatCard {
-                    Layout.preferredWidth: 180
+                    width: 180
                     label: "Bordered"; value: "-98"
                     severity: LogosStatCard.Warning
                     borderColor: Theme.palette.warningBorder
@@ -231,17 +251,19 @@ Rectangle {
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
-                    Layout.preferredWidth: widthKnob.value
+                    width: widthKnob.value
                     label: "Total Balance (default)"
                     value: "5,999,999,986,578"
                     caption: "Text.FixedSize"
                 }
                 LogosStatCard {
-                    Layout.preferredWidth: widthKnob.value
+                    width: widthKnob.value
                     label: "Total Balance"
                     value: "5,999,999,986,578"
                     caption: "Text.HorizontalFit"
@@ -254,7 +276,7 @@ Rectangle {
                 // why the exact figure belongs on a copy button, not on the
                 // hope that it fits.
                 LogosStatCard {
-                    Layout.preferredWidth: widthKnob.value
+                    width: widthKnob.value
                     label: "Past the floor"
                     value: "5,999,999,986,578,000,000,000"
                     caption: "shrinks to " + Theme.typography.subtitleText + "px, then elides"
@@ -292,17 +314,19 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "Static (default)"
                     value: "151548"
                 }
                 LogosStatCard {
                     id: clickable
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "Browsable"
                     value: "151548"
                     caption: "Clicks: " + clickCount.value
@@ -312,7 +336,7 @@ Rectangle {
                 // The trailing item keeps its own clicks even though the card
                 // is interactive — the case worth seeing side by side.
                 LogosStatCard {
-                    Layout.preferredWidth: 210
+                    width: 210
                     label: "Both"
                     value: "151548"
                     caption: "Card clicks: " + bothCount.value
@@ -341,12 +365,14 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.large
 
                 LogosStatCard {
                     id: liveCard
-                    Layout.preferredWidth: 220
+                    width: 220
                     label: "Slot"
                     value: String(ticker.tick)
                     caption: "flashOnChange"
@@ -360,7 +386,7 @@ Rectangle {
 
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch {
+                        LogosSwitch {
                             id: tickSwitch
                             checked: true
                         }
@@ -372,7 +398,7 @@ Rectangle {
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: severitySwitch }
+                        LogosSwitch { id: severitySwitch }
                         LogosText {
                             // The case the restore-binding exists for: toggle
                             // this while it ticks and the value must settle on

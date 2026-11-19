@@ -72,6 +72,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosCardPair"
@@ -88,13 +89,13 @@ Rectangle {
         }
 
         Section {
-            title: "At 600 px: stacked"
-            Pair { Layout.preferredWidth: 600 }
+            title: "At " + Math.round(narrowPair.width) + " px: " + (narrowPair.sideBySide ? "side by side" : "stacked")
+            Pair { id: narrowPair; Layout.fillWidth: true; Layout.maximumWidth: 600 }
         }
 
         Section {
-            title: "At 1000 px: side by side"
-            Pair { Layout.preferredWidth: 1000 }
+            title: "At " + Math.round(widePair.width) + " px: " + (widePair.sideBySide ? "side by side" : "stacked")
+            Pair { id: widePair; Layout.fillWidth: true; Layout.maximumWidth: 1000 }
         }
 
         Item { Layout.fillHeight: true }

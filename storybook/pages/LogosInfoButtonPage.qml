@@ -18,6 +18,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -28,6 +29,7 @@ Rectangle {
             }
             LogosText {
                 text: "Public API: text, title, dialogWidth, open(), close(), toggle(), opened. Opens a centred LogosDialog — an explanation is something you stop to read. For a one-line hint that follows the pointer, use LogosToolTip."
+                Layout.fillWidth: true
                 Layout.maximumWidth: 760
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -51,22 +53,29 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
-                spacing: Theme.spacing.large
+            // The stat card goes under the label when there's no room beside it.
+            GridLayout {
+                id: inContext
+                columns: parent.width >= fieldLabel.implicitWidth + fieldInfo.implicitWidth
+                                         + Theme.spacing.xxlarge + 210 + 3 * columnSpacing ? 4 : 2
+                columnSpacing: Theme.spacing.large
+                rowSpacing: Theme.spacing.large
 
                 LogosText {
+                    id: fieldLabel
                     text: "Beside a field label"
                     font.pixelSize: Theme.typography.primaryText
                     color: Theme.palette.text
                 }
                 LogosInfoButton {
+                    id: fieldInfo
                     title: "Headslot delta"
                     text: "A paragraph long enough to need wrapping: this is the case a tooltip "
                         + "handles badly, because the text appears under the pointer and "
                         + "disappears the moment you move toward it."
                 }
 
-                Item { Layout.preferredWidth: Theme.spacing.xxlarge }
+                Item { Layout.preferredWidth: Theme.spacing.xxlarge; visible: inContext.columns === 4 }
 
                 LogosStatCard {
                     Layout.preferredWidth: 210
@@ -97,7 +106,8 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.xxlarge
 
                 RowLayout {
@@ -158,6 +168,7 @@ Rectangle {
                 text: "The dialog is parented to the window overlay, so it centres on the window — "
                     + "not on the card or row the trigger sits in, and never clips against an edge. "
                     + "Open the one on the far right."
+                Layout.fillWidth: true
                 Layout.maximumWidth: 760
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText

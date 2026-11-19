@@ -19,6 +19,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -28,6 +29,9 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Public API: text, variant, compact, icon, radius, enabled, pressed, clicked(). Tab focuses; hold Space/Enter for pressed, release to click."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
@@ -49,7 +53,8 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 LogosButton {
@@ -77,7 +82,8 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 LogosButton {
@@ -105,7 +111,7 @@ Rectangle {
                 // Constrained on purpose: the one case where the label elides.
                 LogosButton {
                     text: "This is a very long label that will not fit inside the button width"
-                    Layout.preferredWidth: 160
+                    width: 160
                 }
             }
         }
@@ -125,8 +131,11 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
-                spacing: Theme.spacing.large
+            // As many in a row as fit; compact buttons stay centred on the row.
+            GridLayout {
+                readonly property real widest: Math.max(...children.map(c => c.implicitWidth))
+                columns: Math.max(1, Math.min(children.length, Math.floor((parent.width + columnSpacing) / (widest + columnSpacing))))
+                columnSpacing: Theme.spacing.large
 
                 LogosButton {
                     text: "Regular"
@@ -166,6 +175,8 @@ Rectangle {
             }
 
             RowLayout {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
                 spacing: Theme.spacing.large
 
                 LogosButton {
@@ -176,6 +187,7 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    Layout.fillWidth: true
                     spacing: Theme.spacing.small
 
                     RowLayout {
@@ -188,12 +200,14 @@ Rectangle {
                         LogosTextField {
                             id: textInput
                             text: "Live button"
-                            implicitWidth: 200
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 200
+                            Layout.maximumWidth: 200
                         }
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: disableSwitch }
+                        LogosSwitch { id: disableSwitch }
                         LogosText {
                             text: "Disabled"
                             font.pixelSize: Theme.typography.secondaryText

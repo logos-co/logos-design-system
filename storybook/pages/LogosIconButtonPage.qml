@@ -17,6 +17,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -56,7 +57,8 @@ Rectangle {
                 Layout.fillWidth: true; height: 1
                 color: Theme.palette.borderHairline
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 ColumnLayout {
@@ -194,7 +196,7 @@ Rectangle {
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: flatSwitch }
+                        LogosSwitch { id: flatSwitch }
                         LogosText {
                             text: "Flat"
                             font.pixelSize: Theme.typography.secondaryText
@@ -203,7 +205,7 @@ Rectangle {
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: disableSwitch }
+                        LogosSwitch { id: disableSwitch }
                         LogosText {
                             text: "Disabled"
                             font.pixelSize: Theme.typography.secondaryText

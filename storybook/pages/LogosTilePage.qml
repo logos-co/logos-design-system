@@ -28,6 +28,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -82,7 +84,9 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.xxlarge
 
                 Repeater {
@@ -179,6 +183,8 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: implicitWidth
                     spacing: Theme.spacing.medium
 
                     RowLayout {
@@ -191,7 +197,8 @@ Rectangle {
                         LogosSlider {
                             id: sizeSlider
                             from: 32; to: 140; value: 80
-                            Layout.preferredWidth: 200
+                            Layout.fillWidth: true
+                            Layout.maximumWidth: 200
                         }
                         LogosText {
                             text: sizeSlider.value.toFixed(0)
@@ -210,7 +217,8 @@ Rectangle {
                         LogosSlider {
                             id: radiusSlider
                             from: 0; to: 60; value: Theme.spacing.radiusXlarge
-                            Layout.preferredWidth: 200
+                            Layout.fillWidth: true
+                            Layout.maximumWidth: 200
                         }
                         LogosText {
                             text: radiusSlider.value.toFixed(0)
@@ -240,11 +248,15 @@ Rectangle {
                         LogosTextField {
                             id: monogramField
                             text: "Storage"
-                            Layout.preferredWidth: 200
+                            Layout.fillWidth: true
+                            Layout.maximumWidth: 200
                         }
                     }
 
                     LogosText {
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: Math.ceil(implicitWidth)
+                        wrapMode: Text.Wrap
                         text: "clicked() fired " + page.clickCount + " times — "
                             + "keyboard works too: Tab to focus, then Space or Enter."
                         font.pixelSize: Theme.typography.secondaryText

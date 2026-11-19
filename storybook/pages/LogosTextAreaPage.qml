@@ -20,6 +20,7 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosTextArea"
@@ -37,6 +38,9 @@ Rectangle {
         }
 
         LogosText {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Math.ceil(implicitWidth)
+            wrapMode: Text.Wrap
             text: "Auto-grow (no height constraint — area grows with content)"
             color: Theme.palette.textSecondary
         }
@@ -46,6 +50,9 @@ Rectangle {
         }
 
         LogosText {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Math.ceil(implicitWidth)
+            wrapMode: Text.Wrap
             text: "Fixed height (clips on overflow — best when content stays short)"
             color: Theme.palette.textSecondary
             Layout.topMargin: Theme.spacing.medium
@@ -57,6 +64,9 @@ Rectangle {
         }
 
         LogosText {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Math.ceil(implicitWidth)
+            wrapMode: Text.Wrap
             text: "Scrollable (fixed height + ScrollView wrap — best for long content in fixed regions)"
             color: Theme.palette.textSecondary
             Layout.topMargin: Theme.spacing.medium

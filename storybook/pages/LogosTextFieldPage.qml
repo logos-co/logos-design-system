@@ -16,6 +16,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -25,6 +27,9 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Public API: text, placeholderText, placeholderTextColor, echoMode, validator, readOnly, enabled, textInput"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
@@ -47,6 +52,8 @@ Rectangle {
             }
 
             GridLayout {
+                Layout.fillWidth: true
+                Layout.maximumWidth: 140 + columnSpacing + 320
                 columns: 2
                 columnSpacing: Theme.spacing.large
                 rowSpacing: Theme.spacing.large
@@ -58,7 +65,8 @@ Rectangle {
                 }
                 LogosTextField {
                     placeholderText: "Type something..."
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
 
                 LogosText {
@@ -68,7 +76,8 @@ Rectangle {
                 }
                 LogosTextField {
                     text: "Hello"
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
 
                 LogosText {
@@ -79,7 +88,8 @@ Rectangle {
                 LogosTextField {
                     text: "supersecret"
                     echoMode: TextInput.Password
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
 
                 LogosText {
@@ -90,7 +100,8 @@ Rectangle {
                 LogosTextField {
                     placeholderText: "1 – 100"
                     validator: IntValidator { bottom: 1; top: 100 }
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
 
                 LogosText {
@@ -101,7 +112,8 @@ Rectangle {
                 LogosTextField {
                     text: "Cannot edit this"
                     readOnly: true
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
 
                 LogosText {
@@ -112,7 +124,8 @@ Rectangle {
                 LogosTextField {
                     text: "Unavailable"
                     enabled: false
-                    Layout.preferredWidth: 320
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 320
                 }
             }
         }

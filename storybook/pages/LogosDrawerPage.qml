@@ -52,7 +52,6 @@ Rectangle {
         LogosButton {
             text: drawer.opened ? "Close drawer" : "Open drawer"
             implicitWidth: 160
-            implicitHeight: 36
             onClicked: drawer.opened ? drawer.close() : drawer.open()
         }
 

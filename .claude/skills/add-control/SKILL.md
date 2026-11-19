@@ -190,13 +190,24 @@ Follow Qt's official **[QML Coding Conventions](https://doc.qt.io/qt-6/qml-codin
 - **Doc comment at the top** describing the public API and a short usage example. Mirror the format used in `LogosTabBar.qml`.
 - **Object declaration order** (per Qt's convention): `id` first, then property declarations, then signal declarations, then JS functions, then object children, then signal handlers and states/transitions.
 
-## 8. Pre-merge checklist
+## 8. Phones, tablets and desktops
+
+[docs/responsive.md](../../../docs/responsive.md) is the guide; for a control or layout:
+
+- **Go by your own width**, `Theme.windowClass(width)`, never the window's. A part laid out inside a narrow column (a form's button row) takes the column's class.
+- **No fixed widths**: fill what you're given, or `Math.min(preferred, parent.width - 2 * Theme.pageMargin(parent.width))`.
+- **Popups**: a dialog places itself in its parent, a menu in its window. Popup `enter`/`exit` transitions run even when disabled: bind the property to `null` instead (`enter: d.phone ? d.slideIn : null`).
+- **Desktop stays as it was**: compare renders of the storybook pages before and after.
+- **Test each width class** in the component's own test file, and give it a scene in `tests/tst_PhoneFit.qml`, which checks nothing reaches past the sides of a 390 px phone and every tappable part is a fingertip each way. Its storybook page must pass `tests/tst_StorybookPhoneFit.qml` too: no red in the Preview window.
+
+## 9. Pre-merge checklist
 
 Before opening a PR for a new or modified control:
 
 - [ ] No hardcoded colors, sizes, spacing, or font sizes — all values reference `Theme.*` tokens; new sizes added to `ControlTokens.qml` and pinned in `tests/tst_Tokens.qml`.
 - [ ] Every configurable property is typed and has a sensible default.
 - [ ] At touch density every tappable part is at least `Theme.size.touchTarget`, and nothing needs hover (`tests/tst_Density.qml` and the control's own test file).
+- [ ] At a phone's width nothing reaches past the sides (`tests/tst_PhoneFit.qml`, the storybook's Preview).
 - [ ] Internal items needed for tests/tooling are exposed as `readonly property alias <name>Item`.
 - [ ] `background:` and `contentItem:` are overridable.
 - [ ] `tests/tst_<Component>.qml` exists; `nix flake check` passes.

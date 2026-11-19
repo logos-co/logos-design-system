@@ -18,6 +18,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -27,6 +29,8 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
+                Layout.fillWidth: true
+                wrapMode: Text.Wrap
                 text: "Public API: indicatorColor, indicatorHeight, animationDuration, trackColor. "
                       + "Use with LogosTabButton. Selected tab uses the solid indicator; "
                       + "a low-opacity track runs under all tabs."
@@ -52,7 +56,8 @@ Rectangle {
             }
 
             LogosTabBar {
-                Layout.preferredWidth: 480
+                Layout.fillWidth: true
+                Layout.maximumWidth: 480
 
                 LogosTabButton { text: "Files" }
                 LogosTabButton { text: "Images" }
@@ -78,7 +83,8 @@ Rectangle {
             }
 
             LogosTabBar {
-                Layout.preferredWidth: 480
+                Layout.fillWidth: true
+                Layout.maximumWidth: 480
                 indicatorColor: indicatorColorPicker.checked
                                 ? Theme.palette.success
                                 : Theme.palette.primary
@@ -104,7 +110,8 @@ Rectangle {
                     Slider {
                         id: heightSlider
                         from: 1; to: 8; value: 3; stepSize: 1
-                        Layout.preferredWidth: 240
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 240
                     }
                 }
                 RowLayout {
@@ -118,12 +125,13 @@ Rectangle {
                     Slider {
                         id: durationSlider
                         from: 0; to: 1000; value: 200; stepSize: 50
-                        Layout.preferredWidth: 240
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 240
                     }
                 }
                 RowLayout {
                     spacing: Theme.spacing.small
-                    Switch { id: indicatorColorPicker }
+                    LogosSwitch { id: indicatorColorPicker }
                     LogosText {
                         text: "Use success color for indicator"
                         font.pixelSize: Theme.typography.secondaryText
@@ -145,6 +153,9 @@ Rectangle {
             spacing: Theme.spacing.medium
 
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Nested in a StackLayout (indicator must be correct on first reveal)"
                 color: Theme.palette.textSecondary
             }
