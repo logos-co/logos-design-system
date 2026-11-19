@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 
 import Logos.Theme
 
@@ -49,20 +48,19 @@ Item {
 
     readonly property alias listPaneItem: listPane
     // Where the detail goes: the pane less its actions.
-    readonly property alias detailPaneItem: detailArea
-    readonly property alias actionRowItem: actionRow
-    readonly property alias actionBarItem: actionBar
+    readonly property alias detailPaneItem: detailPane.areaItem
+    readonly property alias actionRowItem: detailPane.rowItem
+    readonly property alias actionBarItem: detailPane.barItem
 
-    onListChanged: d.shownList = d.adopt(list, d.shownList, listPane)
-    onDetailChanged: d.shownDetail = d.adopt(detail, d.shownDetail, detailArea)
-    onDetailActionsChanged: {
-        for (let i = 0; i < detailActions.length; ++i) {
-            detailActions[i].Layout.fillWidth = true
-            // Equal widths in the bar, whatever their text.
-            detailActions[i].Layout.preferredWidth = 0
+    onListChanged: {
+        if (d.shownList && d.shownList !== list)
+            d.shownList.parent = null
+        if (list) {
+            list.parent = listPane
+            list.anchors.fill = listPane
         }
+        d.shownList = list
     }
-    onTwoPaneChanged: if (twoPane) Qt.callLater(d.unbar)
 
     Keys.onEscapePressed: function(event) { d.back(event) }
     Keys.onBackPressed: function(event) { d.back(event) }
@@ -70,26 +68,7 @@ Item {
     QtObject {
         id: d
         property Item shownList: null
-        property Item shownDetail: null
 
-        function adopt(item, shown, pane) {
-            if (shown && shown !== item)
-                shown.parent = null
-            if (item) {
-                item.parent = pane
-                item.anchors.fill = pane
-            }
-            return item
-        }
-
-        // The bar's layout sized them; a Flow keeps the size it finds.
-        function unbar() {
-            for (let i = 0; i < root.detailActions.length; ++i) {
-                root.detailActions[i].width = undefined
-                root.detailActions[i].height = undefined
-            }
-        }
-        
         function back(event) {
             event.accepted = root.showingDetail
             if (!root.showingDetail)
@@ -119,7 +98,7 @@ Item {
         }
     }
 
-    Item {
+    PaneWithActions {
         id: detailPane
         visible: root.twoPane || root.detailOpen
         anchors.left: root.twoPane ? listPane.right : parent.left
@@ -127,54 +106,8 @@ Item {
         anchors.top: parent.top
         anchors.bottom: parent.bottom
         clip: true
-
-        Flow {
-            id: actionRow
-            visible: root.twoPane && root.detailActions.length > 0
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.margins: visible ? Theme.pageMargin(detailPane.width) : 0
-            height: visible ? implicitHeight : 0
-            spacing: Theme.spacing.small
-            children: root.twoPane ? root.detailActions : []
-        }
-
-        Item {
-            id: detailArea
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: actionRow.visible ? actionRow.bottom : parent.top
-            anchors.topMargin: actionRow.visible ? Theme.spacing.medium : 0
-            anchors.bottom: actionBar.visible ? actionBar.top : parent.bottom
-        }
-
-        Rectangle {
-            id: actionBar
-            visible: !root.twoPane && root.detailActions.length > 0
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.bottom: parent.bottom
-            implicitHeight: actionBarRow.implicitHeight + 2 * Theme.spacing.medium + Theme.bottomInset(detailPane)
-            color: Theme.palette.backgroundSecondary
-
-            Rectangle {
-                width: parent.width
-                height: Theme.size.borderWidth
-                color: Theme.palette.borderSubtle
-            }
-
-            RowLayout {
-                id: actionBarRow
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: Theme.spacing.medium
-                anchors.leftMargin: Theme.pageMargin(root.width)
-                anchors.rightMargin: Theme.pageMargin(root.width)
-                spacing: Theme.spacing.medium
-                children: root.twoPane ? [] : root.detailActions
-            }
-        }
+        item: root.detail
+        actions: root.detailActions
+        wide: root.twoPane
     }
 }

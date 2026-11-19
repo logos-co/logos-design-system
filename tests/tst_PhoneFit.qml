@@ -58,6 +58,39 @@ TestCase {
     }
 
     Component {
+        id: sidePanelClosed
+        LogosSidePanel {
+            height: 600
+            title: "wallet"
+            content: LogosListView {
+                model: ["wallet", "chat", "storage"]
+                delegate: LogosListRow {
+                    required property string modelData
+                    width: ListView.view.width
+                    title: modelData
+                    showChevron: true
+                }
+            }
+            panel: Item {}
+        }
+    }
+
+    Component {
+        id: sidePanelOpen
+        LogosSidePanel {
+            height: 600
+            panelOpen: true
+            title: "A package with a long name to see the bar keep its ‹"
+            content: Item {}
+            panel: LogosText { text: "Version 1.2.0"; wrapMode: Text.Wrap }
+            panelActions: [
+                LogosButton { text: "Install" },
+                LogosButton { text: "Remove" }
+            ]
+        }
+    }
+
+    Component {
         id: sectionsList
         LogosSections {
             height: 600
@@ -248,6 +281,8 @@ TestCase {
         return [
             { tag: "LogosPageBar", component: pageBar },
             { tag: "LogosListDetail", component: listDetail },
+            { tag: "LogosSidePanel closed", component: sidePanelClosed },
+            { tag: "LogosSidePanel open", component: sidePanelOpen },
             { tag: "LogosSections list", component: sectionsList },
             { tag: "LogosCardGrid", component: cardGrid },
             { tag: "LogosCardPair", component: cardPair },
