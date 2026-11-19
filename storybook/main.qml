@@ -97,6 +97,7 @@ ApplicationWindow {
         { section: "Layouts (not designed)", title: "LogosListDetail",      file: "LogosListDetailPage.qml" },
         { section: "Layouts (not designed)", title: "LogosPageBar",         file: "LogosPageBarPage.qml" },
         { section: "Layouts (not designed)", title: "LogosSections",        file: "LogosSectionsPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosSidePanel",       file: "LogosSidePanelPage.qml" },
         { section: "Layouts (not designed)", title: "LogosWelcome",         file: "LogosWelcomePage.qml" },
         { section: "Layouts (not designed)", title: "LogosWizard",          file: "LogosWizardPage.qml" }
     ]

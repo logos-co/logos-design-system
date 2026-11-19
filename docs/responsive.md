@@ -60,6 +60,7 @@ In a phone-wide view the title sizes step down; body text stays.
 |---|---|---|---|
 | `LogosPageBar` | 44 px; search folds into an icon and takes the whole bar when open; ⋯ for the rest | 56 px, search field shown | same |
 | `LogosListDetail` | the list, or the open item's detail in its place; ‹ goes back | list (320) beside the detail | list (360) beside the detail |
+| `LogosSidePanel` | the content, or the open panel in its place; ‹ goes back | the panel (320) beside the content, which narrows for it; ✕ closes it | same |
 | `LogosSections` | opens on the current section; ‹ goes back to the list of sections. **No ☰ drawer** | list of sections (240) beside the section | same |
 | `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth`, from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
 | `LogosCardPair` | main card above its side card | side by side 2 : 1 once both are usable (400 and 220) | same |
@@ -104,6 +105,28 @@ ColumnLayout {
 }
 ```
 
+A list and an open item take one of two layouts. If the open item is what
+the page is for (a message, a settings page), `LogosListDetail`: a narrow list
+beside a wide detail. If the page is (a table of packages, a chat thread) and
+the item's details are secondary, `LogosSidePanel`: the page keeps the room and
+a narrow panel opens beside it on demand. On a phone both show one page at a
+time, with ‹ back.
+
+```qml
+LogosSidePanel {
+    id: packages
+    title: openRow ? openRow.name : ""
+    onPanelOpenChanged: if (!panelOpen) openRow = null
+    content: LogosTable {
+        model: store.packages
+        onRowClicked: (index, row) => { openRow = row; packages.panelOpen = true }
+        columns: [ … ]
+    }
+    panel: PackageDetails { row: openRow }
+    panelActions: [ LogosButton { text: qsTr("Install"); variant: LogosButton.Variant.Primary } ]
+}
+```
+
 An app with several sections (a wallet: assets, activity, settings) uses
 `LogosSections`, each section a page that starts with a `LogosPageBar` with
 `canGoBack: wallet.showingSection` and `onBackRequested: wallet.showList()`.
@@ -131,8 +154,9 @@ An app with several sections (a wallet: assets, activity, settings) uses
   badge or leaves it off), or your own `cardDelegate`. Give `rowMenu` a
   `LogosMenu` for a visible ⋯ on every row and card, and open a row on a tap
   (`rowsOpen` shows its ›): nothing needs hover or a double-click. A table
-  that drops columns shows them somewhere, in the row's detail: the storybook
-  table page has the pattern (Alisher's RESPONSIVE.md §3.5).
+  that drops columns shows them somewhere: in the row's detail, a
+  `LogosSidePanel` beside it. The storybook table page has the pattern
+  (Alisher's RESPONSIVE.md §3.5).
 - **`LogosPaginator`**: short of room it drops the page-size selector, then
   the info text, then shows ‹ 4 / 10 › instead of the page numbers.
 - **`LogosSearchToggle`**: a search that folds into an icon, for a bar.

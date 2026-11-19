@@ -3,8 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import Logos.Theme
-import Logos.Icons
 import Logos.Controls
+import Logos.Layouts
 
 Rectangle {
     id: page
@@ -82,16 +82,15 @@ Rectangle {
              : Theme.palette.textSecondary
     }
 
-    // A table with a detail: beside it on a desktop, a sheet over its right
-    // side on a tablet, and on a phone cards and a full-page detail with ‹.
-    // The detail has every field, so the columns the table drops for room
-    // are still there. A tap opens a row, ⋯ has its actions.
-    component PackagesWithDetail: Item {
+    // A table with its rows' detail in a LogosSidePanel: beside the table from
+    // tablet width, and on a phone cards and the detail as the page, with ‹.
+    // The detail has every field, so the columns the table drops for room are
+    // still there. A tap opens a row, ⋯ has its actions.
+    component PackagesWithDetail: LogosSidePanel {
         id: pattern
         anchors.fill: parent
 
         property string openName: ""
-        readonly property string widthClass: Theme.windowClass(width)
         readonly property var openRow: {
             for (let i = 0; i < packages.count; ++i)
                 if (packages.get(i).name === openName)
@@ -99,127 +98,82 @@ Rectangle {
             return null
         }
 
-        RowLayout {
-            anchors.fill: parent
-            visible: !(pattern.widthClass === "phone" && pattern.openRow)
-            spacing: Theme.spacing.medium
+        function open(name) {
+            openName = name
+            panelOpen = true
+        }
 
-            LogosTable {
-                id: table
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                model: packages
-                phoneCards: true
-                rowsOpen: true
-                onRowClicked: (index, row) => pattern.openName = row.name
-                rowMenu: LogosMenu {
-                    LogosMenuItem { text: qsTr("Open details"); onTriggered: pattern.openName = table.menuRow.name }
-                    LogosMenuItem { text: qsTr("Uninstall") }
-                }
-                columns: [
-                    LogosTableColumn { title: qsTr("Package");     role: "name";        minWidth: 120; preferredWidth: 160; fillWidth: true },
-                    LogosTableColumn { title: qsTr("Type");        role: "type";        minWidth: 80;  priority: 2 },
-                    LogosTableColumn { title: qsTr("Description"); role: "description"; minWidth: 200; priority: 1; card: "hidden" },
-                    LogosTableColumn {
-                        title: qsTr("Status"); role: "status"; minWidth: 120; card: "badge"
-                        // Sized by its badge, so a card can show it too.
-                        cellDelegate: Item {
-                            implicitWidth: badge.implicitWidth
-                            implicitHeight: badge.implicitHeight
-                            StatusBadge { id: badge; anchors.verticalCenter: parent.verticalCenter; status: rowItem.status }
-                        }
+        // Open from the start when openName says so; after that a row opens
+        // it, and closing it clears the open package.
+        panelOpen: openName !== ""
+        onPanelOpenChanged: if (!panelOpen) openName = ""
+        title: openRow ? openRow.name : ""
+        panelActions: [ LogosButton { text: qsTr("Uninstall") } ]
+
+        content: LogosTable {
+            id: table
+            model: packages
+            phoneCards: true
+            rowsOpen: true
+            onRowClicked: (index, row) => pattern.open(row.name)
+            rowMenu: LogosMenu {
+                LogosMenuItem { text: qsTr("Open details"); onTriggered: pattern.open(table.menuRow.name) }
+                LogosMenuItem { text: qsTr("Uninstall") }
+            }
+            columns: [
+                LogosTableColumn { title: qsTr("Package");     role: "name";        minWidth: 120; preferredWidth: 160; fillWidth: true },
+                LogosTableColumn { title: qsTr("Type");        role: "type";        minWidth: 80;  priority: 2 },
+                LogosTableColumn { title: qsTr("Description"); role: "description"; minWidth: 200; priority: 1; card: "hidden" },
+                LogosTableColumn {
+                    title: qsTr("Status"); role: "status"; minWidth: 120; card: "badge"
+                    // Sized by its badge, so a card can show it too.
+                    cellDelegate: Item {
+                        implicitWidth: badge.implicitWidth
+                        implicitHeight: badge.implicitHeight
+                        StatusBadge { id: badge; anchors.verticalCenter: parent.verticalCenter; status: rowItem.status }
                     }
-                ]
-            }
-
-            PackageDetail {
-                owner: pattern
-                visible: pattern.widthClass === "desktop" && pattern.openRow !== null
-                Layout.preferredWidth: 280
-                Layout.fillHeight: true
-            }
+                }
+            ]
         }
 
-        PackageDetail {
-            owner: pattern
-            visible: pattern.widthClass === "tablet" && pattern.openRow !== null
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right: parent.right
-            width: Math.min(320, parent.width * 0.75)
-        }
-
-        PackageDetail {
-            owner: pattern
-            visible: pattern.widthClass === "phone" && pattern.openRow !== null
-            anchors.fill: parent
-        }
+        panel: PackageDetail { row: pattern.openRow }
     }
 
-    // The detail of PackagesWithDetail's open package.
-    component PackageDetail: Rectangle {
+    // Every field of a package.
+    component PackageDetail: ColumnLayout {
         id: detail
-        required property Item owner
-        color: Theme.palette.backgroundSecondary
-        border.color: Theme.palette.borderSubtle
-        radius: Theme.spacing.radiusLarge
+        required property var row
+        spacing: Theme.spacing.small
 
-        ColumnLayout {
-            anchors.fill: parent
-            anchors.margins: Theme.spacing.large
-            spacing: Theme.spacing.small
+        StatusBadge {
+            Layout.leftMargin: Theme.spacing.large
+            Layout.topMargin: Theme.spacing.medium
+            status: detail.row ? detail.row.status : ""
+        }
 
-            RowLayout {
+        Repeater {
+            model: [[qsTr("Type"), "type"], [qsTr("Description"), "description"]]
+            ColumnLayout {
+                required property var modelData
                 Layout.fillWidth: true
-                LogosIconButton {
-                    visible: detail.owner.widthClass === "phone"
-                    size: Theme.size.touchTarget
-                    flat: true
-                    iconSource: LogosIcons.arrowLeft
-                    Accessible.name: qsTr("Back")
-                    onClicked: detail.owner.openName = ""
+                Layout.leftMargin: Theme.spacing.large
+                Layout.rightMargin: Theme.spacing.large
+                Layout.topMargin: Theme.spacing.small
+                spacing: Theme.spacing.tiny
+                LogosText {
+                    text: modelData[0]
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textSecondary
                 }
                 LogosText {
                     Layout.fillWidth: true
-                    text: detail.owner.openRow ? detail.owner.openRow.name : ""
-                    font.pixelSize: Theme.typography.panelTitleText
-                    font.weight: Theme.typography.weightBold
-                    elide: Text.ElideRight
-                }
-                LogosIconButton {
-                    visible: detail.owner.widthClass !== "phone"
-                    size: Theme.size.touchTarget
-                    flat: true
-                    iconSource: LogosIcons.close
-                    Accessible.name: qsTr("Close")
-                    onClicked: detail.owner.openName = ""
+                    text: detail.row ? detail.row[modelData[1]] : ""
+                    wrapMode: Text.Wrap
                 }
             }
-
-            StatusBadge { status: detail.owner.openRow ? detail.owner.openRow.status : "" }
-
-            Repeater {
-                model: [[qsTr("Type"), "type"], [qsTr("Description"), "description"]]
-                ColumnLayout {
-                    required property var modelData
-                    Layout.fillWidth: true
-                    Layout.topMargin: Theme.spacing.small
-                    spacing: Theme.spacing.tiny
-                    LogosText {
-                        text: modelData[0]
-                        font.pixelSize: Theme.typography.secondaryText
-                        color: Theme.palette.textSecondary
-                    }
-                    LogosText {
-                        Layout.fillWidth: true
-                        text: detail.owner.openRow ? detail.owner.openRow[modelData[1]] : ""
-                        wrapMode: Text.Wrap
-                    }
-                }
-            }
-
-            Item { Layout.fillHeight: true }
         }
+
+        Item { Layout.fillHeight: true }
     }
 
     // Sample data — a list of fake "packages" for the table to render.
@@ -327,9 +281,9 @@ Rectangle {
 
             Heading { text: "With ⋯ and a detail" }
             Note {
-                text: "A tap opens a package; ⋯ has its actions. The detail is beside the table on a desktop, "
-                      + "over its right side on a tablet, and the whole page on a phone. It has every field, so "
-                      + "nothing the table drops is lost. On the cards, Status is a badge and Description is left off."
+                text: "A tap opens a package; ⋯ has its actions. The detail is a LogosSidePanel: beside the table "
+                      + "from tablet width, the whole page on a phone with ‹. It has every field, so nothing the "
+                      + "table drops is lost. On the cards, Status is a badge and Description is left off."
             }
 
             Flow {
