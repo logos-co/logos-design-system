@@ -118,8 +118,9 @@ An app with several sections (a wallet: assets, activity, settings) uses
   less the page margins. In a phone-wide parent a sheet across the bottom,
   dragged down to close, or with `fullPage` the whole parent, for a form. Put
   your content in `body`: it scrolls while the title and actions stay. A
-  dialog that sets `anchors.centerIn` or `width` keeps the placement it
-  sets, so drop those to get the phone forms.
+  dialog that sets `anchors.centerIn` or `width` keeps that placement off a
+  phone; on one it is a sheet or a page across its window, and the app's
+  placement comes back when it closes.
 - **`LogosMenu`**: in a phone-wide window a sheet across the bottom, however
   it is opened. It goes by its window, since its parent is the button that
   opens it.
@@ -155,6 +156,10 @@ An app with several sections (a wallet: assets, activity, settings) uses
   (`storybook/PhoneChecks.js`) on every layout and the adapting controls at
   390 px. A new layout or control that adapts to its width gets a scene there,
   and its own tests at each width class.
+- `tests/tst_StorybookPhoneFit.qml` loads every storybook page at 390 px and
+  fails on anything past the sides, so the Preview shows no red. A demo at a
+  fixed width takes `Layout.fillWidth` and `Layout.maximumWidth` instead of
+  `Layout.preferredWidth`.
 
 ## Hosts
 

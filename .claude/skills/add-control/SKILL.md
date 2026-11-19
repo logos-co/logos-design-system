@@ -198,7 +198,7 @@ Follow Qt's official **[QML Coding Conventions](https://doc.qt.io/qt-6/qml-codin
 - **No fixed widths**: fill what you're given, or `Math.min(preferred, parent.width - 2 * Theme.pageMargin(parent.width))`.
 - **Popups**: a dialog places itself in its parent, a menu in its window. Popup `enter`/`exit` transitions run even when disabled: bind the property to `null` instead (`enter: d.phone ? d.slideIn : null`).
 - **Desktop stays as it was**: compare renders of the storybook pages before and after.
-- **Test each width class** in the component's own test file, and give it a scene in `tests/tst_PhoneFit.qml`, which checks nothing reaches past the sides of a 390 px phone and every tappable part is a fingertip each way. Look at its page in the storybook's Preview window too.
+- **Test each width class** in the component's own test file, and give it a scene in `tests/tst_PhoneFit.qml`, which checks nothing reaches past the sides of a 390 px phone and every tappable part is a fingertip each way. Its storybook page must pass `tests/tst_StorybookPhoneFit.qml` too: no red in the Preview window.
 
 ## 9. Pre-merge checklist
 
