@@ -419,4 +419,25 @@ TestCase {
         compare(spy.count, 1)
         verify(!c.tip.opened)
     }
+
+    Component {
+        id: pinnedButton
+        LogosButton { text: "Reload"; implicitWidth: 100; implicitHeight: 36 }
+    }
+
+    // A button set shorter than its padding allows (the storybook's 36 px
+    // header buttons at comfortable and touch density) keeps its label centred.
+    function test_a_short_button_keeps_its_label_centred_data() {
+        return [ { tag: "compact" }, { tag: "comfortable" }, { tag: "touch" } ]
+    }
+    function test_a_short_button_keeps_its_label_centred(data) {
+        ThemeManager.setDensity(data.tag)
+        const btn = createTemporaryObject(pinnedButton, root)
+        waitForRendering(btn)
+        compare(btn.height, 36)
+        const label = btn.labelItem
+        const centre = label.mapToItem(btn, 0, 0).y + label.height / 2
+        verify(Math.abs(centre - btn.height / 2) <= 1, "label centre " + centre + " in a " + btn.height + " px button")
+        ThemeManager.setDensity("")
+    }
 }

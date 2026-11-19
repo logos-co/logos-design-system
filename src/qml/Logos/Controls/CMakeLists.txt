@@ -75,6 +75,8 @@ qt_add_qml_module(logos_controls_qml
         LogosToolSeparator.qml
         LogosSearchToggle.qml
         LogosListRow.qml
+        LogosButtonRow.qml
+        LogosStateView.qml
 )
 
 target_link_libraries(logos_controls_qml PRIVATE logos_theme_qml logos_icons_qml)

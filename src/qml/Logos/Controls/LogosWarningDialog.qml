@@ -58,15 +58,17 @@ LogosDialog {
     header: Item {
         visible: root.title.length > 0
         implicitHeight: visible
-                        ? headerRow.implicitHeight + Theme.spacing.large + Theme.spacing.small
+                        ? headerRow.implicitHeight + headerRow.anchors.topMargin + Theme.spacing.small
                         : 0
 
         RowLayout {
             id: headerRow
             anchors {
                 left:  parent.left;  leftMargin:  Theme.spacing.large
-                right: parent.right; rightMargin: Theme.spacing.large
-                top:   parent.top;   topMargin:   Theme.spacing.large
+                right: parent.right
+                rightMargin: root.closeButtonItem.visible ? root.closeButtonItem.width + Theme.spacing.tiny : Theme.spacing.large
+                top:   parent.top
+                topMargin: root.dragToClose ? Theme.spacing.large + Theme.spacing.small : Theme.spacing.large
             }
             spacing: Theme.spacing.small
 

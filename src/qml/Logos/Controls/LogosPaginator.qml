@@ -21,10 +21,18 @@ import Logos.Icons
 //     iconColor         tint applied to the four nav arrow icons
 //
 //     pageCount         (read-only) derived as max(1, ceil(totalCount / pageSize))
+//     condensed         (read-only) the page numbers don't fit: see below
+//
+// Narrow: the page numbers and arrows come first, then the info text, then
+// the page-size selector; whichever doesn't fit beside the ones before it
+// hides. Page numbers that don't fit condense to ‹ 4 / 10 ›, with « » if they
+// fit; the ‹ › show then even without showPrevNext. Where it all fits, as
+// before, it is unchanged.
 //
 // Read-only inspection aliases:
 //     infoLabel, firstButton, prevButton, nextButton, lastButton,
 //     pagesItem (the Row of cells/ellipses), pageCells (the Repeater),
+//     positionLabel (the condensed "4 / 10"),
 //     pageSizeSelector (the LogosComboBox), _d (private state)
 //
 // Signals:
@@ -67,6 +75,7 @@ Control {
 
     readonly property int pageCount: Math.max(
         1, Math.ceil(totalCount / Math.max(1, pageSize)))
+    readonly property bool condensed: d.condensed
 
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias infoLabel: infoLabelText
@@ -76,6 +85,7 @@ Control {
     readonly property alias lastButton: lastBtn
     readonly property alias pagesItem: pagesRow
     readonly property alias pageCells: cellRepeater
+    readonly property alias positionLabel: positionText
     readonly property alias pageSizeSelector: sizeSelector
     readonly property alias _d: d 
 
@@ -89,6 +99,40 @@ Control {
         property bool retainNavFocus: false
         property bool expectFocusRestore: false
         property int lastNavIndex: 0
+
+        readonly property var pages: computedPages()
+        readonly property bool hasInfo: root.pageInfoText.length > 0
+        readonly property bool hasSizes: !!root.pageSizeOptions && root.pageSizeOptions.length > 0
+        readonly property real gap: Theme.spacing.small
+        readonly property real buttonSize: Theme.controls.paginator.buttonSize
+        readonly property int arrows: (root.showFirstLast ? 2 : 0) + (root.showPrevNext ? 2 : 0)
+        readonly property real pagesWidth: pages.length * buttonSize + (pages.length - 1) * gap
+        // Until it has a width, all of it shows.
+        readonly property bool constrained: root.availableWidth > 0
+
+        // The row lays its items out in whole pixels.
+        readonly property real infoWidth: Math.ceil(infoLabelText.implicitWidth) + gap
+
+        // All of it, as the row adds it up. The paginator's implicit width
+        // whatever shows, or one sized by its content would stay condensed.
+        readonly property real fullWidth: (hasInfo ? infoWidth : 0)
+                                          + arrows * (buttonSize + gap) + pagesWidth + 2 * gap
+                                          + (hasSizes ? Theme.controls.paginator.pageSizeWidth + gap : 0)
+
+        // At their narrowest, with their gaps: the arrows and page numbers
+        // between two fillers, then the info text, then the size selector.
+        readonly property real fullNavWidth: arrows * (Theme.controls.paginator.buttonMinWidth + gap)
+                                             + pagesWidth + 2 * gap
+        readonly property bool condensed: constrained && root.availableWidth < fullNavWidth
+        readonly property real condensedWidth: 2 * buttonSize + Math.ceil(positionText.implicitWidth) + 4 * gap
+        readonly property bool firstLastFit: root.showFirstLast
+                                             && condensedWidth + 2 * (buttonSize + gap) <= root.availableWidth
+        readonly property real navWidth: !condensed ? fullNavWidth
+                                         : condensedWidth + (firstLastFit ? 2 * (buttonSize + gap) : 0)
+        readonly property bool infoFits: hasInfo && (!constrained || navWidth + infoWidth <= root.availableWidth)
+        readonly property bool sizesFit: hasSizes && (!constrained || navWidth + (infoFits ? infoWidth : 0)
+                                                      + Theme.controls.paginator.pageSizeMinWidth + gap
+                                                      <= root.availableWidth)
 
         // Computes the array of page entries to render. Numbers are page
         // indices; the string "…" is a non-clickable ellipsis between
@@ -323,6 +367,7 @@ Control {
 
     onCurrentPageChanged: d.scheduleFocusRestore()
 
+    implicitWidth: d.fullWidth + leftPadding + rightPadding
     implicitHeight: Theme.controls.paginator.height
     focusPolicy: Qt.NoFocus
     activeFocusOnTab: false
@@ -336,7 +381,7 @@ Control {
             id: infoLabelText
             Layout.alignment: Qt.AlignVCenter
             Layout.minimumWidth: 0
-            visible: root.pageInfoText.length > 0
+            visible: d.infoFits
             text: root.pageInfoText
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textMuted
@@ -356,7 +401,7 @@ Control {
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
-            visible: root.showFirstLast
+            visible: d.condensed ? d.firstLastFit : root.showFirstLast
             enabled: root.currentPage > 1
             background: Rectangle {
                 color: "transparent"
@@ -380,7 +425,7 @@ Control {
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
-            visible: root.showPrevNext
+            visible: root.showPrevNext || d.condensed
             enabled: root.currentPage > 1
             background: Rectangle {
                 color: "transparent"
@@ -396,11 +441,12 @@ Control {
 
         Row {
             id: pagesRow
+            visible: !d.condensed
             spacing: Theme.spacing.small
 
             Repeater {
                 id: cellRepeater
-                model: d.computedPages()
+                model: d.condensed ? [] : d.pages
 
                 delegate: AbstractButton {
                     id: pageCell
@@ -458,6 +504,17 @@ Control {
             }
         }
 
+        LogosText {
+            id: positionText
+            visible: d.condensed
+            Layout.alignment: Qt.AlignVCenter
+            text: qsTr("%1 / %2").arg(Math.min(root.currentPage, root.pageCount)).arg(root.pageCount)
+            font.pixelSize: Theme.typography.primaryText
+            font.weight: Theme.typography.weightMedium
+            color: Theme.palette.text
+            Accessible.name: qsTr("Page %1 of %2").arg(Math.min(root.currentPage, root.pageCount)).arg(root.pageCount)
+        }
+
         LogosIconButton {
             id: nextBtn
             Layout.fillWidth: true
@@ -469,7 +526,7 @@ Control {
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
-            visible: root.showPrevNext
+            visible: root.showPrevNext || d.condensed
             enabled: root.currentPage < root.pageCount
             background: Rectangle {
                 color: "transparent"
@@ -493,7 +550,7 @@ Control {
             flat: true
             focusPolicy: Qt.StrongFocus
             activeFocusOnTab: true
-            visible: root.showFirstLast
+            visible: d.condensed ? d.firstLastFit : root.showFirstLast
             enabled: root.currentPage < root.pageCount
             background: Rectangle {
                 color: "transparent"
@@ -518,7 +575,7 @@ Control {
             Layout.minimumWidth: Theme.controls.paginator.pageSizeMinWidth
             Layout.preferredWidth: Theme.controls.paginator.pageSizeWidth
             Layout.maximumWidth: Theme.controls.paginator.pageSizeWidth
-            visible: root.pageSizeOptions && root.pageSizeOptions.length > 0
+            visible: d.sizesFit
             implicitHeight: Theme.controls.paginator.height
 
             textColor: Theme.palette.textMuted

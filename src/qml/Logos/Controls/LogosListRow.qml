@@ -10,26 +10,30 @@ import Logos.Icons
 import Logos.Controls
 
 // LogosListRow — a row in a list or in grouped settings:
-//     [icon]  Title                     value  ›
+//     [icon]  Title                     value  ⋯  ›
 //             subtitle
+//             caption
 // The whole row is the tap target. For on/off settings put a control on the
 // right with `accessory` (a LogosSwitch); a tap anywhere on the row toggles
 // it. A chevron says the row goes somewhere; `selected` marks the row whose
-// detail is open beside the list.
+// detail is open beside the list. A row with a `menu` shows ⋯ for it, which a
+// long press or a right-click on the row opens too.
 //
 // Public API:
 //     title, subtitle, value     text; value is the current setting, right-aligned
 //     subtitleWraps              let the subtitle wrap instead of eliding
+//     caption                    a third line, e.g. an inbox row's preview
 //     iconSource                 a leading icon
 //     showChevron                a trailing ›
 //     showSeparator              a hairline under the row (default true)
 //     destructive                title and icon in the error colour
 //     selected                   the open row in list → detail
 //     accessory                  an item on the right, e.g. a LogosSwitch
+//     menu                       the row's actions, a LogosMenu
 //     clicked()                  a tap or click on the row
 //
-// Read-only inspection aliases: titleItem, subtitleItem, valueItem,
-// chevronItem, backgroundItem, separatorItem.
+// Read-only inspection aliases: titleItem, subtitleItem, captionItem,
+// valueItem, menuButtonItem, chevronItem, backgroundItem, separatorItem.
 //
 // Example:
 //     LogosListRow { title: qsTr("Network"); value: qsTr("Testnet"); showChevron: true; onClicked: openNetwork() }
@@ -39,6 +43,7 @@ AbstractButton {
 
     property string title: ""
     property string subtitle: ""
+    property string caption: ""
     property bool subtitleWraps: false
     property string value: ""
     property url iconSource: ""
@@ -47,9 +52,12 @@ AbstractButton {
     property bool destructive: false
     property bool selected: false
     property Item accessory: null
+    property LogosMenu menu: null
 
     readonly property alias titleItem: titleText
     readonly property alias subtitleItem: subtitleText
+    readonly property alias captionItem: captionText
+    readonly property alias menuButtonItem: menuButton
     readonly property alias valueItem: valueText
     readonly property alias chevronItem: chevron
     readonly property alias backgroundItem: bg
@@ -70,7 +78,7 @@ AbstractButton {
     bottomPadding: Theme.spacing.tiny
 
     Accessible.name: title
-    Accessible.description: subtitle
+    Accessible.description: [subtitle, caption].filter(text => text !== "").join(", ")
 
     // Not click(): it needs Qt 6.8, and the Windows build uses Qt 6.7.
     onClicked: {
@@ -83,6 +91,7 @@ AbstractButton {
     }
 
     onAccessoryChanged: if (accessory) accessory.parent = accessorySlot
+    onMenuChanged: if (menu) menu.contextFor = root
 
     bottomInset: separator.visible ? separator.height : 0
 
@@ -127,6 +136,15 @@ AbstractButton {
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
+            LogosText {
+                id: captionText
+                Layout.fillWidth: true
+                visible: root.caption !== ""
+                text: root.caption
+                elide: Text.ElideRight
+                font.pixelSize: Theme.typography.secondaryText
+                color: Theme.palette.textTertiary
+            }
         }
 
         LogosText {
@@ -143,6 +161,16 @@ AbstractButton {
             visible: root.accessory !== null
             implicitWidth: root.accessory ? root.accessory.implicitWidth : 0
             implicitHeight: root.accessory ? root.accessory.implicitHeight : 0
+        }
+
+        LogosIconButton {
+            id: menuButton
+            visible: root.menu !== null
+            size: Theme.size.touchTarget
+            flat: true
+            iconSource: LogosIcons.more
+            Accessible.name: qsTr("More")
+            onClicked: root.menu.popupUnder(menuButton)
         }
 
         LogosIcon {

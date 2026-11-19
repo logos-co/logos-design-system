@@ -27,6 +27,19 @@ TestCase {
         dlg.iconSource  = LogosIcons.warning
     }
 
+    // ── As a sheet (its 500 px parent is phone-wide) ─────────────────────
+
+    // Its own header leaves room for the handle, as LogosDialog's does.
+    function test_sheet_title_row_clears_the_handle() {
+        dlg.open()
+        tryCompare(dlg, "opened", true)
+        verify(dlg.sheet && dlg.dragToClose)
+        const iconTop = dlg.warningIconItem.mapToItem(dlg.backgroundItem, 0, 0).y
+        verify(iconTop > dlg.handleItem.y + dlg.handleItem.height + Theme.spacing.small,
+               "icon top " + iconTop)
+        dlg.close()
+    }
+
     // ── Aliases ──────────────────────────────────────────────────────────
 
     function test_warningIconItem_resolves() {

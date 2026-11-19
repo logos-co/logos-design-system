@@ -60,6 +60,17 @@ Rectangle {
                 LogosListRow { Layout.fillWidth: true; title: "Download folder"; subtitle: "/home/me/Downloads"; showChevron: true; iconSource: LogosIcons.install }
                 LogosListRow { Layout.fillWidth: true; title: "Notifications"; subtitle: "A tap on the row toggles the switch"; accessory: LogosSwitch { checked: true } }
                 LogosListRow { Layout.fillWidth: true; title: "Selected row (open in the detail)"; selected: true; showChevron: true }
+                LogosListRow {
+                    Layout.fillWidth: true
+                    title: "Ana Lee"
+                    subtitle: "Weekly sync"
+                    caption: "Bring screenshots from the responsive lab."
+                    value: "09:14"
+                    menu: LogosMenu {
+                        LogosMenuItem { text: "Reply" }
+                        LogosMenuItem { text: "Archive" }
+                    }
+                }
                 LogosListRow { Layout.fillWidth: true; title: "Forget this wallet"; destructive: true; iconSource: LogosIcons.trash; showSeparator: false }
             }
         }

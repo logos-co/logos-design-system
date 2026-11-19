@@ -59,11 +59,23 @@ Rectangle {
                     color: Theme.palette.borderHairline
                 }
 
+                LogosText {
+                    Layout.fillWidth: true
+                    text: "In a phone-wide view the titles step down (Preview: phone in the header), and where targets are touch-sized badgeText grows from 8 to 10."
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textSecondary
+                }
+
                 Repeater {
                     model: [
-                        { name: "titleText",     value: Theme.typography.titleText },
-                        { name: "primaryText",   value: Theme.typography.primaryText },
-                        { name: "secondaryText", value: Theme.typography.secondaryText }
+                        { name: "pageTitleText",  value: Theme.typography.pageTitleText },
+                        { name: "titleText",      value: Theme.typography.titleText },
+                        { name: "panelTitleText", value: Theme.typography.panelTitleText },
+                        { name: "subtitleText",   value: Theme.typography.subtitleText },
+                        { name: "primaryText",    value: Theme.typography.primaryText },
+                        { name: "secondaryText",  value: Theme.typography.secondaryText },
+                        { name: "badgeText",      value: Theme.typography.badgeText }
                     ]
                     RowLayout {
                         Layout.fillWidth: true

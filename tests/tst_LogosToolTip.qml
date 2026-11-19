@@ -235,4 +235,38 @@ TestCase {
         compare(clicked.count, 1)
         verify(!b.tip.opened)
     }
+
+    // A badge with a tip, over something clickable: Basecamp's app tile.
+    Component {
+        id: badgeOverClickable
+        MouseArea {
+            property int clicks: 0
+            readonly property alias badge: badge
+            width: 160
+            height: 80
+            onClicked: clicks++
+            LogosBadge {
+                id: badge
+                anchors.centerIn: parent
+                text: "Update"
+                hoverEnabled: true
+                LogosToolTip { text: "Downloading" }
+            }
+        }
+    }
+
+    function test_desktop_tip_lets_a_click_through_its_parent() {
+        const area = createRendered(badgeOverClickable)
+        mouseClick(area.badge)
+        compare(area.clicks, 1)
+    }
+
+    function test_leaving_touch_density_lets_a_click_through_again() {
+        ThemeManager.setDensity("touch")
+        const area = createRendered(badgeOverClickable)
+        ThemeManager.setDensity("comfortable")
+        waitForRendering(area)
+        mouseClick(area.badge)
+        compare(area.clicks, 1)
+    }
 }

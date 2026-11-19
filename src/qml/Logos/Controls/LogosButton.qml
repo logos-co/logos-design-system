@@ -88,6 +88,8 @@ LogosAbstractButton {
 
     QtObject {
         id: d
+        readonly property real paddingY: root.compact ? Theme.controls.button.compactPaddingY
+                                                      : Theme.controls.button.paddingY
 
         readonly property color foreground: root.variant === LogosButton.Variant.Primary
                                             ? Theme.palette.primaryForeground
@@ -119,11 +121,13 @@ LogosAbstractButton {
     implicitWidth: Math.max(compact ? Theme.controls.button.compactMinWidth : Theme.controls.button.minWidth,
                             implicitContentWidth + leftPadding + rightPadding)
     implicitHeight: Math.max(compact ? Theme.controls.button.compactHeight : Theme.controls.button.height,
-                             implicitContentHeight + topPadding + bottomPadding)
+                             implicitContentHeight + 2 * d.paddingY)
     leftPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
     rightPadding: compact ? Theme.controls.button.compactPaddingX : Theme.controls.button.paddingX
-    topPadding: compact ? Theme.controls.button.compactPaddingY : Theme.controls.button.paddingY
-    bottomPadding: compact ? Theme.controls.button.compactPaddingY : Theme.controls.button.paddingY
+    // A button set shorter than it needs gives up padding evenly, so its
+    // label stays centred rather than overflowing its content downwards.
+    topPadding: Math.min(d.paddingY, Math.max(0, (height - implicitContentHeight) / 2))
+    bottomPadding: topPadding
     font.family: Theme.typography.publicSans
     font.pixelSize: Theme.typography.secondaryText
     font.weight: Theme.typography.weightMedium

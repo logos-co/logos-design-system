@@ -44,8 +44,10 @@ public:
     Q_INVOKABLE bool setDensity(const QString& density) const;
 
     // Keep the Theme in `viewRoot`'s engine told the view's width, so its
-    // layouts and touch sizes follow it (Theme.viewWidth, Theme.viewClass).
-    // Call once per view, with the root item the view sizes to.
+    // layouts and touch sizes follow it (Theme.viewWidth, Theme.viewClass),
+    // and from Qt 6.9 its window's safe area (Theme.safeAreaTop/Bottom). Call
+    // once per view, with the root item the view sizes to. A QQuickWidget's
+    // window is offscreen: its host sets the safe area itself.
     static void followViewWidth(QQuickItem* viewRoot);
 
 private:

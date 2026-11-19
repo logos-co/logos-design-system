@@ -1,6 +1,10 @@
 import QtQuick
 
 QtObject {
+    // Set by Theme: the view is phone-wide; targets are touch-sized.
+    property bool phone: false
+    property bool touch: false
+
     //  font family - using resolved URL for better compatibility
     readonly property FontLoader publicSansRegular: FontLoader {
         source: Qt.resolvedUrl("fonts/PublicSans-Regular.ttf")
@@ -27,13 +31,14 @@ QtObject {
     readonly property int weightMedium: 500
     readonly property int weightBold: 700
 
-    // Text font sizes (descending hierarchy)
-    readonly property int mainTitleText: 256   // splash / marketing
-    readonly property int pageTitleText: 36    // page-level headline
-    readonly property int titleText: 30        // section / dialog title
-    readonly property int panelTitleText: 24   // panel / table title
+    // Text font sizes (descending hierarchy). In a phone-wide view the titles
+    // step down; where targets are touch-sized, badge text grows to stay legible.
+    readonly property int mainTitleText: phone ? 96 : 256   // splash / marketing
+    readonly property int pageTitleText: phone ? 28 : 36    // page-level headline
+    readonly property int titleText: phone ? 24 : 30        // section / dialog title
+    readonly property int panelTitleText: phone ? 20 : 24   // panel / table title
     readonly property int subtitleText: 16     // page subtitle / lead body
     readonly property int primaryText: 14      // default body text
     readonly property int secondaryText: 12    // caption / small text
-    readonly property int badgeText: 8         // badge / tiny text
+    readonly property int badgeText: touch ? 10 : 8         // badge / tiny text
 }

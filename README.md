@@ -31,7 +31,7 @@ Components are split into two groups. **Designed** controls have their final sty
 
 **Designed**: `LogosButton`, `LogosCheckbox`, `LogosComboBox`, `LogosIconButton`, `LogosPaginator`, `LogosSearchBar`, `LogosTabBar`, `LogosTabButton`, `LogosTable` + `LogosTableColumn`, `LogosText`, `LogosTextField`.
 
-**Placeholder**: `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosListRow`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSearchToggle`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
+**Placeholder**: `LogosButtonRow`, `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosListRow`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSearchToggle`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosStateView`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
 
 Text is plain by default: `LogosText`, and every control that draws its text with it, shows markup as written rather than rendering it, and so does `LogosToolTip`. Opt in with `textFormat: Text.StyledText` (bold, links, line breaks) where the text is your own; never for names, messages or anything else from outside the app.
 
@@ -42,7 +42,12 @@ Open the storybook to see public API, props, and live examples for each. Interna
 The bars and panes a page is built from; controls go inside them. Each arranges itself by its own width (`Theme.windowClass`), so a page laid out with them works from phone to desktop:
 
 - `LogosPageBar` — the page's top row: title, ‹ back, search, actions and a ⋯ menu. At phone width search folds into an icon.
-- `LogosListDetail` — a list and the detail of its open item: side by side from tablet width; at phone width the detail replaces the list.
+- `LogosListDetail` — a list and the detail of its open item: side by side from tablet width; at phone width the detail replaces the list. The detail's actions (`detailActions`) are a row across its top, or at phone width an equal-width bar pinned to the bottom.
+- `LogosCardGrid` — cards or tiles in as many equal columns as fit, from the width the grid gets; content at most 1200 px, centred. Balanced, it never leaves one card alone on the last row: four stat cards are 4, 2 × 2 or 1.
+- `LogosFormLayout` + `LogosFormField` — a form at most 720 px wide, centred: labels beside the controls on desktop, above them narrower, narrow fields paired on a tablet, one field per row and stacked buttons on a phone. Help and errors are text under the control.
+- `LogosCardPair` — a wide card and its side card, side by side (2 : 1) while both stay usable, otherwise stacked.
+- `LogosWizard` — a task in steps, as the apps' onboarding does it: an optional welcome screen, a title, a rail of the steps across the top, and Back on the left with a main button that names what it does; a hint beside it says why it can't be pressed yet. On a phone only the current step is named and the buttons stack, the main one last. Esc and the phone's Back key go back.
+- `LogosWelcome` — an onboarding's first screen: a backdrop, a title and the ways in, centred or aligned left, with a slot over the title and four corners for what the app adds (brand, close, version, other ways in); on a phone the bottom corners stack. Its `background` can be replaced. A wizard's `welcome`.
 - `LogosSections` — an app with several sections: a list of them beside the current one from tablet width; on a phone the app opens on its current section and ‹ goes back to the list. There is no ☰ drawer.
 
 All are placeholders for now, under **Layouts (not designed)** in the storybook.
@@ -212,13 +217,21 @@ For verbose runs:
 
 Tooltips stay extras: never put something only in a tooltip, since touch users have to know to long-press.
 
-Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes.
+Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes. Two widths, on purpose: a component arranges itself by its own width, so a wizard in a narrow desktop pane stacks its buttons; type sizes and touch targets follow the whole view (`Theme.viewClass`), so text stays one scale across a view.
+
+On a phone, what covers the window's edges: `Theme.safeAreaTop` / `safeAreaBottom` (the notch and the home indicator; `followViewWidth` keeps them from Qt 6.9) and `Theme.keyboardHeight` (the on-screen keyboard). `Theme.topInset(item)` and `Theme.bottomInset(item)` say how much of an item they cover. Sheets, full-page dialogs, the wizard and the list → detail action bar stay clear of them, and in a dialog, a wizard or a form the field with focus scrolls into view above the keyboard.
+
+A `LogosDialog` left to place itself is centred at its `preferredWidth`, never wider than its parent less the page margins. In a phone-wide parent it is a bottom sheet, or with `fullPage` it fills the parent, for long content such as a form; either way its actions stack full width, the main ones last. Put your own content in `body`: it scrolls when the dialog is shorter than it, while the title and actions stay. A dialog that sets `anchors.centerIn` or `width` keeps that placement off a phone; on one it is still a sheet or a page, across the window it is centred in.
+
+A `LogosMenu` in a phone-wide window opens as a sheet across the bottom, however it is opened: the page dims, the items span the width, and a tap on the page or a drag down on the handle closes it. `contextFor` makes a menu an item's context menu: a right-click opens it there and a long press, the touch path, at the item. A `LogosListRow` with a `menu` shows a ⋯ for it, which a long press on the row opens too; `caption` gives it a third line. A dialog decides by its parent's width, a menu by its window's, since a menu's parent is the button that opens it.
+
+A `LogosPaginator` short of room drops its page-size selector first, then its info text, and then condenses its page numbers to ‹ 4 / 10 ›, keeping « » while they fit. Where all of it fits it is as before.
 
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 
 `Theme.layouts.<layout>.*`: the same for `Logos.Layouts`, for example `pageBar.height`, `listDetail.tabletListWidth`, `sections.listWidth` (`LayoutTokens.qml`). Density doesn't scale them; it scales the controls inside.
 
-`Theme.typography.*`: `weightRegular:400`, `weightMedium:500`, `weightBold:700`, sizes `secondaryText:12`, `primaryText:14`, `titleText:30`, `mainTitleText:256`.
+`Theme.typography.*`: `weightRegular:400`, `weightMedium:500`, `weightBold:700`, sizes `badgeText:8`, `secondaryText:12`, `primaryText:14`, `subtitleText:16`, `panelTitleText:24`, `titleText:30`, `pageTitleText:36`, `mainTitleText:256`. In a phone-wide view the titles step down (`panelTitleText:20`, `titleText:24`, `pageTitleText:28`, `mainTitleText:96`); body sizes stay. Where targets are touch-sized, `badgeText` is 10.
 
 The storybook's **Colors / Spacing / Typography** pages show the full set with names — open it whenever you need to find a token.
 

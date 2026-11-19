@@ -113,12 +113,41 @@ ToolTip {
         value: root.manualY !== undefined ? root.manualY : d.targetY
     }
 
-    TapHandler {
-        parent: root.parent
-        enabled: root.openOnLongPress && Theme.touch && !!root.parent && root.text.length > 0
-        onLongPressed: root.open()
-        onTapped: if (root.visible) root.close()
+    // Made only while it is wanted, on an item of its own under the parent's
+    // content: a pointer handler makes its item take presses, even disabled
+    // and after it is gone, so on the parent itself it would stop the clicks
+    // meant for what is under it.
+    Component {
+        id: longPressComponent
+        Item {
+            required property ToolTip tip
+            anchors.fill: parent
+            z: -1
+            TapHandler {
+                onLongPressed: parent.tip.open()
+                onTapped: if (parent.tip.visible) parent.tip.close()
+            }
+        }
     }
+
+    QtObject {
+        id: longPress
+        readonly property bool wanted: root.openOnLongPress && Theme.touch && !!root.parent && root.text.length > 0
+        property QtObject handler: null
+        onWantedChanged: sync()
+
+        function sync() {
+            if (handler && (!wanted || handler.parent !== root.parent)) {
+                handler.destroy()
+                handler = null
+            }
+            if (wanted && !handler)
+                handler = longPressComponent.createObject(root.parent, { tip: root })
+        }
+    }
+    onParentChanged: longPress.sync()
+    Component.onCompleted: longPress.sync()
+    Component.onDestruction: if (longPress.handler) longPress.handler.destroy()
 
     delay: 200
     timeout: 5000
