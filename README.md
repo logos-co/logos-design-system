@@ -47,7 +47,7 @@ The bars and panes a page is built from; controls go inside them. Each arranges 
 - `LogosFormLayout` + `LogosFormField` — a form at most 720 px wide, centred: labels beside the controls on desktop, above them narrower, narrow fields paired on a tablet, one field per row and stacked buttons on a phone. Help and errors are text under the control.
 - `LogosCardPair` — a wide card and its side card, side by side (2 : 1) while both stay usable, otherwise stacked.
 - `LogosWizard` — a task in steps, as the apps' onboarding does it: an optional welcome screen, a title, a rail of the steps across the top, and Back on the left with a main button that names what it does; a hint beside it says why it can't be pressed yet. On a phone only the current step is named and the buttons stack, the main one last. Esc and the phone's Back key go back.
-- `LogosWelcome` — an onboarding's first screen: a backdrop, a title and the ways in, the main one first; a wizard's `welcome`.
+- `LogosWelcome` — an onboarding's first screen: a backdrop, a title and the ways in, centred or aligned left, with a slot over the title and four corners for what the app adds (brand, close, version, other ways in); on a phone the bottom corners stack. Its `background` can be replaced. A wizard's `welcome`.
 - `LogosSections` — an app with several sections: a list of them beside the current one from tablet width; on a phone the app opens on its current section and ‹ goes back to the list. There is no ☰ drawer.
 
 All are placeholders for now, under **Layouts (not designed)** in the storybook.
