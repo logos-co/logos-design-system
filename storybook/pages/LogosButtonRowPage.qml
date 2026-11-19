@@ -28,18 +28,22 @@ Rectangle {
         Rectangle { Layout.fillWidth: true; height: 1; color: Theme.palette.borderHairline }
     }
 
+    // frameWidth wide, or as wide as there is room for.
     component Framed: ColumnLayout {
         id: framed
         property int frameWidth: 390
         property bool stackOnPhone: true
+        Layout.fillWidth: true
+        Layout.maximumWidth: framed.frameWidth
         spacing: Theme.spacing.tiny
         LogosText {
-            text: framed.frameWidth + " px"
+            text: Math.round(box.width) + " px"
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textSecondary
         }
         Rectangle {
-            Layout.preferredWidth: framed.frameWidth
+            id: box
+            Layout.fillWidth: true
             Layout.preferredHeight: buttons.implicitHeight + 2 * Theme.spacing.large
             color: Theme.palette.backgroundSecondary
             border.color: Theme.palette.borderSubtle
@@ -64,6 +68,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosButtonRow"

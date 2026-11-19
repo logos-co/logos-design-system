@@ -78,6 +78,7 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosDialog"
@@ -96,40 +97,40 @@ Rectangle {
             }
         }
 
-        RowLayout {
+        Flow {
+            Layout.fillWidth: true
             spacing: Theme.spacing.medium
 
             LogosButton {
                 text: "Confirm dialog"
                 implicitWidth: 160
-                implicitHeight: 36
                 onClicked: confirmDlg.open()
             }
 
             LogosButton {
                 text: "Wizard dialog (left + right)"
                 implicitWidth: 240
-                implicitHeight: 36
                 onClicked: helpDlg.open()
             }
 
             LogosButton {
                 text: "Long form (body scrolls)"
                 implicitWidth: 200
-                implicitHeight: 36
                 onClicked: longDlg.open()
             }
         }
 
         LogosText {
-            text: "Placed by itself, in a 390 px parent"
+            text: "Placed by itself, in a " + Math.round(phoneParent.width) + " px parent"
             font.pixelSize: Theme.typography.primaryText
             font.weight: Theme.typography.weightBold
             color: Theme.palette.text
         }
 
         Rectangle {
-            Layout.preferredWidth: 390
+            id: phoneParent
+            Layout.fillWidth: true
+            Layout.maximumWidth: 390
             Layout.preferredHeight: 520
             color: Theme.palette.backgroundSecondary
             border.color: Theme.palette.borderSubtle

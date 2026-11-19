@@ -125,7 +125,8 @@ Rectangle {
                 wrapMode: Text.WordWrap
                 Layout.fillWidth: true
             }
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.large
 
                 Repeater {
@@ -172,8 +173,11 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
 
-            RowLayout {
-                spacing: Theme.spacing.xxlarge
+            // The preview beside the knobs, or above them when both don't fit.
+            GridLayout {
+                columns: parent.width >= 96 + columnSpacing + knobs.implicitWidth ? 2 : 1
+                columnSpacing: Theme.spacing.xxlarge
+                rowSpacing: Theme.spacing.xxlarge
 
                 Rectangle {
                     width: 96; height: 96
@@ -192,6 +196,7 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    id: knobs
                     spacing: Theme.spacing.medium
 
                     RowLayout {

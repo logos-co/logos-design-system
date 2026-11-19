@@ -16,8 +16,12 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "LogosToolBar / LogosToolButton"
                 font.pixelSize: Theme.typography.titleText
                 font.weight: Theme.typography.weightBold

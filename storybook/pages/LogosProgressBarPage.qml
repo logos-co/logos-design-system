@@ -80,7 +80,6 @@ Rectangle {
                 LogosButton {
                     text: demoAnim.running ? "Stop" : "Play"
                     implicitWidth: 80
-                    implicitHeight: 32
                     onClicked: {
                         if (demoAnim.running) {
                             demoAnim.stop()

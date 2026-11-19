@@ -82,6 +82,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosFormLayout"
@@ -98,18 +99,18 @@ Rectangle {
         }
 
         Section {
-            title: "At 390 px"
-            PayoutForm { Layout.preferredWidth: 390 }
+            title: "At " + Math.round(phoneForm.width) + " px"
+            PayoutForm { id: phoneForm; Layout.fillWidth: true; Layout.maximumWidth: 390 }
         }
 
         Section {
-            title: "At 700 px"
-            PayoutForm { Layout.preferredWidth: 700 }
+            title: "At " + Math.round(tabletForm.width) + " px"
+            PayoutForm { id: tabletForm; Layout.fillWidth: true; Layout.maximumWidth: 700 }
         }
 
         Section {
-            title: "At 1000 px"
-            PayoutForm { Layout.preferredWidth: 1000 }
+            title: "At " + Math.round(desktopForm.width) + " px"
+            PayoutForm { id: desktopForm; Layout.fillWidth: true; Layout.maximumWidth: 1000 }
         }
 
         Item { Layout.fillHeight: true }

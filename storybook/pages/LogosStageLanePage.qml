@@ -19,6 +19,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -29,6 +31,7 @@ Rectangle {
             }
             LogosText {
                 text: "Public API: stages (LogosStage), currentIndex, busy, failed, interactive, stageClicked(index), stateAt(index). An ordered process; for a single proportion use LogosProgressBar."
+                Layout.fillWidth: true
                 Layout.maximumWidth: 760
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -101,6 +104,9 @@ Rectangle {
                 color: Theme.palette.borderHairline
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "busy: the current stage pulses and swaps in its busyLabel. failed: it goes red and stops pulsing."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
@@ -165,7 +171,9 @@ Rectangle {
                 ]
             }
 
-            RowLayout {
+            Flow {
+                Layout.fillWidth: true
+                Layout.maximumWidth: implicitWidth
                 spacing: Theme.spacing.xxlarge
 
                 RowLayout {
@@ -190,7 +198,7 @@ Rectangle {
 
                 RowLayout {
                     spacing: Theme.spacing.small
-                    Switch { id: busySwitch; checked: true }
+                    LogosSwitch { id: busySwitch; checked: true }
                     LogosText {
                         text: "busy"
                         font.pixelSize: Theme.typography.secondaryText
@@ -199,7 +207,7 @@ Rectangle {
                 }
                 RowLayout {
                     spacing: Theme.spacing.small
-                    Switch { id: failedSwitch }
+                    LogosSwitch { id: failedSwitch }
                     LogosText {
                         text: "failed"
                         font.pixelSize: Theme.typography.secondaryText
@@ -208,7 +216,7 @@ Rectangle {
                 }
                 RowLayout {
                     spacing: Theme.spacing.small
-                    Switch { id: interactiveSwitch }
+                    LogosSwitch { id: interactiveSwitch }
                     LogosText {
                         text: "interactive (click a stage)"
                         font.pixelSize: Theme.typography.secondaryText

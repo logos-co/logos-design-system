@@ -61,6 +61,8 @@ Rectangle {
                 spacing: Theme.spacing.tiny
                 LogosText {
                     text: "Small (30 items / 10 per page → 3 pages, no ellipsis)"
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
                     font.pixelSize: Theme.typography.secondaryText
                     color: Theme.palette.textTertiary
                 }
@@ -79,6 +81,8 @@ Rectangle {
                 spacing: Theme.spacing.tiny
                 LogosText {
                     text: "Medium (150 items / 10 per page → 15 pages, current=8 — both ellipses)"
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
                     font.pixelSize: Theme.typography.secondaryText
                     color: Theme.palette.textTertiary
                 }
@@ -101,6 +105,8 @@ Rectangle {
                 spacing: Theme.spacing.tiny
                 LogosText {
                     text: "Large (1000 items / 10 per page → 100 pages, near start — single trailing ellipsis)"
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
                     font.pixelSize: Theme.typography.secondaryText
                     color: Theme.palette.textTertiary
                 }
@@ -130,7 +136,8 @@ Rectangle {
                         id: narrowFrame
                         required property int modelData
                         property int page: 8
-                        Layout.preferredWidth: modelData
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: modelData
                         Layout.preferredHeight: narrowPager.implicitHeight
                         color: Theme.palette.backgroundSecondary
 
@@ -193,6 +200,7 @@ Rectangle {
             }
 
             ColumnLayout {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.small
 
                 RowLayout {
@@ -205,6 +213,8 @@ Rectangle {
                     SpinBox { id: totalCountSpin; from: 0; to: 5000; value: 600; stepSize: 10 }
                     LogosText {
                         text: "→ pageCount: " + tryPager.pageCount
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
                         font.pixelSize: Theme.typography.secondaryText
                         color: Theme.palette.textTertiary
                     }
@@ -236,28 +246,12 @@ Rectangle {
                     }
                     SpinBox { id: boundarySpin; from: 0; to: 3; value: 1 }
                 }
-                RowLayout {
-                    spacing: Theme.spacing.small
-                    Switch { id: firstLastSwitch; checked: true }
-                    LogosText {
-                        text: "show first / last"
-                        font.pixelSize: Theme.typography.secondaryText
-                        color: Theme.palette.textSecondary
-                    }
-                    Item { width: Theme.spacing.large }
-                    Switch { id: prevNextSwitch; checked: true }
-                    LogosText {
-                        text: "show prev / next"
-                        font.pixelSize: Theme.typography.secondaryText
-                        color: Theme.palette.textSecondary
-                    }
-                    Item { width: Theme.spacing.large }
-                    Switch { id: showSizeSwitch; checked: true }
-                    LogosText {
-                        text: "show page-size selector"
-                        font.pixelSize: Theme.typography.secondaryText
-                        color: Theme.palette.textSecondary
-                    }
+                Flow {
+                    Layout.fillWidth: true
+                    spacing: Theme.spacing.large
+                    LogosSwitch { id: firstLastSwitch; text: "show first / last"; checked: true }
+                    LogosSwitch { id: prevNextSwitch; text: "show prev / next"; checked: true }
+                    LogosSwitch { id: showSizeSwitch; text: "show page-size selector"; checked: true }
                 }
                 RowLayout {
                     spacing: Theme.spacing.small
@@ -269,7 +263,8 @@ Rectangle {
                     LogosTextField {
                         id: infoTextInput
                         text: "Showing 41–50 of 300"
-                        implicitWidth: 280
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 280
                     }
                 }
                 RowLayout {

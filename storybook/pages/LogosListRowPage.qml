@@ -53,8 +53,8 @@ Rectangle {
         Section {
             title: "Variants"
             ColumnLayout {
-                Layout.fillWidth: false
-                Layout.preferredWidth: 420
+                Layout.fillWidth: true
+                Layout.maximumWidth: 420
                 spacing: 0
                 LogosListRow { Layout.fillWidth: true; title: "Network"; value: "Testnet"; showChevron: true }
                 LogosListRow { Layout.fillWidth: true; title: "Download folder"; subtitle: "/home/me/Downloads"; showChevron: true; iconSource: LogosIcons.install }
@@ -78,7 +78,8 @@ Rectangle {
         Section {
             title: "Wrapping subtitle"
             LogosListRow {
-                Layout.preferredWidth: 420
+                Layout.fillWidth: true
+                Layout.maximumWidth: 420
                 title: "Storage node"
                 subtitle: "Downloads come from the storage network. Turn this off to download from GitHub releases instead."
                 subtitleWraps: true

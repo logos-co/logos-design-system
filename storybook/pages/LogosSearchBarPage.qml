@@ -26,11 +26,15 @@ Rectangle {
             }
             LogosText {
                 text: "Public API: text, placeholderText, iconSource, shortcutHint (display only), submitted(string)"
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
             LogosText {
                 text: "Note: shortcutHint only renders the chip — wire your own Shortcut at the app/page level."
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textTertiary
             }
@@ -53,19 +57,22 @@ Rectangle {
             }
 
             LogosSearchBar {
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 placeholderText: "Default (bundled search icon)"
             }
 
             LogosSearchBar {
                 id: barWithChip
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 placeholderText: "shortcutHint: \"Ctrl+K\" — chip only, no binding by itself"
                 shortcutHint: "Ctrl+K"
             }
 
             LogosSearchBar {
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 placeholderText: "Icon hidden, Ctrl+F hint"
                 iconSource: ""
                 shortcutHint: "Ctrl+F"
@@ -73,7 +80,8 @@ Rectangle {
 
             // A flat bar has no box of its own: the bar it fills is the box.
             Rectangle {
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 Layout.preferredHeight: Theme.size.touchTarget
                 color: Theme.palette.backgroundSecondary
 
@@ -111,7 +119,8 @@ Rectangle {
 
             LogosSearchBar {
                 id: liveBar
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 placeholderText: "Press Ctrl+K (or Cmd+K on macOS) to focus me"
                 // Pass the consumer Shortcut's nativeText so the chip
                 // renders the platform-aware form (⌘ K on macOS).
@@ -162,7 +171,8 @@ Rectangle {
 
             LogosSearchBar {
                 id: tryBar
-                Layout.preferredWidth: 600
+                Layout.fillWidth: true
+                Layout.maximumWidth: 600
                 placeholderText: placeholderInput.text || "(empty placeholder)"
                 shortcutHint: tryShortcut.nativeText
                 echoMode: passwordSwitch.checked ? TextInput.Password : TextInput.Normal
@@ -185,6 +195,7 @@ Rectangle {
             }
 
             ColumnLayout {
+                Layout.fillWidth: true
                 spacing: Theme.spacing.small
 
                 RowLayout {
@@ -198,7 +209,8 @@ Rectangle {
                     LogosTextField {
                         id: placeholderInput
                         text: "Type and press Enter"
-                        implicitWidth: 280
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 280
                     }
                 }
 
@@ -213,25 +225,20 @@ Rectangle {
                     LogosTextField {
                         id: shortcutSeqInput
                         text: "Ctrl+J"
-                        implicitWidth: 160
+                        Layout.fillWidth: true
+                        Layout.maximumWidth: 160
                         placeholderText: "e.g. Ctrl+J"
                     }
                     LogosText {
                         text: "→ chip: " + (tryShortcut.nativeText || "(empty)")
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
                         font.pixelSize: Theme.typography.secondaryText
                         color: Theme.palette.textTertiary
                     }
                 }
 
-                RowLayout {
-                    spacing: Theme.spacing.small
-                    Switch { id: passwordSwitch }
-                    LogosText {
-                        text: "Password mode (echoMode)"
-                        font.pixelSize: Theme.typography.secondaryText
-                        color: Theme.palette.textSecondary
-                    }
-                }
+                LogosSwitch { id: passwordSwitch; text: "Password mode (echoMode)" }
 
                 RowLayout {
                     spacing: Theme.spacing.small

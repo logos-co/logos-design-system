@@ -117,6 +117,8 @@ Rectangle {
 
             LogosText {
                 text: "Message only — no title, not dismissible. The form-error shape."
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
                 color: Theme.palette.textSecondary
                 Layout.topMargin: Theme.spacing.medium
             }

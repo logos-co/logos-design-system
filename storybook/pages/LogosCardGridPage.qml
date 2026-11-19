@@ -39,18 +39,22 @@ Rectangle {
         Rectangle { Layout.fillWidth: true; height: 1; color: Theme.palette.borderHairline }
     }
 
+    // frameWidth wide, or as wide as there is room for.
     component Frame: ColumnLayout {
         id: frame
         property int frameWidth: 390
         default property alias content: holder.data
+        Layout.fillWidth: true
+        Layout.maximumWidth: frame.frameWidth
         spacing: Theme.spacing.tiny
         LogosText {
-            text: frame.frameWidth + " px"
+            text: Math.round(box.width) + " px"
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textSecondary
         }
         Rectangle {
-            Layout.preferredWidth: frame.frameWidth
+            id: box
+            Layout.fillWidth: true
             Layout.preferredHeight: holder.childrenRect.height + 2 * Theme.spacing.large
             color: Theme.palette.backgroundSecondary
             border.color: Theme.palette.borderSubtle
@@ -105,6 +109,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosCardGrid"

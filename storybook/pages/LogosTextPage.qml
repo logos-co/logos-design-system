@@ -16,6 +16,8 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -25,6 +27,9 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Themed Text. Inherits Text's full API; defaults to Theme typography."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary

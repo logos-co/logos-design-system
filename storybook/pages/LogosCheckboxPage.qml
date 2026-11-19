@@ -16,6 +16,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
 
             LogosText {
@@ -25,6 +26,9 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
+                wrapMode: Text.Wrap
                 text: "Public API: text, checked, checkState, clicked()"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
@@ -70,6 +74,8 @@ Rectangle {
             }
 
             RowLayout {
+                Layout.fillWidth: true
+                Layout.maximumWidth: Math.ceil(implicitWidth)
                 spacing: Theme.spacing.large
 
                 LogosCheckbox {
@@ -80,6 +86,7 @@ Rectangle {
                 }
 
                 ColumnLayout {
+                    Layout.fillWidth: true
                     spacing: Theme.spacing.small
 
                     RowLayout {
@@ -92,12 +99,14 @@ Rectangle {
                         LogosTextField {
                             id: textInput
                             text: "Click me"
-                            implicitWidth: 200
+                            Layout.fillWidth: true
+                            Layout.preferredWidth: 200
+                            Layout.maximumWidth: 200
                         }
                     }
                     RowLayout {
                         spacing: Theme.spacing.small
-                        Switch { id: disableSwitch }
+                        LogosSwitch { id: disableSwitch }
                         LogosText {
                             text: "Disabled"
                             font.pixelSize: Theme.typography.secondaryText

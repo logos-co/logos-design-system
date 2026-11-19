@@ -44,7 +44,6 @@ Rectangle {
             id: menuButton
             text: "Open menu"
             implicitWidth: 140
-            implicitHeight: 36
             onClicked: contextMenu.popupUnder(menuButton)
         }
 

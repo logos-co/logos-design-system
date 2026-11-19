@@ -17,6 +17,7 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosToolTip"
@@ -37,10 +38,13 @@ Rectangle {
         // the placement named below it. We give the grid generous spacing so
         // the tooltips can pop out without overlapping their neighbours.
         GridLayout {
-            columns: 4
+            readonly property real fourAcross: 4 * 140 + 3 * columnSpacing
+            columns: width < fourAcross ? 2 : 4
             rowSpacing: Theme.spacing.xxlarge
             columnSpacing: Theme.spacing.xxlarge
             Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            Layout.maximumWidth: fourAcross
 
             Repeater {
                 model: [
@@ -53,7 +57,8 @@ Rectangle {
                 delegate: Item {
                     id: cell
                     required property var modelData
-                    Layout.preferredWidth: 140
+                    Layout.fillWidth: true
+                    Layout.maximumWidth: 140
                     Layout.preferredHeight: 60
 
                     LogosText {
@@ -62,14 +67,16 @@ Rectangle {
                         font.pixelSize: Theme.typography.primaryText
                         font.weight: Theme.typography.weightBold
                         color: Theme.palette.text
+                    }
 
-                        HoverHandler { id: hover }
+                    // On the cell, not the label: on touch the tooltip's
+                    // long press makes its parent a tap target.
+                    HoverHandler { id: hover }
 
-                        LogosToolTip {
-                            text: cell.modelData.hint
-                            placement: cell.modelData.placement
-                            visible: hover.hovered
-                        }
+                    LogosToolTip {
+                        text: cell.modelData.hint
+                        placement: cell.modelData.placement
+                        visible: hover.hovered
                     }
                 }
             }
@@ -93,7 +100,6 @@ Rectangle {
                 id: saveBtn
                 text: qsTr("Save")
                 implicitWidth: 140
-                implicitHeight: 36
 
                 LogosToolTip {
                     text: qsTr("Save the active project")

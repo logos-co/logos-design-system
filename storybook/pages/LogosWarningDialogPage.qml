@@ -19,10 +19,10 @@ Rectangle {
         message: "The default Logos repository provides the official package catalog. "
                  + "You can restore it later by pasting its URL into the \"Add a repository\" field."
         leftActions: [
-            LogosButton { text: "Cancel"; implicitWidth: 100; implicitHeight: 36; onClicked: removeDlg.reject() }
+            LogosButton { text: "Cancel"; implicitWidth: 100; onClicked: removeDlg.reject() }
         ]
         rightActions: [
-            LogosButton { text: "Remove"; implicitWidth: 100; implicitHeight: 36; onClicked: removeDlg.accept() }
+            LogosButton { text: "Remove"; implicitWidth: 100; onClicked: removeDlg.accept() }
         ]
     }
 
@@ -35,8 +35,8 @@ Rectangle {
         accentColor: Theme.palette.error
         message: "This will permanently delete your account and all associated data. This action cannot be undone."
         rightActions: [
-            LogosButton { text: "Cancel"; implicitWidth: 100; implicitHeight: 36; onClicked: deleteDlg.reject() },
-            LogosButton { text: "Delete"; implicitWidth: 100; implicitHeight: 36; onClicked: deleteDlg.accept() }
+            LogosButton { text: "Cancel"; implicitWidth: 100; onClicked: deleteDlg.reject() },
+            LogosButton { text: "Delete"; implicitWidth: 100; onClicked: deleteDlg.accept() }
         ]
     }
 
@@ -46,6 +46,7 @@ Rectangle {
         spacing: Theme.spacing.xlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosWarningDialog"
@@ -64,20 +65,20 @@ Rectangle {
             }
         }
 
-        RowLayout {
+        Flow {
+            Layout.fillWidth: true
+            Layout.maximumWidth: implicitWidth
             spacing: Theme.spacing.medium
 
             LogosButton {
                 text: "Remove repository"
                 implicitWidth: 180
-                implicitHeight: 36
                 onClicked: removeDlg.open()
             }
 
             LogosButton {
                 text: "Delete account"
                 implicitWidth: 160
-                implicitHeight: 36
                 onClicked: deleteDlg.open()
             }
         }

@@ -55,18 +55,22 @@ Rectangle {
         Item { Layout.fillHeight: true }
     }
 
+    // frameWidth wide, or as wide as there is room for.
     component Wallet: ColumnLayout {
         id: framed
         property int frameWidth: 390
+        Layout.fillWidth: true
+        Layout.maximumWidth: framed.frameWidth
         spacing: Theme.spacing.tiny
 
         LogosText {
-            text: framed.frameWidth + " px · " + Theme.windowClass(framed.frameWidth)
+            text: Math.round(box.width) + " px · " + Theme.windowClass(box.width)
             font.pixelSize: Theme.typography.secondaryText
             color: Theme.palette.textSecondary
         }
         Item {
-            Layout.preferredWidth: framed.frameWidth
+            id: box
+            Layout.fillWidth: true
             Layout.preferredHeight: 360
             clip: true
 

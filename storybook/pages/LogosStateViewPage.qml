@@ -60,6 +60,7 @@ Rectangle {
         spacing: Theme.spacing.xxlarge
 
         ColumnLayout {
+            Layout.fillWidth: true
             spacing: Theme.spacing.tiny
             LogosText {
                 text: "LogosStateView"
@@ -77,17 +78,20 @@ Rectangle {
 
         Section {
             title: "At 390 px"
-            RowLayout {
+            Flow {
+                id: phoneFrames
+                Layout.fillWidth: true
+                Layout.maximumWidth: 2 * 390 + spacing
                 spacing: Theme.spacing.large
-                Framed { Layout.preferredWidth: 390; kind: LogosStateView.Empty }
-                Framed { Layout.preferredWidth: 390; kind: LogosStateView.Loading }
+                Framed { width: Math.min(390, phoneFrames.width); height: 320; kind: LogosStateView.Empty }
+                Framed { width: Math.min(390, phoneFrames.width); height: 320; kind: LogosStateView.Loading }
             }
-            Framed { Layout.preferredWidth: 390; kind: LogosStateView.Error }
+            Framed { Layout.fillWidth: true; Layout.maximumWidth: 390; kind: LogosStateView.Error }
         }
 
         Section {
             title: "At 1000 px"
-            Framed { Layout.preferredWidth: 1000; kind: LogosStateView.Error }
+            Framed { Layout.fillWidth: true; Layout.maximumWidth: 1000; kind: LogosStateView.Error }
         }
 
         Item { Layout.fillHeight: true }
