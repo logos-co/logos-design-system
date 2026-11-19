@@ -6,6 +6,7 @@
 #include <QFileInfo>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQuickWindow>
 #include <QSaveFile>
 
 Logos::ThemeManager::ThemeManager(const QString& dir, QObject* parent)
@@ -96,6 +97,21 @@ void Logos::ThemeManager::followViewWidth(QQuickItem* viewRoot)
     const auto apply = [viewRoot, theme] { theme->setProperty("viewWidth", viewRoot->width()); };
     QObject::connect(viewRoot, &QQuickItem::widthChanged, theme, apply);
     apply();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+    const auto applySafeArea = [viewRoot, theme] {
+        const QMargins margins = viewRoot->window() ? viewRoot->window()->safeAreaMargins() : QMargins();
+        theme->setProperty("safeAreaTop", margins.top());
+        theme->setProperty("safeAreaBottom", margins.bottom());
+    };
+    const auto followWindow = [theme, applySafeArea](QQuickWindow* window) {
+        if (window)
+            QObject::connect(window, &QWindow::safeAreaMarginsChanged, theme, applySafeArea);
+        applySafeArea();
+    };
+    QObject::connect(viewRoot, &QQuickItem::windowChanged, theme, followWindow);
+    followWindow(viewRoot->window());
+#endif
 }
 
 QVariantMap Logos::ThemeManager::remove(const QString& id) const

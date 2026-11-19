@@ -225,8 +225,13 @@ TestCase {
 
     // ---- Rich body ----
 
+    // The paragraph is the dialog's body, inside its scrolling area.
     function test_dialog_body_defaults_to_the_text_paragraph() {
-        compare(info.dialogItem.contentItem, info.textItem)
+        let item = info.textItem
+        while (item && item !== info.dialogItem.contentItem)
+            item = item.parent
+        compare(item, info.dialogItem.contentItem)
+        compare(info.textItem.text, info.text)
     }
 
     function test_dialog_content_item_replaces_the_body() {

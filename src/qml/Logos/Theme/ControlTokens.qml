@@ -54,6 +54,10 @@ QtObject {
         readonly property int iconSize: tokens.size.iconMedium
     }
 
+    readonly property QtObject buttonRow: QtObject {
+        readonly property int minButtonWidth: 140
+    }
+
     readonly property QtObject checkbox: QtObject {
         readonly property int indicatorSize: tokens.size.controlXSmall
     }
@@ -68,6 +72,12 @@ QtObject {
     readonly property QtObject copyButton: QtObject {
         readonly property int size: tokens.size.controlXSmall
         readonly property int iconSize: tokens.size.iconSmall
+    }
+
+    readonly property QtObject dialog: QtObject {
+        readonly property int handleWidth: 32
+        readonly property int handleHeight: 4
+        readonly property int sheetTopGap: tokens.size.touchTarget
     }
 
     readonly property QtObject dotMatrix: QtObject {
@@ -185,6 +195,11 @@ QtObject {
         readonly property int notch: 14
         readonly property int gap: 2
         readonly property int cornerRadius: 3
+    }
+
+    readonly property QtObject stateView: QtObject {
+        readonly property int maxWidth: 400
+        readonly property int iconSize: 40
     }
 
     readonly property QtObject statCard: QtObject {

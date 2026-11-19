@@ -32,7 +32,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: Menu / MenuItem (text, enabled, triggered()). Use popupUnder(button) for button menus (keyboard-safe); popup() for context menus at the cursor. Aliases: backgroundItem, labelItem."
+                text: "Public API: Menu / MenuItem (text, enabled, triggered()), contextFor, sheet (read-only). Use popupUnder(button) for button menus (keyboard-safe). contextFor makes it an item's context menu: a right-click opens it there, a long press (the touch path) at the item. Aliases: backgroundItem, handleItem, dragAreaItem, labelItem. In a phone-wide window, however it is opened, it is a sheet across the bottom: try it with Preview: phone in the header."
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pixelSize: Theme.typography.secondaryText
@@ -46,6 +46,28 @@ Rectangle {
             implicitWidth: 140
             implicitHeight: 36
             onClicked: contextMenu.popupUnder(menuButton)
+        }
+
+        Rectangle {
+            id: contextTarget
+            Layout.fillWidth: true
+            Layout.maximumWidth: 320
+            implicitHeight: Theme.size.touchTarget * 2
+            radius: Theme.spacing.radiusLarge
+            color: Theme.palette.backgroundSecondary
+            border.color: Theme.palette.borderSubtle
+
+            LogosText {
+                anchors.centerIn: parent
+                text: "Right-click or long-press here"
+                color: Theme.palette.textSecondary
+            }
+        }
+
+        LogosMenu {
+            contextFor: contextTarget
+            LogosMenuItem { text: "Copy" }
+            LogosMenuItem { text: "Share" }
         }
 
         Item { Layout.fillHeight: true }

@@ -7,6 +7,24 @@ QtObject {
 
     required property Sizes size
 
+    readonly property QtObject cardGrid: QtObject {
+        readonly property int maximumWidth: 1200
+        readonly property int statCardWidth: 150
+        readonly property int tileWidthPhone: 104
+        readonly property int tileWidthTablet: 140
+        readonly property int tileWidthDesktop: 180
+    }
+
+    readonly property QtObject cardPair: QtObject {
+        readonly property int minimumMainWidth: 400
+        readonly property int minimumSideWidth: 220
+    }
+
+    readonly property QtObject form: QtObject {
+        readonly property int maximumWidth: 720
+        readonly property int labelWidth: 200
+    }
+
     readonly property QtObject listDetail: QtObject {
         readonly property int tabletListWidth: 320
         readonly property int desktopListWidth: 360
@@ -19,5 +37,18 @@ QtObject {
 
     readonly property QtObject sections: QtObject {
         readonly property int listWidth: 240
+    }
+
+    readonly property QtObject welcome: QtObject {
+        readonly property int maximumWidth: 520
+        readonly property int buttonWidth: 320
+        readonly property int buttonHeight: 48
+        readonly property int logoSize: 48
+    }
+
+    readonly property QtObject wizard: QtObject {
+        readonly property int railHeight: 4
+        readonly property int railLabelText: 11
+        readonly property int nextMinWidth: 160
     }
 }

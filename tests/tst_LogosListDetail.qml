@@ -40,6 +40,24 @@ TestCase {
         }
     }
 
+    Component {
+        id: withActions
+        LogosListDetail {
+            list: Rectangle {}
+            detail: Rectangle {}
+            detailActions: [
+                LogosButton { text: "Reply" },
+                LogosButton { text: "Archive" }
+            ]
+        }
+    }
+    Component { id: plainRect; Rectangle {} }
+
+    function cleanup() {
+        Theme.keyboardHeight = 0
+        Theme.safeAreaBottom = 0
+    }
+
     function create(width) {
         return createTemporaryObject(listDetail, root, { width: width })
     }
@@ -60,7 +78,7 @@ TestCase {
         verify(v.listPaneItem.visible)
         compare(v.detailPaneItem.visible, data.twoPane)
         if (data.twoPane)
-            compare(v.detailPaneItem.x, data.listWidth)
+            compare(v.detailPaneItem.mapToItem(v, 0, 0).x, data.listWidth)
     }
 
     function test_phone_detail_replaces_the_list() {
@@ -98,7 +116,7 @@ TestCase {
         const v = create(1000)
         v.listWidth = 200
         compare(v.listPaneItem.width, 200)
-        compare(v.detailPaneItem.x, 200)
+        compare(v.detailPaneItem.mapToItem(v, 0, 0).x, 200)
         v.width = 390
         compare(v.listPaneItem.width, 390)
     }
@@ -137,5 +155,52 @@ TestCase {
         compare(p.escapes, 1)
         keyClick(Qt.Key_Escape)
         compare(p.escapes, 2)
+    }
+
+    // On a phone the detail's actions are an equal-width bar at the bottom.
+    function test_phone_actions_are_a_bar_at_the_bottom() {
+        const v = createTemporaryObject(withActions, root, { width: 390, height: 400, detailOpen: true })
+        waitForRendering(v)
+        const bar = v.actionBarItem, reply = v.detailActions[0], archive = v.detailActions[1]
+        verify(bar.visible)
+        verify(!v.actionRowItem.visible)
+        compare(bar.mapToItem(v, 0, 0).y + bar.height, v.height)
+        compare(reply.width, archive.width)
+        compare(reply.mapToItem(v, 0, 0).y, archive.mapToItem(v, 0, 0).y)
+        verify(reply.mapToItem(v, 0, 0).x < archive.mapToItem(v, 0, 0).x, "the main one first")
+        compare(v.detailPaneItem.mapToItem(v, 0, 0).y + v.detailPaneItem.height, bar.mapToItem(v, 0, 0).y)
+    }
+
+    // Above the keyboard and the safe area.
+    function test_the_bar_stays_above_the_keyboard() {
+        const v = createTemporaryObject(withActions, root, { width: 390, height: 400, detailOpen: true })
+        waitForRendering(v)
+        const reply = v.detailActions[0]
+        Theme.keyboardHeight = 150
+        tryVerify(() => reply.mapToItem(null, 0, reply.height).y <= root.height - 150)
+    }
+
+    // From tablet width a row across the top of the detail, at their own widths.
+    function test_wide_actions_are_a_row_at_the_top() {
+        const v = createTemporaryObject(withActions, root, { width: 390, height: 400, detailOpen: true })
+        waitForRendering(v)
+        v.width = 1000
+        waitForRendering(v)
+        const row = v.actionRowItem, reply = v.detailActions[0]
+        verify(row.visible)
+        verify(!v.actionBarItem.visible)
+        tryCompare(reply, "width", reply.implicitWidth)
+        verify(reply.mapToItem(v, 0, 0).y < v.detailPaneItem.mapToItem(v, 0, 0).y)
+    }
+
+    function test_a_replaced_or_cleared_pane_is_taken_out() {
+        const v = create(1000)
+        const oldDetail = v.detail, oldList = v.list
+        const replacement = createTemporaryObject(plainRect, root)
+        v.detail = replacement
+        compare(oldDetail.parent, null)
+        compare(replacement.parent, v.detailPaneItem)
+        v.list = null
+        compare(oldList.parent, null)
     }
 }

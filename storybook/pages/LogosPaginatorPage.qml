@@ -25,7 +25,7 @@ Rectangle {
                 color: Theme.palette.text
             }
             LogosText {
-                text: "Public API: totalCount, pageSize, currentPage, siblingCount, boundaryCount, showFirstLast, showPrevNext, pageInfoText, pageSizeOptions, pageRequested(int), pageSizeRequested(int)"
+                text: "Public API: totalCount, pageSize, currentPage, siblingCount, boundaryCount, showFirstLast, showPrevNext, pageInfoText, pageSizeOptions, condensed (read-only), pageRequested(int), pageSizeRequested(int)"
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
                 wrapMode: Text.WordWrap
@@ -111,6 +111,43 @@ Rectangle {
                     currentPage: largePager.value
                     onPageRequested: function(page) { largePager.value = page }
                     QtObject { id: largePager; property int value: 2 }
+                }
+            }
+
+            ColumnLayout {
+                Layout.fillWidth: true
+                spacing: Theme.spacing.tiny
+                LogosText {
+                    text: "Narrow (the medium one with page sizes, at 640, 500, 360 and 240 px): the size selector gives way first, then the info text; then the page numbers condense to ‹ 8 / 15 ›"
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                    font.pixelSize: Theme.typography.secondaryText
+                    color: Theme.palette.textTertiary
+                }
+                Repeater {
+                    model: [640, 500, 360, 240]
+                    delegate: Rectangle {
+                        id: narrowFrame
+                        required property int modelData
+                        property int page: 8
+                        Layout.preferredWidth: modelData
+                        Layout.preferredHeight: narrowPager.implicitHeight
+                        color: Theme.palette.backgroundSecondary
+
+                        LogosPaginator {
+                            id: narrowPager
+                            anchors.fill: parent
+                            totalCount: 150
+                            pageSize: 10
+                            currentPage: narrowFrame.page
+                            pageInfoText: qsTr("Showing %1–%2 of %3")
+                                               .arg((narrowFrame.page - 1) * 10 + 1)
+                                               .arg(Math.min(narrowFrame.page * 10, 150))
+                                               .arg(150)
+                            pageSizeOptions: [10, 20, 50, 100]
+                            onPageRequested: function(page) { narrowFrame.page = page }
+                        }
+                    }
                 }
             }
         }

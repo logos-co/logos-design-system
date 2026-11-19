@@ -16,6 +16,16 @@ TestCase {
 
     Component { id: row; LogosListRow { width: 360; title: "Network"; value: "Testnet"; showChevron: true } }
     Component { id: rowWithIcon; LogosListRow { width: 360; title: "Download folder"; iconSource: "qrc:/test-icon.png" } }
+    Component { id: rowWithCaption; LogosListRow { width: 360; title: "Ana"; subtitle: "Weekly sync"; caption: "Bring screenshots from the lab." } }
+    Component {
+        id: rowWithMenu
+        LogosListRow {
+            width: 360
+            title: "Message"
+            menu: LogosMenu { LogosMenuItem { text: "Archive" } }
+        }
+    }
+    Component { id: spyComp2; SignalSpy {} }
     Component { id: rowWithSubtitle; LogosListRow { width: 360; title: "Network"; subtitle: "Where the node connects" } }
     Component { id: switchRow; LogosListRow { width: 360; title: "Notifications"; accessory: LogosSwitch {} } }
     Component { id: disabledSwitchRow; LogosListRow { width: 360; title: "Notifications"; accessory: LogosSwitch { enabled: false } } }
@@ -138,5 +148,50 @@ TestCase {
         mouseRelease(r)
         tryCompare(r.tip, "opened", true)
         compare(clicked.count, 0)
+    }
+
+    // A third line, e.g. an inbox row's preview, under the subtitle.
+    function test_caption_is_a_third_line() {
+        const r = createTemporaryObject(rowWithCaption, root)
+        waitForRendering(r)
+        verify(r.captionItem.visible)
+        verify(r.captionItem.mapToItem(r, 0, 0).y > r.subtitleItem.mapToItem(r, 0, 0).y)
+        compare(r.Accessible.description, "Weekly sync, Bring screenshots from the lab.")
+        verify(r.height >= r.captionItem.mapToItem(r, 0, r.captionItem.height).y)
+    }
+
+    // The row's actions: a visible ⋯, a fingertip each way, that opens them.
+    function test_menu_shows_a_more_button() {
+        const r = createTemporaryObject(rowWithMenu, root)
+        waitForRendering(r)
+        verify(r.menuButtonItem.visible)
+        compare(r.menuButtonItem.width, Theme.size.touchTarget)
+        const clicked = createTemporaryObject(spyComp2, root, { target: r, signalName: "clicked" })
+        mouseClick(r.menuButtonItem)
+        tryCompare(r.menu, "opened", true)
+        compare(clicked.count, 0, "the ⋯ isn't a tap on the row")
+        r.menu.close()
+    }
+
+    // Long press or right-click on the row opens them too, without a tap.
+    function test_long_press_on_the_row_opens_its_menu() {
+        const r = createTemporaryObject(rowWithMenu, root)
+        waitForRendering(r)
+        const clicked = createTemporaryObject(spyComp2, root, { target: r, signalName: "clicked" })
+        mousePress(r, 40, r.height / 2)
+        wait(Qt.styleHints.mousePressAndHoldInterval + 300)
+        mouseRelease(r, 40, r.height / 2)
+        tryCompare(r.menu, "opened", true)
+        compare(clicked.count, 0)
+        r.menu.close()
+        tryCompare(r.menu, "visible", false)
+        mouseClick(r, 40, r.height / 2, Qt.RightButton)
+        tryCompare(r.menu, "opened", true)
+        r.menu.close()
+    }
+
+    function test_no_menu_no_more_button() {
+        const r = createTemporaryObject(row, root)
+        verify(!r.menuButtonItem.visible)
     }
 }

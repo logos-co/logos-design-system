@@ -45,6 +45,7 @@ ApplicationWindow {
         { section: "Controls", title: "LogosTextField", file: "LogosTextFieldPage.qml" },
         { section: "Controls", title: "LogosToolTip",   file: "LogosToolTipPage.qml" },
 
+        { section: "Controls (not designed)", title: "LogosButtonRow",      file: "LogosButtonRowPage.qml" },
         { section: "Controls (not designed)", title: "LogosCopyButton",     file: "LogosCopyButtonPage.qml" },
         { section: "Controls (not designed)", title: "LogosCopyableText",   file: "LogosCopyableTextPage.qml" },
         { section: "Controls (not designed)", title: "LogosDialog",         file: "LogosDialogPage.qml" },
@@ -60,6 +61,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosMenuSeparator",  file: "LogosMenuSeparatorPage.qml" },
         { section: "Controls (not designed)", title: "LogosNotice",         file: "LogosNoticePage.qml" },
         { section: "Controls (not designed)", title: "LogosStatCard",       file: "LogosStatCardPage.qml" },
+        { section: "Controls (not designed)", title: "LogosStateView",      file: "LogosStateViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosInfoButton",     file: "LogosInfoButtonPage.qml" },
         { section: "Controls (not designed)", title: "LogosStageLane",      file: "LogosStageLanePage.qml" },
         { section: "Controls (not designed)", title: "LogosProgressBar",    file: "LogosProgressBarPage.qml" },
@@ -79,9 +81,14 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosToolBar",        file: "LogosToolBarPage.qml" },
         { section: "Controls (not designed)", title: "LogosToolSeparator",  file: "LogosToolSeparatorPage.qml" },
 
+        { section: "Layouts (not designed)", title: "LogosCardGrid",        file: "LogosCardGridPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosCardPair",        file: "LogosCardPairPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosFormLayout",      file: "LogosFormLayoutPage.qml" },
         { section: "Layouts (not designed)", title: "LogosListDetail",      file: "LogosListDetailPage.qml" },
         { section: "Layouts (not designed)", title: "LogosPageBar",         file: "LogosPageBarPage.qml" },
-        { section: "Layouts (not designed)", title: "LogosSections",        file: "LogosSectionsPage.qml" }
+        { section: "Layouts (not designed)", title: "LogosSections",        file: "LogosSectionsPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosWelcome",         file: "LogosWelcomePage.qml" },
+        { section: "Layouts (not designed)", title: "LogosWizard",          file: "LogosWizardPage.qml" }
     ]
 
     ListModel {

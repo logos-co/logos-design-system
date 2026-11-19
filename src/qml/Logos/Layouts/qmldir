@@ -2,3 +2,9 @@ module Logos.Layouts
 LogosPageBar 1.0 LogosPageBar.qml
 LogosListDetail 1.0 LogosListDetail.qml
 LogosSections 1.0 LogosSections.qml
+LogosCardGrid 1.0 LogosCardGrid.qml
+LogosCardPair 1.0 LogosCardPair.qml
+LogosFormField 1.0 LogosFormField.qml
+LogosFormLayout 1.0 LogosFormLayout.qml
+LogosWizard 1.0 LogosWizard.qml
+LogosWelcome 1.0 LogosWelcome.qml

@@ -71,6 +71,10 @@ Rectangle {
                     id: listDetail
                     Layout.fillWidth: true
                     Layout.fillHeight: true
+                    detailActions: [
+                        LogosButton { text: "Reply"; variant: LogosButton.Variant.Primary },
+                        LogosButton { text: "Archive" }
+                    ]
                     list: ListView {
                         model: page.messages
                         delegate: LogosListRow {

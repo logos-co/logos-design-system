@@ -10,7 +10,10 @@ QtObject {
     
     // ===== DESIGN TOKENS =====
     readonly property Spacing spacing: Spacing {}
-    readonly property Typography typography: Typography {}
+    readonly property Typography typography: Typography {
+        phone: theme.viewClass === "phone"
+        touch: theme.touch
+    }
     readonly property Sizes size: Sizes {}
     readonly property ControlTokens controls: ControlTokens {
         size: theme.size
@@ -44,6 +47,53 @@ QtObject {
     function pageMargin(width) {
         const cls = windowClass(width)
         return cls === "phone" ? spacing.large : cls === "tablet" ? spacing.xlarge : spacing.xxlarge
+    }
+
+    // ===== WHAT COVERS THE WINDOW'S EDGES =====
+    // The phone's safe area (notch, home indicator), kept up to date by the
+    // host (ThemeManager::followViewWidth, Qt 6.9 and later), and the on-screen
+    // keyboard. 0 on a desktop.
+    property real safeAreaTop: 0
+    property real safeAreaBottom: 0
+    property real keyboardHeight: Qt.inputMethod.visible ? Qt.inputMethod.keyboardRectangle.height : 0
+    // How much of `item`'s top or bottom they cover, from where it is in its
+    // window: 0 for an item away from the edge.
+    function topInset(item) {
+        if (!item || !item.Window.window)
+            return 0
+        return Math.max(0, safeAreaTop - item.mapToItem(null, 0, 0).y)
+    }
+    function bottomInset(item) {
+        return Math.max(keyboardInset(item), _below(item, safeAreaBottom))
+    }
+    // The keyboard's part of bottomInset: what is to be lifted above it.
+    function keyboardInset(item) {
+        return _below(item, keyboardHeight)
+    }
+    function _below(item, cover) {
+        const window = item ? item.Window.window : null
+        if (!window)
+            return 0
+        return Math.max(0, cover - (window.height - item.mapToItem(null, 0, item.height).y))
+    }
+    // Scrolls the Flickable that holds `item` so the item shows clear of the
+    // keyboard: for the field with focus, if it is inside `within`.
+    function scrollIntoView(item, within) {
+        let inside = item
+        while (inside && inside !== within)
+            inside = inside.parent
+        let flick = inside ? item.parent : null
+        while (flick && !(flick instanceof Flickable))
+            flick = flick.parent
+        if (!flick)
+            return
+        const top = item.mapToItem(flick.contentItem, 0, 0).y - spacing.medium
+        const bottom = top + item.height + 2 * spacing.medium
+        const shown = flick.height - keyboardInset(flick)
+        if (top < flick.contentY)
+            flick.contentY = Math.max(0, top)
+        else if (bottom > flick.contentY + shown)
+            flick.contentY = Math.min(bottom - shown, Math.max(0, flick.contentHeight - flick.height))
     }
     
     // ===== THEME INSTANCES =====
