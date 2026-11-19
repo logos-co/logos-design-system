@@ -4,6 +4,8 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QQmlEngine>
+#include <QQuickItem>
 #include <QSaveFile>
 
 Logos::ThemeManager::ThemeManager(const QString& dir, QObject* parent)
@@ -81,6 +83,19 @@ bool Logos::ThemeManager::select(const QString& id) const
 bool Logos::ThemeManager::setDensity(const QString& density) const
 {
     return ThemeStore::instance()->setDensity(density);
+}
+
+void Logos::ThemeManager::followViewWidth(QQuickItem* viewRoot)
+{
+    QQmlEngine* engine = viewRoot ? qmlEngine(viewRoot) : nullptr;
+    QObject* theme = engine ? engine->singletonInstance<QObject*>("Logos.Theme", "Theme") : nullptr;
+    if (!theme) {
+        qWarning("ThemeManager::followViewWidth: no Logos.Theme in the view's engine");
+        return;
+    }
+    const auto apply = [viewRoot, theme] { theme->setProperty("viewWidth", viewRoot->width()); };
+    QObject::connect(viewRoot, &QQuickItem::widthChanged, theme, apply);
+    apply();
 }
 
 QVariantMap Logos::ThemeManager::remove(const QString& id) const

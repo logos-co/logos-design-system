@@ -43,6 +43,7 @@ pkgs.stdenv.mkDerivation rec {
       || { echo "Logos.Theme from source: no usable palette (exit $?)"; exit 1; }
 
     bash ${src}/tests/check-size-literals.sh ${src}/src/qml/Logos/Controls
+    bash ${src}/tests/check-size-literals.sh ${src}/src/qml/Logos/Layouts
     runHook postCheck
   '';
 
@@ -59,7 +60,7 @@ pkgs.stdenv.mkDerivation rec {
     cp ${src}/tests/test-icon.png $out/share/logos-design-system-tests/
     cp -r ${src}/tests/fixtures $out/share/logos-design-system-tests/
 
-    # Logos.Theme/.Controls/.Icons are STATIC-linked into the test binary via
+    # Logos.Theme/.Controls/.Icons/.Layouts are STATIC-linked into the test binary via
     # logos_design_system; no lib/Logos copy needed.
 
     runHook postInstall

@@ -1,6 +1,6 @@
 # Logos Design System
 
-The Qt/QML design system for Logos applications. Two QML modules — `Logos.Theme` for design tokens and `Logos.Controls` for themed components — plus a storybook for browsing them and a unit test suite.
+The Qt/QML design system for Logos applications. QML modules — `Logos.Theme` for design tokens, `Logos.Controls` for themed components and `Logos.Layouts` for the bars and panes a page is built from — plus a storybook for browsing them and a unit test suite.
 
 ```
 nix build                    # the QML library (what consumers depend on)
@@ -15,14 +15,15 @@ nix flake check              # CI: build + test
 
 | File | Provides |
 |---|---|
-| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, `Theme.density` / `Theme.touch`, theme switching |
+| `Theme.qml` | Singleton: `Theme.palette`, `Theme.spacing`, `Theme.typography`, `Theme.size`, `Theme.controls`, `Theme.layouts`, `Theme.density` / `Theme.touch`, width classes, theme switching |
 | `ColorPalette.qml` | Raw color values (gray, orange, red, green, …) — single source of truth |
 | `DarkTheme.qml` | Semantic palette mapped from `ColorPalette`: `text`, `background`, `primary`, `success`, `border`, `surface`, `surfaceRaised`, `borderHairline`, etc. |
 | `Spacing.qml` | Spacing scale (`tiny:4` … `xxlarge:40`) and corner radii (`radiusSmall:4` … `radiusPill:999`) |
 | `Typography.qml` | Public Sans font loaders, weights, type sizes |
 | `Sizes.qml` | Shared size scale: control heights (`controlXSmall:24` … `controlXLarge:44`), icon sizes, `borderWidth`, `focusWidth`, `touchTarget` |
 | `ControlTokens.qml` | Each control's own dimensions (`Theme.controls.button.height`, `Theme.controls.toggle.trackWidth`, …), defaulting to the shared scale where a value is shared; density scales the tappable ones |
-| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses, and the density; only the host installs and switches. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
+| `LayoutTokens.qml` | The `Logos.Layouts` types' dimensions (`Theme.layouts.pageBar.height`, `Theme.layouts.listDetail.desktopListWidth`, …) |
+| `ThemeStore`, `ThemeManager` (C++) | Installed `theme.json` files that recolour `Theme.palette`, from a directory the host chooses, and the density; only the host installs and switches. `ThemeManager::followViewWidth()` tells each view's engine its width. `ThemeRegistry` is QML's read-only view. See [docs/themes.md](docs/themes.md) |
 
 ### `Logos.Controls` — themed components
 
@@ -30,11 +31,21 @@ Components are split into two groups. **Designed** controls have their final sty
 
 **Designed**: `LogosButton`, `LogosCheckbox`, `LogosComboBox`, `LogosIconButton`, `LogosPaginator`, `LogosSearchBar`, `LogosTabBar`, `LogosTabButton`, `LogosTable` + `LogosTableColumn`, `LogosText`, `LogosTextField`.
 
-**Placeholder**: `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
+**Placeholder**: `LogosDialog`, `LogosFrame`, `LogosGroupBox`, `LogosListRow`, `LogosMenu` + `LogosMenuItem`, `LogosProgressBar`, `LogosRadioButton`, `LogosScrollBar`, `LogosSearchToggle`, `LogosSlider`, `LogosSpinBox`, `LogosSpinner`, `LogosSwitch`, `LogosTextArea`, `LogosToolBar` + `LogosToolButton`.
 
 Text is plain by default: `LogosText`, and every control that draws its text with it, shows markup as written rather than rendering it, and so does `LogosToolTip`. Opt in with `textFormat: Text.StyledText` (bold, links, line breaks) where the text is your own; never for names, messages or anything else from outside the app.
 
 Open the storybook to see public API, props, and live examples for each. Internal items exposed via `*Item` aliases (e.g. `indicatorItem`, `labelItem`) are for inspection by tests and tooling — read-only handles.
+
+### `Logos.Layouts` — page pieces
+
+The bars and panes a page is built from; controls go inside them. Each arranges itself by its own width (`Theme.windowClass`), so a page laid out with them works from phone to desktop:
+
+- `LogosPageBar` — the page's top row: title, ‹ back, search, actions and a ⋯ menu. At phone width search folds into an icon.
+- `LogosListDetail` — a list and the detail of its open item: side by side from tablet width; at phone width the detail replaces the list.
+- `LogosSections` — an app with several sections: a list of them beside the current one from tablet width; on a phone the app opens on its current section and ‹ goes back to the list. There is no ☰ drawer.
+
+All are placeholders for now, under **Layouts (not designed)** in the storybook.
 
 #### Designed vs placeholder
 
@@ -60,7 +71,8 @@ When a placeholder graduates to designed:
 │   └── tests.nix              packages.tests         (test runner)
 ├── src/qml/Logos/
 │   ├── Theme/                 Logos.Theme module
-│   └── Controls/              Logos.Controls module
+│   ├── Controls/              Logos.Controls module
+│   └── Layouts/               Logos.Layouts module
 ├── storybook/                 catalog browser host app + per-page QML
 │   ├── main.cpp + main.qml    host with sidebar, dark/light toggle, hot-reload
 │   └── pages/                 one .qml per token group / control
@@ -92,6 +104,7 @@ Then in QML:
 ```qml
 import Logos.Theme
 import Logos.Controls
+import Logos.Layouts   // page bars and panes, if the page uses them
 
 Rectangle {
     color: Theme.palette.background
@@ -175,7 +188,7 @@ For verbose runs:
 
 - Prefer `tryCompare(obj, "prop", value)` over `tryVerify(function() { … })`. The closure-based form has had reliability issues across Qt versions.
 - `Item.visible` returns *effective* (ancestor-chain) visibility — unreliable in offscreen test runs. Test what you actually care about (existence, position, size, property round-trips) instead of asserting on `visible`.
-- For mouse interactions, emit `mouseAreaItem.clicked(null)` directly. Synthesized `mouseClick` events do not always reach inner `MouseArea`s through `Control` on offscreen QPA.
+- Synthesized mouse and touch events reach nothing in an invisible `TestCase`, which is Qt's default. For real input give the TestCase `visible: true` and `waitForRendering(item)` after creating an item; otherwise emit `mouseAreaItem.clicked(null)` directly.
 
 ## Tokens at a glance
 
@@ -199,7 +212,11 @@ For verbose runs:
 
 Tooltips stay extras: never put something only in a tooltip, since touch users have to know to long-press.
 
+Layout follows the width of an app's own area, not the screen. `Theme.windowClass(width)` is `phone` (< 600), `tablet` (< 840) or `desktop`, and `Theme.pageMargin(width)` the page's side margin (16 / 20 / 40). The host keeps each view's engine told the view's width with `ThemeManager::followViewWidth(root)`; `Theme.viewClass` is then that view's class, and desktop until the host sets it. A phone-width view gets touch-size targets at any density (`Theme.touch`), without the touch density's larger sizes.
+
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
+
+`Theme.layouts.<layout>.*`: the same for `Logos.Layouts`, for example `pageBar.height`, `listDetail.tabletListWidth`, `sections.listWidth` (`LayoutTokens.qml`). Density doesn't scale them; it scales the controls inside.
 
 `Theme.typography.*`: `weightRegular:400`, `weightMedium:500`, `weightBold:700`, sizes `secondaryText:12`, `primaryText:14`, `titleText:30`, `mainTitleText:256`.
 

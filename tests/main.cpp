@@ -7,9 +7,11 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QTemporaryDir>
+#include <QQuickItem>
 #include <QtQml/qqml.h>
 
 #include <QDebug>
+#include <memory>
 #include <QQmlComponent>
 #include <QQmlEngine>
 #include <ThemeManager.h>
@@ -91,6 +93,26 @@ public:
                 qWarning() << c.errors();
         }
         return m_otherView ? m_otherView->property(property.toUtf8()) : QVariant();
+    }
+
+    // Theme.viewClass in a fresh engine whose root item ThemeManager follows,
+    // with the root `first` then `second` wide, as Basecamp does per view.
+    Q_INVOKABLE QStringList viewClassesFollowing(qreal first, qreal second) const
+    {
+        QQmlEngine engine;
+        QQmlComponent c(&engine);
+        c.setData("import QtQuick\nimport Logos.Theme\n"
+                  "Item { property string viewClass: Theme.viewClass }\n", QUrl());
+        std::unique_ptr<QObject> object(c.create());
+        auto* root = qobject_cast<QQuickItem*>(object.get());
+        if (!root)
+            return {};
+        root->setWidth(first);
+        Logos::ThemeManager::followViewWidth(root);
+        QStringList seen { root->property("viewClass").toString() };
+        root->setWidth(second);
+        seen << root->property("viewClass").toString();
+        return seen;
     }
 
     // Must run before the app goes away; this helper is static.

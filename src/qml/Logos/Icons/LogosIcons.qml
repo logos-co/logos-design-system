@@ -3,6 +3,7 @@ import QtQuick
 
 QtObject {
     // Arrows
+    readonly property url back:             Qt.resolvedUrl("icons/back.svg")
     readonly property url arrowLeft:        Qt.resolvedUrl("icons/arrow-left-s-line.svg")
     readonly property url arrowLeftDouble:  Qt.resolvedUrl("icons/arrow-left-double-line.svg")
     readonly property url arrowRight:       Qt.resolvedUrl("icons/arrow-right-s-line.svg")

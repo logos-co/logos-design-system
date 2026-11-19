@@ -32,6 +32,7 @@ qt_add_qml_module(logos_theme_qml
         Typography.qml
         Sizes.qml
         ControlTokens.qml
+        LayoutTokens.qml
         DarkTheme.qml
     RESOURCES
         fonts/PublicSans-Bold.ttf
@@ -40,8 +41,8 @@ qt_add_qml_module(logos_theme_qml
 )
 
 # ThemeStore parses theme.json with QJsonDocument and hands QColor values
-# to QML.
-target_link_libraries(logos_theme_qml PRIVATE Qt6::Core Qt6::Gui Qt6::Qml)
+# to QML; ThemeManager follows a view's root QQuickItem.
+target_link_libraries(logos_theme_qml PRIVATE Qt6::Core Qt6::Gui Qt6::Qml Qt6::Quick)
 
 # Logos::ThemeStore and Logos::ThemeManager are public C++ API for hosts.
 include(GNUInstallDirs)

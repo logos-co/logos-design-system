@@ -5,6 +5,8 @@
 #include <QUrl>
 #include <QVariantMap>
 
+class QQuickItem;
+
 namespace Logos {
 
 // The host's control over themes: install a user's theme.json into a
@@ -40,6 +42,11 @@ public:
     // "touch") and save it; "" goes back to the platform's default (touch on
     // phones and tablets). False for an unknown density.
     Q_INVOKABLE bool setDensity(const QString& density) const;
+
+    // Keep the Theme in `viewRoot`'s engine told the view's width, so its
+    // layouts and touch sizes follow it (Theme.viewWidth, Theme.viewClass).
+    // Call once per view, with the root item the view sizes to.
+    static void followViewWidth(QQuickItem* viewRoot);
 
 private:
     QString m_dir;

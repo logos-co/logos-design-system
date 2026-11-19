@@ -100,6 +100,13 @@ QtObject {
         readonly property int paddingX: d.padding(tokens.spacing.medium)
     }
 
+    readonly property QtObject listRow: QtObject {
+        readonly property int height: d.tappable(52)
+        readonly property int subtitleHeight: d.tappable(64)
+        readonly property int paddingX: d.padding(tokens.spacing.large)
+        readonly property int iconSize: tokens.size.iconMedium
+    }
+
     readonly property QtObject menu: QtObject {
         readonly property int width: 200
     }
@@ -147,6 +154,10 @@ QtObject {
         readonly property int clearButtonSize: tokens.size.iconMedium
         readonly property int clearIconSize: 14
         readonly property int hintHeight: 20
+    }
+
+    readonly property QtObject searchToggle: QtObject {
+        readonly property int fieldWidth: 280
     }
 
     readonly property QtObject slider: QtObject {

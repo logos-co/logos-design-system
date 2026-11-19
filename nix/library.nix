@@ -1,6 +1,6 @@
 { pkgs, common }:
 
-# STATIC QML modules for Logos.Theme / .Icons / .Controls, plus the CMake
+# STATIC QML modules for Logos.Theme / .Icons / .Controls / .Layouts, plus the CMake
 # package config that downstream apps (logos-basecamp, logos-standalone-app)
 # consume via `find_package(LogosDesignSystem CONFIG)` and link as
 # `Logos::DesignSystem`. Bytecode + assets are embedded into the STATIC libs,

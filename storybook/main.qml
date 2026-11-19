@@ -54,6 +54,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosGroupBox",       file: "LogosGroupBoxPage.qml" },
         { section: "Controls (not designed)", title: "LogosItemDelegate",   file: "LogosItemDelegatePage.qml" },
         { section: "Controls (not designed)", title: "LogosLink",           file: "LogosLinkPage.qml" },
+        { section: "Controls (not designed)", title: "LogosListRow",        file: "LogosListRowPage.qml" },
         { section: "Controls (not designed)", title: "LogosListView",       file: "LogosListViewPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenu",           file: "LogosMenuPage.qml" },
         { section: "Controls (not designed)", title: "LogosMenuSeparator",  file: "LogosMenuSeparatorPage.qml" },
@@ -65,6 +66,7 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosRadioButton",    file: "LogosRadioButtonPage.qml" },
         { section: "Controls (not designed)", title: "LogosScrollBar",      file: "LogosScrollBarPage.qml" },
         { section: "Controls (not designed)", title: "LogosScrollView",     file: "LogosScrollViewPage.qml" },
+        { section: "Controls (not designed)", title: "LogosSearchToggle",   file: "LogosSearchTogglePage.qml" },
         { section: "Controls (not designed)", title: "LogosSelectableText", file: "LogosSelectableTextPage.qml" },
         { section: "Controls (not designed)", title: "LogosSlider",         file: "LogosSliderPage.qml" },
         { section: "Controls (not designed)", title: "LogosSpinBox",        file: "LogosSpinBoxPage.qml" },
@@ -75,7 +77,11 @@ ApplicationWindow {
         { section: "Controls (not designed)", title: "LogosTextArea",       file: "LogosTextAreaPage.qml" },
         { section: "Controls (not designed)", title: "LogosToast",          file: "LogosToastPage.qml" },
         { section: "Controls (not designed)", title: "LogosToolBar",        file: "LogosToolBarPage.qml" },
-        { section: "Controls (not designed)", title: "LogosToolSeparator",  file: "LogosToolSeparatorPage.qml" }
+        { section: "Controls (not designed)", title: "LogosToolSeparator",  file: "LogosToolSeparatorPage.qml" },
+
+        { section: "Layouts (not designed)", title: "LogosListDetail",      file: "LogosListDetailPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosPageBar",         file: "LogosPageBarPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosSections",        file: "LogosSectionsPage.qml" }
     ]
 
     ListModel {

@@ -66,7 +66,7 @@ pkgs.stdenv.mkDerivation rec {
     mkdir -p $out/lib/pages
     cp -r ${src}/storybook/pages/. $out/lib/pages/
 
-    # Logos.Theme/.Controls/.Icons are STATIC-linked into LogosStorybook via
+    # Logos.Theme/.Controls/.Icons/.Layouts are STATIC-linked into LogosStorybook via
     # logos_design_system; nothing to copy for the design system itself.
 
     runHook postInstall

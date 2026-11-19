@@ -1,11 +1,13 @@
 ---
 name: add-control
-description: Activate when creating, modifying, or extending a QML control in this repo (src/qml/Logos/Controls/). Covers base-class choice (extend Qt Quick Control vs use plain Control), public API design (open for extension, closed for modification), alias patterns for testability, unit tests, and storybook pages.
+description: Activate when creating, modifying, or extending a QML control or layout in this repo (src/qml/Logos/Controls/, src/qml/Logos/Layouts/). Covers base-class choice (extend Qt Quick Control vs use plain Control), public API design (open for extension, closed for modification), alias patterns for testability, unit tests, and storybook pages.
 ---
 
 # Add or modify a control in logos-design-system
 
 A control here is a QML file under `src/qml/Logos/Controls/` exposed via `qmldir`. Every new control must ship with a unit test and a storybook page; every public property and signal is API and changing it is a breaking change.
+
+A piece of a page's skeleton (a bar, a pane arrangement, a scaffold) is a layout instead: it goes in `src/qml/Logos/Layouts/` (`Logos.Layouts`), its sizes in `LayoutTokens.qml` (`Theme.layouts.<layout>`), its storybook entry under "Layouts (not designed)". Everything below applies to it too, except the base class: a layout that only arranges other items is an `Item`, like Qt's own layouts (`LogosListDetail`, `LogosSections`); one with chrome of its own is a `Control` (`LogosPageBar`). What a page puts inside those (rows, fields, a search toggle) is a control, even when it adapts to its width.
 
 ## 1. Pick the base class
 
@@ -200,6 +202,6 @@ Before opening a PR for a new or modified control:
 - [ ] `tests/tst_<Component>.qml` exists; `nix flake check` passes.
 - [ ] `storybook/pages/<Component>Page.qml` exists and is registered in `main.qml`.
 - [ ] `qmldir` updated with the new entry.
-- [ ] `CMakeLists.txt` `CONTROLS_SOURCES` updated.
+- [ ] The module's `CMakeLists.txt` `QML_FILES` updated.
 - [ ] Doc comment at the top of the QML file documents the public API and shows a minimal usage example.
 - [ ] If the control's API differs from the Qt base class (e.g., custom `iconSource` instead of `icon.source`), explain *why* in the doc comment.

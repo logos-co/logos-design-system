@@ -1,0 +1,4 @@
+module Logos.Layouts
+LogosPageBar 1.0 LogosPageBar.qml
+LogosListDetail 1.0 LogosListDetail.qml
+LogosSections 1.0 LogosSections.qml

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Fails when a control sets a size with a number instead of a Theme token.
+# Fails when a control or layout sets a size with a number instead of a Theme token.
 # 0 is allowed (it means "none"), and so is arithmetic on tokens (`height / 2`).
-# Usage: check-size-literals.sh <Controls dir>
+# Usage: check-size-literals.sh <module dir>
 set -u
-dir=${1:?usage: check-size-literals.sh <Controls dir>}
+dir=${1:?usage: check-size-literals.sh <module dir>}
 
 props='(Layout\.)?(implicitWidth|implicitHeight|width|height|minimumWidth|maximumWidth|preferredWidth|preferredHeight|radius|spacing|padding|leftPadding|rightPadding|topPadding|bottomPadding|horizontalPadding|verticalPadding|[a-zA-Z]*[mM]argins?|border\.width|font\.pixelSize|font\.letterSpacing|size|iconSize|icon\.width|icon\.height)'
 sizeProp='property (int|real) [a-zA-Z]*(Width|Height|Size|size|Radius|radius|Thickness|thickness|Padding|Spacing|Gap|gap|Inset|notch)'
@@ -17,7 +17,7 @@ found=$(grep -nE \
     "$dir"/*.qml | grep -vE 'property int pageSize:')
 
 if [ -n "$found" ]; then
-    echo "Size literals in controls; use a Theme.size or Theme.controls token:"
+    echo "Size literals in $dir; use a Theme.size, Theme.controls or Theme.layouts token:"
     echo "$found"
     exit 1
 fi

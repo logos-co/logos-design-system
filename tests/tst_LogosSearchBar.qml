@@ -10,6 +10,8 @@ TestCase {
     name: "LogosSearchBar"
     width: 600
     height: 200
+    // Visibility is asserted below; TestCase is invisible by default.
+    visible: true
     when: windowShown
 
     LogosSearchBar {
@@ -33,6 +35,7 @@ TestCase {
         bar.shortcutHint = ""
         bar.iconSource = defaultIconSource
         bar.clearable = true
+        bar.flat = false
     }
 
     function cleanup() {
@@ -85,6 +88,13 @@ TestCase {
         verify(bar.iconItem, "iconItem must resolve")
         verify(bar.clearItem, "clearItem must resolve")
         verify(bar.shortcutItem, "shortcutItem must resolve")
+    }
+
+    // Flat, it has no border or fill of its own; the bar around it is the box.
+    function test_flat_drops_its_box() {
+        verify(bar.background.visible)
+        bar.flat = true
+        verify(!bar.background.visible)
     }
 
     function test_clearable_defaults_on_and_round_trips() {
