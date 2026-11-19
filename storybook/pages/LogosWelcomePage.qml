@@ -23,6 +23,8 @@ Rectangle {
         spacing: Theme.spacing.medium
         LogosText {
             id: sectionTitle
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
             font.pixelSize: Theme.typography.primaryText
             font.weight: Theme.typography.weightBold
         }
@@ -42,6 +44,7 @@ Rectangle {
     // As Basecamp's design has it: aligned left, a status over the title, the
     // brand, a close button, the version and other ways in in the corners.
     component Designed: LogosWelcome {
+        id: designed
         Layout.fillWidth: true
         Layout.preferredHeight: 560
         backdrop: Qt.resolvedUrl("sample-app-icon.png")
@@ -64,8 +67,11 @@ Rectangle {
             LogosText { text: "Alpha · V. 0.1.3"; font.pixelSize: Theme.typography.secondaryText; color: Theme.palette.textSecondary }
             LogosLink { text: "Legal disclaimer" }
         }
-        bottomRight: Row {
-            spacing: Theme.spacing.large
+        // The two links stack on a phone, where they wouldn't fit side by side.
+        bottomRight: Grid {
+            columns: Theme.windowClass(designed.width) === "phone" ? 1 : 2
+            columnSpacing: Theme.spacing.large
+            rowSpacing: Theme.spacing.small
             LogosLink { text: "Restore existing device"; underline: false }
             LogosLink { text: "Connect to remote device"; underline: false }
         }
