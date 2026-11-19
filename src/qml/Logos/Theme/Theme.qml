@@ -59,9 +59,9 @@ QtObject {
     // How much of `item`'s top or bottom they cover, from where it is in its
     // window: 0 for an item away from the edge.
     function topInset(item) {
-        if (!item || !item.Window.window)
+        if (!item || !item.Window.window || safeAreaTop <= 0)
             return 0
-        return Math.max(0, safeAreaTop - item.mapToItem(null, 0, 0).y)
+        return Math.max(0, safeAreaTop - Math.max(0, item.mapToItem(null, 0, 0).y))
     }
     function bottomInset(item) {
         return Math.max(keyboardInset(item), _below(item, safeAreaBottom))
@@ -70,11 +70,15 @@ QtObject {
     function keyboardInset(item) {
         return _below(item, keyboardHeight)
     }
+    // The part of the window's bottom `cover` px that the item reaches into.
+    // An item that runs past the window's edge, as in a scrolled page, counts
+    // only up to the edge.
     function _below(item, cover) {
         const window = item ? item.Window.window : null
-        if (!window)
+        if (!window || cover <= 0)
             return 0
-        return Math.max(0, cover - (window.height - item.mapToItem(null, 0, item.height).y))
+        const bottom = Math.min(item.mapToItem(null, 0, item.height).y, window.height)
+        return Math.max(0, bottom - (window.height - cover))
     }
     // Scrolls the Flickable that holds `item` so the item shows clear of the
     // keyboard: for the field with focus, if it is inside `within`.

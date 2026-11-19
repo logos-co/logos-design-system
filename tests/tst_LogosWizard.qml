@@ -280,4 +280,14 @@ TestCase {
         Theme.keyboardHeight = 300
         tryVerify(() => w.nextButtonItem.mapToItem(null, 0, w.nextButtonItem.height).y <= coveredFrom)
     }
+
+    // A wizard that runs past the bottom of the window, as in a scrolled page,
+    // keeps its layout.
+    function test_past_the_bottom_of_the_window() {
+        const w = createTemporaryObject(wizard, root, { width: 900, height: 500, y: root.height - 200 })
+        waitForRendering(w)
+        compare(w.headerItem.width, 900 - 2 * Theme.pageMargin(900))
+        // No keyboard and no safe area: nothing is taken off its height.
+        compare(w.headerItem.parent.height, 500 - 2 * Theme.pageMargin(900))
+    }
 }

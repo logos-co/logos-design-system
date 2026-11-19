@@ -17,6 +17,9 @@ TestCase {
     Item { id: middleItem; y: 250; width: 400; height: 100 }
     Item { id: lowItem; y: 350; width: 400; height: 100 }
     Item { id: bottomItem; y: 500; width: 400; height: 100 }
+    // Running past the window's edges, as in a scrolled page.
+    Item { id: pastBottom; y: 400; width: 400; height: 900 }
+    Item { id: pastTop; y: -300; width: 400; height: 500 }
 
     Flickable {
         id: flick
@@ -80,5 +83,19 @@ TestCase {
         Theme.keyboardHeight = 300
         Theme.scrollIntoView(farField, elsewhere)
         compare(flick.contentY, 0)
+    }
+
+    // An item past the window's edge is covered only up to the edge, and with
+    // nothing covering the window, not at all. Counting past the edge squeezed
+    // a wizard in a scrolled storybook page to nothing.
+    function test_an_item_past_the_edge() {
+        compare(Theme.bottomInset(pastBottom), 0)
+        compare(Theme.topInset(pastTop), 0)
+        Theme.safeAreaBottom = 30
+        Theme.safeAreaTop = 40
+        compare(Theme.bottomInset(pastBottom), 30)
+        compare(Theme.topInset(pastTop), 40)
+        Theme.keyboardHeight = 250
+        compare(Theme.bottomInset(pastBottom), 250)
     }
 }
