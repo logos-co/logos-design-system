@@ -231,6 +231,8 @@ A `LogosMenu` in a phone-wide window opens as a sheet across the bottom, however
 
 A `LogosPaginator` short of room drops its page-size selector first, then its info text, and then condenses its page numbers to ‹ 4 / 10 ›, keeping « » while they fit. Where all of it fits it is as before.
 
+A `LogosTable` too narrow for its columns' `minWidth`s first drops the columns given a `priority`, the highest number first; columns without one always stay, and the table then scrolls sideways. With `phoneCards`, a phone-wide table shows a card per row instead: the first column as the title, the others under it, or your own `cardDelegate`; a column's `card` makes it a badge on the card or leaves it off. A tap opens the row (`rowsOpen` shows a › for it), or in a table with selection selects it. Give `rowMenu` a `LogosMenu` and every row and card shows a ⋯ for the row's actions; `menuRow` says which row it opened for. Nothing needs hover or a double-click.
+
 `Theme.controls.<control>.*`: each control's sizes, for example `button.height`, `button.compactHeight`, `field.paddingX`, `checkbox.indicatorSize`, `table.rowHeight`. Controls read their sizes only from here and from `Theme.size`, never from literals; `tests/check-size-literals.sh` enforces it. The full list is in `src/qml/Logos/Theme/ControlTokens.qml`.
 
 `Theme.layouts.<layout>.*`: the same for `Logos.Layouts`, for example `pageBar.height`, `listDetail.tabletListWidth`, `sections.listWidth` (`LayoutTokens.qml`). Density doesn't scale them; it scales the controls inside.

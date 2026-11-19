@@ -130,6 +130,44 @@ TestCase {
         }
     }
 
+    ListModel {
+        id: packages
+        ListElement { name: "wallet"; version: "1.2.0"; status: "Installed" }
+        ListElement { name: "chat"; version: "0.9.1"; status: "Upgrade" }
+    }
+
+    Component {
+        id: tableCards
+        LogosTable {
+            height: 400
+            phoneCards: true
+            rowsOpen: true
+            selectionMode: LogosTable.Multi
+            model: packages
+            rowMenu: LogosMenu { LogosMenuItem { text: "Uninstall" } }
+            columns: [
+                LogosTableColumn { title: "Name"; role: "name" },
+                LogosTableColumn { title: "Version"; role: "version" },
+                LogosTableColumn { title: "Status"; role: "status"; card: "badge" }
+            ]
+        }
+    }
+
+    Component {
+        id: tableRows
+        LogosTable {
+            height: 400
+            selectionMode: LogosTable.Multi
+            model: packages
+            rowMenu: LogosMenu { LogosMenuItem { text: "Uninstall" } }
+            columns: [
+                LogosTableColumn { title: "Name"; role: "name"; minWidth: 120; sortable: true },
+                LogosTableColumn { title: "Version"; role: "version"; minWidth: 100; priority: 1 },
+                LogosTableColumn { title: "Status"; role: "status"; minWidth: 100; fillWidth: true }
+            ]
+        }
+    }
+
     Component {
         id: paginator
         LogosPaginator {
@@ -216,6 +254,8 @@ TestCase {
             { tag: "LogosFormLayout", component: form },
             { tag: "LogosWizard", component: wizard },
             { tag: "LogosStateView", component: stateView },
+            { tag: "LogosTable cards", component: tableCards },
+            { tag: "LogosTable rows", component: tableRows },
             { tag: "LogosPaginator", component: paginator },
             { tag: "controls", component: controls },
         ]

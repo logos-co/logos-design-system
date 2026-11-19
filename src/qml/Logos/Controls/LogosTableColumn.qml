@@ -14,6 +14,16 @@ import Logos.Theme
 //     maxWidth          upper bound; -1 = unbounded (default -1)
 //     fillWidth         if true, this column absorbs leftover horizontal space
 //                       when the table is wider than the sum of preferred widths
+//     priority          0 (default): always shown. When the table is narrower
+//                       than its columns' minWidths, columns with a priority
+//                       drop out, the highest number first, before it scrolls
+//                       sideways
+//
+//     card              on a phone card: "" (default) the first such column is
+//                       the title and the others make the line under it;
+//                       "badge" beside the card's ⋯, drawn by cellDelegate if
+//                       set (at its implicit size), else as a LogosBadge;
+//                       "hidden" not on the card
 //
 //     alignment         text alignment for the default cell + header (default
 //                       Qt.AlignLeft | Qt.AlignVCenter)
@@ -48,6 +58,8 @@ QtObject {
     property int preferredWidth: minWidth
     property int maxWidth: -1
     property bool fillWidth: false
+    property int priority: 0
+    property string card: ""
 
     property int alignment: Qt.AlignLeft | Qt.AlignVCenter
 
