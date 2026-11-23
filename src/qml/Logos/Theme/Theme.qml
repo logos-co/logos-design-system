@@ -48,6 +48,13 @@ QtObject {
         const cls = windowClass(width)
         return cls === "phone" ? spacing.large : cls === "tablet" ? spacing.xlarge : spacing.xxlarge
     }
+    // The narrowest cell of a tile in a catalogue `width` wide, a grid's
+    // minimum cell width: three across a phone, more as it widens.
+    function tileWidth(width) {
+        const cls = windowClass(width)
+        return cls === "phone" ? layouts.cardGrid.tileWidthPhone
+             : cls === "tablet" ? layouts.cardGrid.tileWidthTablet : layouts.cardGrid.tileWidthDesktop
+    }
 
     // ===== WHAT COVERS THE WINDOW'S EDGES =====
     // The phone's safe area (notch, home indicator), kept up to date by the

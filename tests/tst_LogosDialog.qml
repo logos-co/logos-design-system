@@ -233,6 +233,28 @@ TestCase {
         }
     }
 
+    // Its parent leaves the window and goes, as a list's row does under a
+    // refresh: after the dialog was a sheet, or while it is one.
+    function test_its_parent_goes_away_cleanly_data() {
+        return [{ tag: "closed", open: false }, { tag: "open", open: true }]
+    }
+
+    function test_its_parent_goes_away_cleanly(data) {
+        failOnWarning(/TypeError/)
+        const host = hostComponent.createObject(root, { width: 390, height: 300 })
+        const d = placedByItself.createObject(host)
+        d.open()
+        tryCompare(d, "opened", true)
+        verify(d.sheet)
+        if (!data.open) {
+            d.close()
+            tryCompare(d, "visible", false)
+        }
+        host.parent = null
+        host.destroy()
+        wait(50)
+    }
+
     function test_widening_turns_a_sheet_into_a_centred_dialog() {
         const host = createTemporaryObject(hostComponent, root, { width: 390, height: 300 })
         const d = openIn(host)

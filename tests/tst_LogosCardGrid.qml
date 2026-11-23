@@ -84,6 +84,21 @@ TestCase {
         fuzzyCompare(cs[3].mapToItem(g, 0, 0).x + cs[3].width, 1000, 0.5)
     }
 
+    // The gap is the grid's spacing, across and down, and the columns that
+    // fit are counted with it.
+    function test_spacing() {
+        let g = create({ width: 1000, count: 4, spacing: 24 })
+        const cs = cards(g)
+        fuzzyCompare(cs[1].mapToItem(g, 0, 0).x - (cs[0].mapToItem(g, 0, 0).x + cs[0].width), 24, 0.5)
+        fuzzyCompare(cs[0].width, (1000 - 3 * 24) / 4, 0.5)
+        g = create({ width: 2 * 300 + 16, count: 2, minimumCellWidth: 300 })
+        compare(g.columns, 2)
+        g = create({ width: 2 * 300 + 16, count: 2, minimumCellWidth: 300, spacing: 24 })
+        compare(g.columns, 1)
+        g = create({ width: 300, count: 2, minimumCellWidth: 300, spacing: 24 })
+        fuzzyCompare(cards(g)[1].mapToItem(g, 0, 0).y - (cards(g)[0].mapToItem(g, 0, 0).y + cards(g)[0].height), 24, 0.5)
+    }
+
     // Wider than maximumWidth, the content keeps to it, centred.
     function test_content_is_capped_and_centred() {
         const g = create({ width: 1600, count: 8 })

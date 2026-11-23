@@ -134,6 +134,25 @@ TestCase {
         compare(v.panelPaneItem.width, 390)
     }
 
+    // Beside the content, a panel framed as a card keeps a space from it and
+    // needs no hairline; on a phone, as the page, it fills the width.
+    function test_spacing_and_divider() {
+        const v = create(1000, { panelOpen: true, spacing: 12, divider: false })
+        compare(v.contentPaneItem.width, 1000 - Theme.layouts.sidePanel.width - 12)
+        compare(v.panelFrameItem.mapToItem(v, 0, 0).x, 1000 - Theme.layouts.sidePanel.width)
+        verify(!v.dividerItem.visible)
+        v.width = 390
+        compare(v.panelPaneItem.width, 390)
+        v.panelOpen = false
+        compare(v.contentPaneItem.width, 390, "closed, the content has it all")
+    }
+
+    function test_a_hairline_beside_the_content_by_default() {
+        const v = create(1000, { panelOpen: true })
+        verify(v.dividerItem.visible)
+        compare(v.contentPaneItem.width, 1000 - Theme.layouts.sidePanel.width)
+    }
+
     function test_content_and_panel_go_into_their_panes() {
         const v = create(1000, { panelOpen: true })
         compare(v.content.parent, v.contentPaneItem)
@@ -218,6 +237,20 @@ TestCase {
         mouseClick(v.headerItem.backButtonItem)
         verify(!v.panelOpen)
         verify(v.contentPaneItem.visible)
+    }
+
+    // Where the host draws the way back, on a phone the bar only names the
+    // panel: one way back. Beside the content ✕ still closes it.
+    function test_back_in_host_leaves_the_bar_its_title() {
+        const phone = createTemporaryObject(withActions, root, { width: 390, panelOpen: true, backInHost: true })
+        waitForRendering(phone)
+        verify(phone.headerItem.visible)
+        compare(phone.headerItem.titleItem.text, "wallet")
+        verify(!phone.headerItem.backButtonItem.visible)
+
+        const beside = createTemporaryObject(withActions, root, { width: 1000, panelOpen: true, backInHost: true })
+        waitForRendering(beside)
+        verify(beside.closeButtonItem.visible)
     }
 
     // Beside the content a row across the top of the panel, at their own widths.

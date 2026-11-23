@@ -21,24 +21,24 @@ TestCase {
 
     function typeScale() {
         const t = Theme.typography
-        return [t.mainTitleText, t.pageTitleText, t.titleText, t.panelTitleText,
+        return [t.mainTitleText, t.displayText, t.pageTitleText, t.titleText, t.panelTitleText,
                 t.subtitleText, t.primaryText, t.secondaryText, t.badgeText]
     }
 
     function test_typeScale() {
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 8])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 8])
     }
 
     function test_titlesStepDownInAPhoneWideView() {
         Theme.viewWidth = 390
-        compare(typeScale(), [96, 28, 24, 20, 16, 14, 12, 10])
+        compare(typeScale(), [96, 28, 28, 24, 20, 16, 14, 12, 10])
         Theme.viewWidth = 700
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 8])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 8])
     }
 
     function test_badgeTextGrowsAtTouchDensity() {
         ThemeManager.setDensity("touch")
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 10])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 10])
     }
 
     function test_sizeScale() {

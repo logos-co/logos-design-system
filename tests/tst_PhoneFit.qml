@@ -445,6 +445,24 @@ TestCase {
         }
     }
 
+    Component {
+        id: comboBox
+        LogosComboBox { width: 200; model: ["All categories", "Networking", "Storage"] }
+    }
+
+    // A picker's list, a sheet on a phone as a menu is.
+    function test_combo_box_sheet_fits() {
+        const box = createTemporaryObject(comboBox, host)
+        box.popupItem.open()
+        tryCompare(box.popupItem, "opened", true)
+        verify(box.sheet)
+        waitForRendering(box.popupItem.background)
+        const found = problems(box.popupItem.background.parent)
+        compare(found.overflow, "", "past the sides")
+        compare(found.small, "", "smaller than a fingertip")
+        box.popupItem.close()
+    }
+
     function test_popups_fit_data() {
         return [
             { tag: "LogosDialog sheet", component: dialog },

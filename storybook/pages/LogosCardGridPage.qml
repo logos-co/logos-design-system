@@ -82,9 +82,7 @@ Rectangle {
         id: catalogue
         width: parent ? parent.width : 0
         balanced: false
-        minimumCellWidth: Theme.windowClass(width) === "phone" ? Theme.layouts.cardGrid.tileWidthPhone
-                        : Theme.windowClass(width) === "tablet" ? Theme.layouts.cardGrid.tileWidthTablet
-                        : Theme.layouts.cardGrid.tileWidthDesktop
+        minimumCellWidth: Theme.tileWidth(width)
         Repeater {
             model: page.apps
             delegate: ColumnLayout {
@@ -119,7 +117,7 @@ Rectangle {
             LogosText {
                 Layout.fillWidth: true
                 wrapMode: Text.Wrap
-                text: "Cards in as many equal columns as fit at minimumCellWidth, from the width the grid gets. Public API: minimumCellWidth, maximumColumns, balanced, maximumWidth (1200, centred), columns. Balanced, never one card alone on the last row when fewer columns avoid it: four stat cards are 4, 2 × 2 or 1. A catalogue sets balanced: false."
+                text: "Cards in as many equal columns as fit at minimumCellWidth, from the width the grid gets. Public API: minimumCellWidth, maximumColumns, balanced, maximumWidth (1200, centred), spacing (16, across and down), columns. Balanced, never one card alone on the last row when fewer columns avoid it: four stat cards are 4, 2 × 2 or 1. A catalogue sets balanced: false."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }

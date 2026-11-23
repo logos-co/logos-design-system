@@ -17,8 +17,10 @@ large tablet the desktop one.
 | `tablet` | 600 – 839 | 20 |
 | `desktop` | ≥ 840 | 40 |
 
-- `Theme.windowClass(width)` gives the class of a width, and
-  `Theme.pageMargin(width)` the side margin that goes with it.
+- `Theme.windowClass(width)` gives the class of a width,
+  `Theme.pageMargin(width)` the side margin that goes with it, and
+  `Theme.tileWidth(width)` a tile's narrowest cell in a catalogue that wide
+  (104, 140, 180: three across a phone).
 - **A component goes by its own width.** Each layout and control measures
   itself: a form in a 500 px pane of a desktop window lays out as on a phone.
   Pass a component's own `width` to `Theme.windowClass`, not the window's.
@@ -48,6 +50,7 @@ In a phone-wide view the title sizes step down; body text stays.
 
 | Token | Desktop | Phone |
 |---|---|---|
+| `displayText` | 40 | 28 |
 | `pageTitleText` | 36 | 28 |
 | `titleText` | 30 | 24 |
 | `panelTitleText` | 24 | 20 |
@@ -66,7 +69,7 @@ In a phone-wide view the title sizes step down; body text stays.
 | `LogosSidebarLayout` | the content alone (`sideShown` false): the app shows what the sidebar holds another way, e.g. pickers | the sidebar (200) beside the content while the content keeps `minimumContentWidth`; by what fits, not the class | same |
 | `LogosOverflowRow` | a row while its items fit, else ⋯ opening the app's menu; by what fits, not the class | same | same |
 | `LogosItemLayout` | one line of an item while it fits; else meta goes under the content, to the item's end, wrapping, and leading and trailing stay at the ends, at the top | by what fits, not the class | same |
-| `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth`, from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
+| `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth` (for tiles, `Theme.tileWidth(width)`), from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
 | `LogosCardPair` | main card above its side card | side by side 2 : 1 once both are usable (400 and 220) | same |
 | `LogosFormLayout` | one field per row, labels above, buttons stacked full width, main last | narrow fields in pairs | labels beside the controls, at most 720 wide, centred |
 | `LogosWizard` | the rail names only the current step; buttons stacked full width, the main one last, its hint above them | title, a rail of the steps across the top, Back on the left and the main button on the right with its hint beside it | same |
@@ -176,6 +179,8 @@ LogosItemLayout {
 - **`LogosMenu`**: in a phone-wide window a sheet across the bottom, however
   it is opened. It goes by its window, since its parent is the button that
   opens it.
+- **`LogosComboBox`**: its list too, in a phone-wide window, rather than a
+  dropdown under the box.
 - **`LogosTable`**: give columns that can go a `priority` (higher drops
   first) and they drop out before the table scrolls sideways. With
   `phoneCards` a phone-wide table shows a card per row instead (the first

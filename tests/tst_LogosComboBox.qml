@@ -7,10 +7,12 @@ import Logos.Theme
 import Logos.Controls
 import LogosTests
 
+// Desktop-wide: in a phone-wide window the list is a sheet
+// (tst_LogosComboBoxSheet).
 TestCase {
     id: root
     name: "LogosComboBox"
-    width: 400
+    width: 800
     height: 200
     when: windowShown
 
@@ -245,7 +247,7 @@ TestCase {
     function test_dropdown_width_is_capped_to_the_window() {
         const win = root.Window.window
         verify(win, "no window to cap against")
-        cbox.width = 200
+        cbox.width = 300
         cbox.model = ["1.0.0", "x".repeat(120)]
         verify(cbox.width * cbox.maxPopupWidthFactor > win.width,
                "the factor must allow more than the window for this to test the cap")
@@ -281,6 +283,14 @@ TestCase {
                "the capped list should scroll")
         verify(cbox.popupListView.ScrollBar.vertical,
                "a capped dropdown needs a scroll bar to say so")
+    }
+
+    function test_not_a_sheet_on_a_desktop() {
+        cbox.popupItem.open()
+        tryCompare(cbox.popupItem, "opened", true)
+        verify(!cbox.sheet)
+        verify(!cbox.popupHandleItem.visible)
+        verify(cbox.popupItem.y >= cbox.height, "under the box")
     }
 
     function test_dropdown_never_narrower_than_the_control() {
