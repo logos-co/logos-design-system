@@ -71,6 +71,44 @@ TestCase {
         verify(xOf(h.searchItem, h) + h.searchItem.width <= 700 + 0.5)
     }
 
+    // A title that leaves the search less than a usable field, as a long
+    // translation can, folds it into a 🔍 at the end of the title's line at
+    // any width, as on a phone. A tap opens it across that line, over the
+    // subtitle, where it stays open; ✕ brings the title back.
+    function test_a_long_title_folds_the_search() {
+        const h = create(650, { title: "Installed packages and everything they depend on" })
+        const search = h.searchItem
+        verify(search.folds, "no room for a field beside the title")
+        verify(search.openButtonItem.visible)
+        fuzzyCompare(xOf(search, h) + search.width, 650, 0.5, "at the end of the line")
+        verify(yOf(search, h) + search.height <= yOf(h.subtitleItem, h) + 0.5, "on the title's line")
+        h.openSearch()
+        waitForRendering(h)
+        verify(search.expanded, "it stays open")
+        verify(!h.titleItem.visible)
+        verify(search.width >= Theme.controls.search.minimumWidth, "a field across the line, " + search.width)
+        verify(yOf(search, h) + search.height <= yOf(h.subtitleItem, h) + 0.5, "over the subtitle")
+        search.closeButtonItem.clicked()
+        waitForRendering(h)
+        verify(h.titleItem.visible)
+        verify(!search.expanded)
+    }
+
+    // While the title leaves it a usable field, the field stays, at least
+    // Theme.controls.search.minimumWidth wide; a pixel less and it folds.
+    function test_the_search_folds_once_a_field_would_not_fit() {
+        const title = "Packages, apps and modules"
+        const probe = create(1100, { title: title })
+        const textWidth = Math.ceil(Math.max(probe.titleItem.implicitWidth, probe.subtitleItem.implicitWidth))
+        const width = textWidth + Theme.spacing.xlarge + 1 + Theme.controls.search.minimumWidth
+        verify(Theme.windowClass(width - 1) !== "phone", "wider than a phone: " + width)
+        const h = create(width, { title: title })
+        verify(!h.searchItem.folds)
+        fuzzyCompare(h.searchItem.width, Theme.controls.search.minimumWidth, 0.5)
+        compare(h.titleItem.lineCount, 1)
+        verify(create(width - 1, { title: title }).searchItem.folds)
+    }
+
     function test_no_search_until_enabled() {
         const h = create(1100, { searchEnabled: false })
         verify(!h.searchItem.visible)

@@ -132,6 +132,31 @@ TestCase {
                "the title keeps its width")
     }
 
+    // Beside the list, a title that leaves the search less than a usable
+    // field folds it into a 🔍 at the end of the title's row. A tap opens it
+    // across the row in place of the title, where it stays open; ✕ brings
+    // the title back.
+    function test_a_long_title_folds_the_search_beside_the_list() {
+        const s = create(700, { title: "Settings for everything Basecamp runs and shows" })
+        s.currentIndex = 1
+        waitForRendering(s)
+        const search = s.searchItem
+        verify(s.twoPane)
+        verify(search.folds, "no room for a field beside the title")
+        verify(search.openButtonItem.visible)
+        verify(within(search, s))
+        s.openSearch()
+        waitForRendering(s)
+        verify(search.expanded, "it stays open")
+        verify(!s.titleItem.visible)
+        verify(search.width >= Theme.controls.search.minimumWidth, "a field across the row, " + search.width)
+        verify(within(search, s))
+        search.closeButtonItem.clicked()
+        waitForRendering(s)
+        verify(s.titleItem.visible)
+        verify(!search.expanded)
+    }
+
     function test_searchText_is_the_query_while_there_is_a_search() {
         const s = create(1000)
         s.currentIndex = 1

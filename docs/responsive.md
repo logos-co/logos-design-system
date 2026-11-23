@@ -69,10 +69,10 @@ In a phone-wide view the title sizes step down; body text stays.
 | `LogosPageBar` | 44 px; search folds into an icon and takes the whole bar when open; ⋯ for the rest | 56 px, search field shown | same |
 | `LogosListDetail` | the list, or the open item's detail in its place; ‹ goes back | list (320) beside the detail | list (360) beside the detail |
 | `LogosSidePanel` | the content, or the open panel in its place; ‹ goes back | the panel (320) beside the content, which narrows for it; ✕ closes it | same |
-| `LogosSections` | the list of sections is the page, a card of rows; a tap opens the section under a ‹ Title row, which names a level deeper and goes up one; a section's search is a 🔍 at that row's end. **No ☰ drawer** | title, subtitle and a section's search over the list (168) beside the section's card; a level deeper puts the ‹ row at the top of the card | the same, list 200 |
-| `LogosPageHeader` | title, then its subtitle (or a `shortTitle`, and no subtitle with `subtitleOnPhone: false`); the search a 🔍 at the end of the title's line, open across it | title and subtitle, the search beside them (`searchWidth`, giving way to the title) | same |
+| `LogosSections` | the list of sections is the page, a card of rows; a tap opens the section under a ‹ Title row, which names a level deeper and goes up one; a section's search is a 🔍 at that row's end. **No ☰ drawer** | title, subtitle and a section's search over the list (168) beside the section's card (a 🔍 once a field wouldn't fit beside the title); a level deeper puts the ‹ row at the top of the card | the same, list 200 |
+| `LogosPageHeader` | title, then its subtitle (or a `shortTitle`, and no subtitle with `subtitleOnPhone: false`); the search a 🔍 at the end of the title's line, open across it | title and subtitle, the search beside them (`searchWidth`, giving way to the title; a 🔍 once a field wouldn't fit, `Theme.controls.search.minimumWidth`) | same |
 | `LogosSidebarLayout` | the content alone (`sideShown` false): the app shows what the sidebar holds another way, e.g. pickers | the sidebar (200) beside the content while the content keeps `minimumContentWidth`; by what fits, not the class | same |
-| `LogosOverflowRow` | a row while its items fit, else ⋯ opening the app's menu; by what fits, not the class | same | same |
+| `LogosOverflowRow` | a row while its items fit, else ⋯ opening the app's menu (without one it never folds); by what fits, not the class | same | same |
 | `LogosItemLayout` | one line of an item while it fits; else meta goes under the content, to the item's end, wrapping, and leading and trailing stay at the ends, at the top | by what fits, not the class | same |
 | `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth` (for tiles, `Theme.tileWidth(width)`), from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
 | `LogosCardPair` | main card above its side card | side by side 2 : 1 once both are usable (400 and 220) | same |
@@ -140,14 +140,15 @@ LogosSidePanel {
 ```
 
 A page with several sections, as Basecamp's Settings, uses `LogosSections`:
-its title, subtitle and `accessory` (a search, for the sections that have one)
-head the page, and each section's page goes in the card beside the list. On a
-phone the sections open under a "‹ Settings" row, so the pages need no bar of
-their own. A section that opens a level of its own, such as a table row's
-detail as the page, sets `canGoBack` and `backTitle`: the same row names it
-and `backRequested()` goes up one level; beside the list the row shows at the
-top of the section's card. There is one way back, so the levels draw no back
-of their own.
+its title, subtitle and a search (`searchEnabled`, for the sections that have
+one) head the page, and each section's page goes in the card beside the list:
+its content is the pages, which the app shows by `currentIndex`, e.g. with a
+`StackLayout`. On a phone the sections open under a "‹ Settings" row, so the
+pages need no bar of their own. A section that opens a level of its own, such
+as a table row's detail as the page, sets `canGoBack` and `backTitle`: the
+same row names it and `backRequested()` goes up one level; beside the list
+the row shows at the top of the section's card. There is one way back, so the
+levels draw no back of their own.
 
 A row, a header or a field and its button whose parts move under each other
 when they don't fit uses `LogosItemLayout` rather than its own width checks:

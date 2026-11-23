@@ -172,6 +172,22 @@ TestCase {
         compare(oldContent.parent, null)
     }
 
+    // One taken out lets go of its place: it no longer follows its pane's
+    // size, so the app can put it elsewhere at a size of its own.
+    function test_a_replaced_item_lets_go_of_its_place() {
+        const v = create(1000, { panelOpen: true })
+        const oldPanel = v.panel, oldContent = v.content
+        v.panel = createTemporaryObject(plainRect, root)
+        v.content = null
+        for (const old of [oldPanel, oldContent]) {
+            compare(old.anchors.fill, null, old.objectName)
+            old.height = 50
+        }
+        v.height = 360
+        compare(oldPanel.height, 50, "not the panel's height")
+        compare(oldContent.height, 50, "not the content pane's height")
+    }
+
     function test_escape_and_back_close_the_panel_data() {
         return [
             { tag: "escape beside", key: Qt.Key_Escape, width: 1000 },

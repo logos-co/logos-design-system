@@ -115,6 +115,19 @@ TestCase {
         }
     }
 
+    // Each of the content's items fills the room left, up to its own
+    // Layout.maximumWidth.
+    Component {
+        id: cappedContent
+        LogosItemLayout {
+            readonly property alias free: free
+            readonly property alias capped: capped
+            LogosText { id: free; text: "A publisher" }
+            LogosText { id: capped; text: "A key"; Layout.maximumWidth: 80 }
+            trailing: Rectangle { implicitWidth: 32; implicitHeight: 32 }
+        }
+    }
+
     function init() {
         failOnWarning(/Binding loop/)
     }
@@ -128,6 +141,12 @@ TestCase {
 
     function xOf(item, layout) { return item.mapToItem(layout, 0, 0).x }
     function yOf(item, layout) { return item.mapToItem(layout, 0, 0).y }
+
+    function test_the_content_fills_up_to_its_maximum_width() {
+        const l = create(cappedContent, 600)
+        compare(l.free.width, 600 - 32 - l.spacing, "the room left")
+        compare(l.capped.width, 80, "its own maximum")
+    }
 
     function test_one_line_while_it_fits() {
         const l = create(publisher, 600)

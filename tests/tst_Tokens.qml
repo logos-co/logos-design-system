@@ -80,7 +80,7 @@ TestCase {
             { tag: "progressBar",   group: "progressBar",   values: { width: 200, height: 8 } },
             { tag: "radio",         group: "radio",         values: { indicatorSize: 22, dotSize: 8 } },
             { tag: "scrollBar",     group: "scrollBar",     values: { thickness: 6 } },
-            { tag: "search",        group: "search",        values: { width: 400, height: 54, paddingLeft: 10, iconSize: 20, clearButtonSize: 20, clearIconSize: 14, hintHeight: 20 } },
+            { tag: "search",        group: "search",        values: { width: 400, minimumWidth: 200, height: 54, paddingLeft: 10, iconSize: 20, clearButtonSize: 20, clearIconSize: 14, hintHeight: 20 } },
             { tag: "searchToggle",  group: "searchToggle",  values: { fieldWidth: 280 } },
             { tag: "slider",        group: "slider",        values: { width: 200, trackHeight: 4, handleSize: 18 } },
             { tag: "spinBox",       group: "spinBox",       values: { height: 32, buttonWidth: 28 } },

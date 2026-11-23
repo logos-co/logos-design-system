@@ -44,21 +44,14 @@ TabBar {
     readonly property alias indicatorItem: indicator
     readonly property alias trackItem: track
 
-    // The tabs' own widths and the spacing between them. Qt's TabBar measures
-    // its content at the widths it lays the tabs out at, which move while it
-    // lays itself out: a spacing bound to a token, which settles once the tabs
-    // are in, moved its implicit width under its own binding, a binding loop.
-    contentWidth: d.tabsWidth
-
-    QtObject {
-        id: d
-        readonly property real tabsWidth: {
-            const tabs = root.contentChildren
-            let width = 0
-            for (let i = 0; i < tabs.length; ++i)
-                width += tabs[i].implicitWidth
-            return width + Math.max(0, tabs.length - 1) * root.spacing
-        }
+    // Qt's TabBar doesn't measure its tabs again when its spacing changes, so
+    // a spacing bound to a token, which settles once the tabs are in, left a
+    // stale width that Qt corrected while laying the bar out: a binding loop
+    // on implicitWidth. Setting and resetting contentWidth measures them
+    // again, Qt's way, where a tab given its own width counts at it.
+    onSpacingChanged: {
+        contentWidth = contentWidth
+        contentWidth = undefined
     }
 
     background: Item {

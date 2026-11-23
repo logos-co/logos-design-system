@@ -15,8 +15,8 @@ import Logos.Controls
 // Public API:
 //     content (default)   the row's items, in order, each at its
 //                         Layout.preferredWidth or its own width
-//     menu                the LogosMenu that ⋯ opens; without one, nothing
-//                         shows once the row doesn't fit
+//     menu                the LogosMenu that ⋯ opens; without one the row
+//                         never folds, as its items would have nowhere to go
 //     spacing             between the items (default Theme.spacing.medium)
 //     folded              read-only; ⋯ shows in place of the row, which is
 //                         then out of sight and reach
@@ -38,7 +38,7 @@ Item {
 
     property LogosMenu menu: null
     property real spacing: Theme.spacing.medium
-    readonly property bool folded: row.implicitWidth > width
+    readonly property bool folded: menu !== null && row.implicitWidth > width
     default property alias content: row.data
 
     readonly property alias rowItem: row
@@ -61,7 +61,7 @@ Item {
 
     LogosIconButton {
         id: moreButton
-        visible: root.folded && root.menu !== null
+        visible: root.folded
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
         flat: true

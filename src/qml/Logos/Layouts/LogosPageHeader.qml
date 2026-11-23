@@ -7,8 +7,10 @@ import Logos.Controls
 // LogosPageHeader — the head of a page a shell already frames, such as an app
 // in a Basecamp tab: its title and subtitle, and a search on their right,
 // searchWidth wide or what the title leaves. On a phone, measured on itself,
-// the search never takes a row of its own: it is a 🔍 at the end of the
-// title's line, and a tap opens it across that line in place of the title.
+// and wherever the title leaves less than a usable field
+// (Theme.controls.search.minimumWidth), as a long translation can, the search
+// never takes a row of its own: it is a 🔍 at the end of the title's line,
+// and a tap opens it across that line in place of the title.
 // ✕ clears and folds it, as Esc does; it stays open while it holds text, and
 // its query survives a change of width. Its search is LogosSections'.
 //
@@ -77,10 +79,17 @@ Item {
     QtObject {
         id: d
         readonly property bool phone: Theme.windowClass(root.width) === "phone"
-        // Open across the title's line, on a phone.
+        readonly property bool subtitleShown: root.subtitle !== "" && (root.subtitleOnPhone || !phone)
+        // Open across the title's line.
         readonly property bool searching: root.searchEnabled && search.folds && search.expanded
-        readonly property real textWidth: Math.max(titleText.visible ? titleText.implicitWidth : 0,
-                                                   subtitleText.visible ? subtitleText.implicitWidth : 0)
+        // The title's and subtitle's width, measured whether or not the
+        // search is open in the title's place, which would otherwise unfold it.
+        readonly property real textWidth: Math.max(titleText.text !== "" ? titleText.implicitWidth : 0,
+                                                   subtitleShown ? subtitleText.implicitWidth : 0)
+        // What the title leaves the search, a pixel to spare: a title given
+        // exactly its width can wrap.
+        readonly property real searchRoom: grid.width - grid.columnSpacing - Math.ceil(textWidth) - 1
+        readonly property bool folds: phone || searchRoom < Theme.controls.search.minimumWidth
     }
 
     GridLayout {
@@ -105,10 +114,10 @@ Item {
 
         LogosText {
             id: subtitleText
-            visible: text !== "" && (root.subtitleOnPhone || !d.phone)
+            visible: d.subtitleShown
             Layout.row: 1
             Layout.column: 0
-            Layout.columnSpan: d.phone ? 2 : 1
+            Layout.columnSpan: d.folds ? 2 : 1
             Layout.fillWidth: true
             text: root.subtitle
             wrapMode: Text.Wrap
@@ -116,23 +125,21 @@ Item {
             color: Theme.palette.textSecondary
         }
 
-        // Beside the title and subtitle, centred on them; on a phone at the
-        // end of the title's line, and across it once open.
+        // Beside the title and subtitle, centred on them; folded, at the end
+        // of the title's line, and across it once open.
         LogosSearchToggle {
             id: search
             visible: root.searchEnabled
-            folds: d.phone
+            folds: d.folds
             placeholderText: root.searchPlaceholder
             shortcutHint: root.searchShortcutHint
             Layout.row: 0
             Layout.column: d.searching ? 0 : 1
             Layout.columnSpan: d.searching ? 2 : 1
-            Layout.rowSpan: d.phone ? 1 : 2
+            Layout.rowSpan: folds ? 1 : 2
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.preferredWidth: folds ? -1 : root.searchWidth
-            // A pixel to spare: a title given exactly its width can wrap.
-            Layout.maximumWidth: folds ? Number.POSITIVE_INFINITY
-                                       : Math.max(0, grid.width - grid.columnSpacing - Math.ceil(d.textWidth) - 1)
+            Layout.maximumWidth: folds ? Number.POSITIVE_INFINITY : d.searchRoom
             Layout.preferredHeight: folds ? -1 : Theme.controls.search.height
             onSubmitted: text => root.searchSubmitted(text)
         }

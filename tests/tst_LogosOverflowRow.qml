@@ -109,10 +109,14 @@ TestCase {
         compare(r.implicitWidth, 212)
     }
 
-    function test_without_a_menu_nothing_shows_once_folded() {
+    // Without a menu it never folds: there would be nowhere for its items to
+    // go, so they stay in sight and reach, as tall as they are.
+    function test_without_a_menu_it_never_folds() {
         const r = create(noMenu, 100)
-        verify(r.folded)
-        compare(r.rowItem.opacity, 0)
+        verify(!r.folded)
+        compare(r.rowItem.opacity, 1)
+        verify(r.rowItem.enabled)
         verify(!r.moreButtonItem.visible)
+        compare(r.implicitHeight, r.rowItem.implicitHeight)
     }
 }

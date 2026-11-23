@@ -95,6 +95,65 @@ TestCase {
                      "not the widths it lays the tabs out at")
     }
 
+    // A tab given its own width, as Qt's TabBar allows, beside one at its own.
+    Component {
+        id: sizedTab
+        LogosTabBar {
+            spacing: Theme.spacing.large
+            LogosTabButton { text: "All" }
+            LogosTabButton { text: "Transactions"; width: 180 }
+        }
+    }
+
+    // A tab given its own width counts at it, as in Qt's TabBar: the bar's
+    // implicit width is what its tabs take, so at that width each tab shows
+    // whole and the other keeps its own width.
+    function test_a_tab_with_its_own_width_counts_at_it() {
+        failOnWarning(/Binding loop/)
+        const b = createTemporaryObject(sizedTab, root)
+        waitForRendering(b)
+        const all = b.contentChildren[0], sized = b.contentChildren[1]
+        fuzzyCompare(b.implicitWidth, all.implicitWidth + 180 + Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5)
+        compare(sized.width, 180)
+        fuzzyCompare(all.width, all.implicitWidth, 0.5, "the other at its own width")
+    }
+
+    // Tabs given more width than the bar has scroll, as in Qt's TabBar: the
+    // current one comes into view, the last too.
+    Component {
+        id: wideTabs
+        LogosTabBar {
+            width: 300
+            animationDuration: 0
+            LogosTabButton { text: "One"; width: 150 }
+            LogosTabButton { text: "Two"; width: 150 }
+            LogosTabButton { text: "Three"; width: 150 }
+        }
+    }
+
+    function test_tabs_wider_than_the_bar_scroll_to_the_last() {
+        const b = createTemporaryObject(wideTabs, root)
+        waitForRendering(b)
+        verify(b.contentItem.contentWidth > b.width, "wider than the bar")
+        b.currentIndex = 2
+        waitForRendering(b)
+        const last = b.contentChildren[2]
+        const x = last.mapToItem(b, 0, 0).x
+        verify(x >= 0 && x + last.width <= b.width + 0.5, "the last tab in view, at " + x)
+    }
+
+    // A label that changes changes the bar's width with it.
+    function test_a_longer_label_widens_the_bar() {
+        const b = createTemporaryObject(boundSpacing, root)
+        waitForRendering(b)
+        const tab = b.contentChildren[0]
+        const before = b.implicitWidth, tabBefore = tab.implicitWidth
+        tab.text = "Everything there is"
+        waitForRendering(b)
+        verify(tab.implicitWidth > tabBefore)
+        fuzzyCompare(b.implicitWidth, before + tab.implicitWidth - tabBefore, 0.5)
+    }
+
     function init() {
         bar.indicatorColor = Theme.palette.primary
         bar.indicatorHeight = 3

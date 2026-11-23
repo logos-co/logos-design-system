@@ -22,7 +22,8 @@ import Logos.Controls
 // The panel's actions are buttons, never hover-only: beside the content a
 // row across the top of the panel, wrapping; on a phone an equal-width bar
 // pinned to the bottom, above the keyboard and the safe area. A content or
-// panel that is replaced or cleared is taken out.
+// panel that is replaced or cleared is taken out and unanchored; it stays the
+// app's.
 //
 // Which layout: if the open item is what the page is for (a message, a
 // settings page), LogosListDetail; if the page is (a table, a thread) and the
@@ -82,8 +83,10 @@ Item {
     readonly property alias dividerItem: dividerLine
 
     onContentChanged: {
-        if (d.shownContent && d.shownContent !== content)
+        if (d.shownContent && d.shownContent !== content) {
+            d.shownContent.anchors.fill = undefined
             d.shownContent.parent = null
+        }
         if (content) {
             content.parent = contentPane
             content.anchors.fill = contentPane

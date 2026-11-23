@@ -21,11 +21,13 @@ import Logos.Icons
 // There is one way back: the section's own pages draw no back of their own.
 //
 // A section can have a search. Beside the list it is a field on the title's
-// right, searchWidth wide or what the title leaves. On a phone it never takes
-// a row of its own: it is a 🔍 at the end of the back row, and a tap opens it
-// across the row in place of the row's title. ✕ clears and folds it, and Esc
-// or the phone's Back key folds it before they go back. It stays open while
-// it holds text, and its query survives a change of width.
+// right, searchWidth wide or what the title leaves; where that is less than a
+// usable field (Theme.controls.search.minimumWidth), a 🔍 at the end of the
+// title's row that opens across it in place of the title. On a phone it never
+// takes a row of its own: it is a 🔍 at the end of the back row, and a tap
+// opens it across the row in place of the row's title. ✕ clears and folds
+// it, and Esc or the phone's Back key folds it before they go back. It stays
+// open while it holds text, and its query survives a change of width.
 //
 // Public API:
 //     title, subtitle     over the page; on a phone the title names the back row
@@ -47,7 +49,8 @@ import Logos.Icons
 //     canGoBack           the open section is a level deeper; back goes up one
 //     backTitle           where back goes from there, named by the back row
 //     backRequested()     back from a level of the section's own: go up one
-//     content (default)   the sections' pages; show the one at currentIndex
+//     content (default)   the sections' pages, in the card; the app shows the
+//                         one at currentIndex, e.g. with a StackLayout (below)
 //
 // Read-only inspection aliases: titleItem, subtitleItem, listItem,
 // phoneListItem, backRowItem (on a phone), sectionBackRowItem (in the card,
@@ -131,8 +134,15 @@ Item {
         readonly property bool titleShown: !root.showingSection && (root.title !== "" || root.subtitle !== "")
         // Beside the list, or in the back row of an open section.
         readonly property bool searchShown: root.searchEnabled && (root.twoPane || root.showingSection)
-        // Open across the back row, on a phone.
+        // Open across the back row, or the title's row beside the list.
         readonly property bool searching: searchShown && search.folds && search.expanded
+        // The title's and subtitle's width, measured whether or not the
+        // search is open in their place, which would otherwise unfold it.
+        readonly property real titleWidth: titleShown ? Math.max(root.title !== "" ? titleText.implicitWidth : 0,
+                                                                 root.subtitle !== "" ? subtitleText.implicitWidth : 0)
+                                                      : 0
+        readonly property real searchRoom: header.width - header.spacing - titleWidth
+        readonly property bool searchFolds: !root.twoPane || searchRoom < Theme.controls.search.minimumWidth
         readonly property real listWidth: Theme.windowClass(root.width) === "tablet"
                                           ? Theme.layouts.sections.tabletListWidth
                                           : Theme.layouts.sections.listWidth
@@ -235,7 +245,7 @@ Item {
 
             ColumnLayout {
                 id: titleBlock
-                visible: d.titleShown
+                visible: d.titleShown && !d.searching
                 Layout.fillWidth: true
                 spacing: Theme.spacing.tiny
 
@@ -263,18 +273,16 @@ Item {
             Item { visible: root.twoPane && !d.titleShown; Layout.fillWidth: true }
 
             // Beside the list a search field, searchWidth wide or what the
-            // title leaves; on a phone a 🔍 that opens across the row.
+            // title leaves; folded, a 🔍 that opens across the row.
             LogosSearchToggle {
                 id: search
                 visible: d.searchShown
-                folds: !root.twoPane
+                folds: d.searchFolds
                 placeholderText: root.searchPlaceholder
                 shortcutHint: root.searchShortcutHint
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.preferredWidth: folds ? -1 : root.searchWidth
-                Layout.maximumWidth: folds ? Number.POSITIVE_INFINITY
-                                           : Math.max(0, header.width - header.spacing
-                                                         - (d.titleShown ? titleBlock.implicitWidth : 0))
+                Layout.maximumWidth: folds ? Number.POSITIVE_INFINITY : d.searchRoom
                 Layout.preferredHeight: folds ? -1 : Theme.controls.search.height
                 onSubmitted: text => root.searchSubmitted(text)
             }

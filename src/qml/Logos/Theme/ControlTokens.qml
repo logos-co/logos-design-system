@@ -158,6 +158,9 @@ QtObject {
 
     readonly property QtObject search: QtObject {
         readonly property int width: 400
+        // A page's search narrower than this folds into its icon: room for
+        // the icon, a word and the shortcut hint.
+        readonly property int minimumWidth: 200
         readonly property int height: d.tappable(54)
         readonly property int paddingLeft: 10
         readonly property int iconSize: tokens.size.iconMedium

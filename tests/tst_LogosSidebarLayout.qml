@@ -95,4 +95,16 @@ TestCase {
         compare(second.parent, null)
         verify(!l.sideShown)
     }
+
+    // One taken out lets go of its place: it no longer follows the sidebar's
+    // size, so the app can put it elsewhere at a size of its own.
+    function test_a_replaced_sidebar_lets_go_of_its_place() {
+        const l = create(900)
+        const first = l.side
+        l.side = createTemporaryObject(other, root)
+        compare(first.anchors.fill, null)
+        first.height = 50
+        l.height = 360
+        compare(first.height, 50, "not the sidebar's height")
+    }
 }

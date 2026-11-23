@@ -11,6 +11,7 @@ import Logos.Theme
 //
 // Public API:
 //     side                  the sidebar; one replaced or cleared is taken out
+//                           and unanchored; it stays the app's
 //     content (default)     the content; it fills what the sidebar leaves
 //     sideWidth             the sidebar's width (default Theme.layouts.sidebarLayout.sideWidth)
 //     minimumContentWidth   what the content keeps before the sidebar goes
@@ -45,8 +46,10 @@ Item {
     implicitWidth: sideWidth + spacing + minimumContentWidth
 
     onSideChanged: {
-        if (d.shownSide && d.shownSide !== side)
+        if (d.shownSide && d.shownSide !== side) {
+            d.shownSide.anchors.fill = undefined
             d.shownSide.parent = null
+        }
         if (side) {
             side.parent = sideArea
             side.anchors.fill = sideArea

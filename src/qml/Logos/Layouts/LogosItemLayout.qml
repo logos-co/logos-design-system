@@ -11,7 +11,9 @@ import Logos.Theme
 // fits:
 //   leading   at the start, at their own sizes
 //   content   (the default property) what the line is about; it takes the
-//             room left, so its text elides or wraps there
+//             room left, so its text elides or wraps there: the layout sets
+//             each of its items' Layout.fillWidth, so cap one with
+//             Layout.maximumWidth
 //   meta      beside the content while the content keeps minimumContentWidth;
 //             otherwise on lines under it, from where the content starts to
 //             the end, under trailing too, so the last ends where trailing

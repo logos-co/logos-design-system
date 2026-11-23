@@ -8,7 +8,7 @@ import Logos.Theme
 // across the top, wrapping; otherwise an equal-width bar pinned to the
 // bottom, in thumb reach, above the keyboard and the safe area. While every
 // action is hidden there is neither. An item that is replaced or cleared is
-// taken out.
+// taken out and unanchored.
 //
 // API: item, actions, wide; areaItem (where the item goes), rowItem, barItem.
 Item {
@@ -23,8 +23,10 @@ Item {
     readonly property alias barItem: actionBar
 
     onItemChanged: {
-        if (d.shown && d.shown !== item)
+        if (d.shown && d.shown !== item) {
+            d.shown.anchors.fill = undefined
             d.shown.parent = null
+        }
         if (item) {
             item.parent = area
             item.anchors.fill = area
