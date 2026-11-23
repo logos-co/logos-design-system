@@ -14,6 +14,11 @@ import Logos.Theme
 //
 // Use with LogosTabButton.
 //
+// Its implicit width is its tabs' implicit widths and the spacing between
+// them, and it shares its width out among them, as Qt's TabBar does. A tab
+// given a width of its own keeps it, but the bar counts it at its implicit
+// width: give a bar whose tabs have widths of their own a width too.
+//
 // Example:
 //     LogosTabBar {
 //         id: bar
@@ -47,11 +52,19 @@ TabBar {
     // Qt's TabBar doesn't measure its tabs again when its spacing changes, so
     // a spacing bound to a token, which settles once the tabs are in, left a
     // stale width that Qt corrected while laying the bar out: a binding loop
-    // on implicitWidth. Setting and resetting contentWidth measures them
-    // again, Qt's way, where a tab given its own width counts at it.
-    onSpacingChanged: {
-        contentWidth = contentWidth
-        contentWidth = undefined
+    // on implicitWidth. On Qt 6.7 nothing but its own measure avoids that,
+    // and QML can't tell a tab's own width from the one Qt lays it out at.
+    contentWidth: d.tabsWidth
+
+    QtObject {
+        id: d
+        readonly property real tabsWidth: {
+            const tabs = root.contentChildren
+            let width = 0
+            for (let i = 0; i < tabs.length; ++i)
+                width += tabs[i].implicitWidth
+            return width + Math.max(0, tabs.length - 1) * root.spacing
+        }
     }
 
     background: Item {

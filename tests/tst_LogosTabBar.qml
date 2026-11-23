@@ -95,27 +95,29 @@ TestCase {
                      "not the widths it lays the tabs out at")
     }
 
-    // A tab given its own width, as Qt's TabBar allows, beside one at its own.
+    // A tab given its own width, as Qt's TabBar allows, in a bar given one.
     Component {
         id: sizedTab
         LogosTabBar {
+            width: 400
             spacing: Theme.spacing.large
             LogosTabButton { text: "All" }
             LogosTabButton { text: "Transactions"; width: 180 }
         }
     }
 
-    // A tab given its own width counts at it, as in Qt's TabBar: the bar's
-    // implicit width is what its tabs take, so at that width each tab shows
-    // whole and the other keeps its own width.
-    function test_a_tab_with_its_own_width_counts_at_it() {
+    // A tab given its own width keeps it, as in Qt's TabBar, and the other
+    // takes what is left. The bar counts each at its implicit width, which is
+    // why such a bar needs a width of its own.
+    function test_a_tab_with_its_own_width_keeps_it() {
         failOnWarning(/Binding loop/)
         const b = createTemporaryObject(sizedTab, root)
         waitForRendering(b)
         const all = b.contentChildren[0], sized = b.contentChildren[1]
-        fuzzyCompare(b.implicitWidth, all.implicitWidth + 180 + Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5)
         compare(sized.width, 180)
-        fuzzyCompare(all.width, all.implicitWidth, 0.5, "the other at its own width")
+        fuzzyCompare(all.width, b.availableWidth - 180 - Theme.spacing.large, 0.5, "the other takes what is left")
+        fuzzyCompare(b.implicitWidth, all.implicitWidth + sized.implicitWidth + Theme.spacing.large
+                                      + b.leftPadding + b.rightPadding, 0.5, "each at its implicit width")
     }
 
     // Tabs given more width than the bar has scroll, as in Qt's TabBar: the
