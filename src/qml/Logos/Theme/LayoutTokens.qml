@@ -44,6 +44,11 @@ QtObject {
         readonly property int width: 320
     }
 
+    readonly property QtObject sidebarLayout: QtObject {
+        readonly property int sideWidth: 200
+        readonly property int minimumContentWidth: 560
+    }
+
     readonly property QtObject sections: QtObject {
         readonly property int listWidth: 200
         readonly property int tabletListWidth: 168

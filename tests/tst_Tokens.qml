@@ -116,6 +116,7 @@ TestCase {
             { tag: "listDetail", group: "listDetail", values: { tabletListWidth: 320, desktopListWidth: 360 } },
             { tag: "pageBar",    group: "pageBar",    values: { height: 56, phoneHeight: 44 } },
             { tag: "sections",   group: "sections",   values: { listWidth: 200, tabletListWidth: 168 } },
+            { tag: "sidebarLayout", group: "sidebarLayout", values: { sideWidth: 200, minimumContentWidth: 560 } },
             { tag: "sidePanel",  group: "sidePanel",  values: { width: 320 } },
             { tag: "welcome",    group: "welcome",    values: { maximumWidth: 520, buttonWidth: 320, buttonHeight: 48, logoSize: 48 } },
             { tag: "wizard",     group: "wizard",     values: { railHeight: 4, railLabelText: 11, nextMinWidth: 160 } },

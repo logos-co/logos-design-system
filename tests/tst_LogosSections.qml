@@ -155,6 +155,22 @@ TestCase {
         compare(s.searchItem.shortcutHint, "")
     }
 
+    // Given a query, it searches for that, open on a phone.
+    function test_openSearch_with_a_query_data() {
+        return [
+            { tag: "phone",   width: 390 },
+            { tag: "desktop", width: 1000 },
+        ]
+    }
+
+    function test_openSearch_with_a_query(data) {
+        const s = create(data.width)
+        s.currentIndex = 1
+        s.openSearch("wallet")
+        compare(s.searchText, "wallet")
+        verify(s.searchItem.expanded)
+    }
+
     function test_enter_submits_the_query() {
         const s = create(1000)
         const spy = createTemporaryObject(submittedSpy, root, { target: s })

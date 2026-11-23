@@ -155,6 +155,17 @@ TestCase {
         verify(!s.expanded, "a width change takes an empty search back to its icon")
     }
 
+    // A query set from outside opens a folded search: folded, it filtered
+    // out of sight.
+    function test_a_query_set_from_outside_opens_it() {
+        const s = createRendered()
+        verify(!s.expanded)
+        s.text = "wallet"
+        verify(s.expanded)
+        s.close()
+        verify(!s.expanded)
+    }
+
     function test_shortcut_hint_shows_in_the_field() {
         const s = createRendered({ folds: false, shortcutHint: "Ctrl+K" })
         compare(s.searchBarItem.shortcutHint, "Ctrl+K")

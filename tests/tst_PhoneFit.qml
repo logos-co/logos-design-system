@@ -164,6 +164,54 @@ TestCase {
         }
     }
 
+    // A toolbar's buttons, folded into ⋯ on a phone.
+    Component {
+        id: overflowRow
+        LogosOverflowRow {
+            LogosButton { text: "Install Local Package" }
+            LogosButton { text: "Reload" }
+            LogosButton { text: "Manage Repositories" }
+            menu: LogosMenu {
+                LogosMenuItem { text: "Install Local Package…" }
+                LogosMenuItem { text: "Reload" }
+                LogosMenuItem { text: "Manage Repositories…" }
+            }
+        }
+    }
+
+    // A page's title and subtitle, its search a 🔍 at the end of the title's
+    // line, then open across it.
+    Component {
+        id: pageHeader
+        LogosPageHeader {
+            title: "Package Manager"
+            subtitle: "Manage your plugins and packages."
+            searchEnabled: true
+            searchPlaceholder: "Search packages…"
+        }
+    }
+
+    Component {
+        id: pageHeaderOpen
+        LogosPageHeader {
+            title: "Package Manager"
+            subtitle: "Manage your plugins and packages."
+            searchEnabled: true
+            searchPlaceholder: "Search packages…"
+            Component.onCompleted: openSearch()
+        }
+    }
+
+    // A catalog without its sidebar on a phone.
+    Component {
+        id: sidebarLayout
+        LogosSidebarLayout {
+            height: 400
+            side: LogosListView { model: ["All", "Networking", "Storage"] }
+            LogosText { anchors.fill: parent; text: "The catalog"; wrapMode: Text.Wrap }
+        }
+    }
+
     Component {
         id: cardGrid
         LogosCardGrid {
@@ -350,6 +398,10 @@ TestCase {
             { tag: "LogosSections search", component: sectionsSearch },
             { tag: "LogosSections search open", component: sectionsSearchOpen },
             { tag: "LogosItemLayout", component: itemLayout },
+            { tag: "LogosOverflowRow", component: overflowRow },
+            { tag: "LogosPageHeader", component: pageHeader },
+            { tag: "LogosPageHeader search open", component: pageHeaderOpen },
+            { tag: "LogosSidebarLayout", component: sidebarLayout },
             { tag: "LogosCardGrid", component: cardGrid },
             { tag: "LogosCardPair", component: cardPair },
             { tag: "LogosFormLayout", component: form },

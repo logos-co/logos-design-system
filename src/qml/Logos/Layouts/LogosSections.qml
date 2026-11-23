@@ -37,7 +37,8 @@ import Logos.Icons
 //     searchShortcutHint  a keyboard shortcut shown in it beside the list, e.g. "Ctrl+K"
 //     searchWidth         its width beside the list (default Theme.controls.search.width)
 //     searchText          read-only; the query, "" while searchEnabled is false
-//     openSearch()        focus the search, opening it on a phone, its query selected
+//     openSearch([query]) focus the search, opening it on a phone, its query
+//                         selected; given a query, it searches for that
 //     closeSearch()       clear the search and fold it
 //     searchSubmitted(text)  Enter in the search
 //     twoPane             read-only; the list beside the section
@@ -104,9 +105,11 @@ Item {
         d.sectionOpen = false
     }
 
-    function openSearch() {
+    function openSearch(query) {
         if (!d.searchShown)
             return
+        if (query !== undefined)
+            search.text = query
         search.open()
         search.searchBarItem.textInput.selectAll()
     }
