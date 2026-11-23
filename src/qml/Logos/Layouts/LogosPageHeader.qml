@@ -14,6 +14,10 @@ import Logos.Controls
 //
 // Public API:
 //     title, subtitle       the page's; an empty one takes no room
+//     shortTitle            the title in a phone-wide header, where a long one
+//                           crowds the 🔍 (default: the title)
+//     subtitleOnPhone       false: a phone-wide header leaves the subtitle off,
+//                           for one that says the title again (default true)
 //     searchEnabled         the page has a search
 //     searchPlaceholder     its placeholder
 //     searchShortcutHint    a keyboard shortcut shown in it beside the title, e.g. "Ctrl+K"
@@ -40,6 +44,8 @@ Item {
 
     property string title: ""
     property string subtitle: ""
+    property string shortTitle: ""
+    property bool subtitleOnPhone: true
     property bool searchEnabled: false
     property string searchPlaceholder: qsTr("Search")
     property string searchShortcutHint: ""
@@ -91,7 +97,7 @@ Item {
             Layout.row: 0
             Layout.column: 0
             Layout.fillWidth: true
-            text: root.title
+            text: d.phone && root.shortTitle !== "" ? root.shortTitle : root.title
             wrapMode: Text.Wrap
             font.pixelSize: Theme.typography.pageTitleText
             font.weight: Theme.typography.weightBold
@@ -99,7 +105,7 @@ Item {
 
         LogosText {
             id: subtitleText
-            visible: text !== ""
+            visible: text !== "" && (root.subtitleOnPhone || !d.phone)
             Layout.row: 1
             Layout.column: 0
             Layout.columnSpan: d.phone ? 2 : 1

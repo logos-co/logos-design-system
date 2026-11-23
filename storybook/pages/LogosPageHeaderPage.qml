@@ -56,7 +56,7 @@ Rectangle {
             LogosText {
                 Layout.fillWidth: true
                 wrapMode: Text.Wrap
-                text: "The head of a page a shell already frames: its title and subtitle, and a search on their right, searchWidth wide or what the title leaves. Public API: title, subtitle, searchEnabled, searchPlaceholder, searchShortcutHint, searchWidth, searchText, openSearch(), closeSearch(), searchSubmitted(). On a phone, measured on itself, the search is a 🔍 at the end of the title's line, never a row of its own; a tap opens it across that line in place of the title, ✕ clears and folds it. Its search is LogosSections'. Tap the 🔍 in the phone frame."
+                text: "The head of a page a shell already frames: its title and subtitle, and a search on their right, searchWidth wide or what the title leaves. Public API: title, subtitle, shortTitle and subtitleOnPhone (a phone-wide header can say less), searchEnabled, searchPlaceholder, searchShortcutHint, searchWidth, searchText, openSearch(), closeSearch(), searchSubmitted(). On a phone, measured on itself, the search is a 🔍 at the end of the title's line, never a row of its own; a tap opens it across that line in place of the title, ✕ clears and folds it. Its search is LogosSections'. Tap the 🔍 in the phone frame."
                 font.pixelSize: Theme.typography.secondaryText
                 color: Theme.palette.textSecondary
             }
@@ -65,6 +65,11 @@ Rectangle {
         Section {
             title: "A phone, " + Math.round(phone.width) + " px" + (phone.searchText !== "" ? ": " + phone.searchText : "")
             Header { id: phone; Layout.fillWidth: true; Layout.maximumWidth: 360 }
+        }
+
+        Section {
+            title: "A phone, saying less: shortTitle \"Packages\", subtitleOnPhone: false"
+            Header { Layout.fillWidth: true; Layout.maximumWidth: 360; shortTitle: "Packages"; subtitleOnPhone: false }
         }
 
         Section {

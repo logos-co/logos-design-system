@@ -93,6 +93,29 @@ TestCase {
     }
 
     // On a phone a 🔍 at the end of the title's line, not a row of its own.
+    // A phone-wide header can say less: a short title in place of a long one,
+    // and no subtitle that only says the title again. Wider, both as they are.
+    function test_a_phone_header_can_say_less_data() {
+        return [{ tag: "phone", width: 390, phone: true }, { tag: "desktop", width: 1000, phone: false }]
+    }
+
+    function test_a_phone_header_can_say_less(data) {
+        const h = create(data.width, { title: "Package Manager", subtitle: "Manage your plugins and packages.",
+                                       shortTitle: "Packages", subtitleOnPhone: false })
+        compare(h.titleItem.text, data.phone ? "Packages" : "Package Manager")
+        compare(h.subtitleItem.visible, !data.phone)
+        if (data.phone)
+            verify(h.height <= Math.max(h.titleItem.height, Theme.size.touchTarget) + 0.5,
+                   "the title's line alone, " + h.height + " px")
+    }
+
+    // Unless asked, a phone-wide header keeps its title and subtitle.
+    function test_a_phone_header_keeps_both_by_default() {
+        const h = create(390, { title: "Package Manager", subtitle: "Manage your plugins and packages." })
+        compare(h.titleItem.text, "Package Manager")
+        verify(h.subtitleItem.visible)
+    }
+
     function test_phone_search_folds_into_the_title_line() {
         const h = create(390)
         const search = h.searchItem
