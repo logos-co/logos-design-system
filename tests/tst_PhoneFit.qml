@@ -94,10 +94,55 @@ TestCase {
         id: sectionsList
         LogosSections {
             height: 600
-            title: "Wallet"
-            sections: [{ title: "Assets" }, { title: "Activity" }, { title: "Settings" }]
-            menu: LogosMenu { LogosMenuItem { text: "Lock" } }
-            Component.onCompleted: showList()
+            title: "Settings"
+            subtitle: "Manage modules, apps and dashboards."
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            Item {}
+        }
+    }
+
+    // A section open a level deeper, under the one back row that names it.
+    Component {
+        id: sectionsLevel
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            canGoBack: true
+            backTitle: "Apps Inspector"
+            // Opens the section, as a tap would; a declared index opens nothing.
+            Component.onCompleted: currentIndex = 1
+            Item {}
+        }
+    }
+
+    // A section with a search: a 🔍 at the end of the back row, folded, then
+    // open across it.
+    Component {
+        id: sectionsSearch
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            searchEnabled: true
+            searchPlaceholder: "Search apps…"
+            Component.onCompleted: currentIndex = 1
+            Item {}
+        }
+    }
+
+    Component {
+        id: sectionsSearchOpen
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            searchEnabled: true
+            searchPlaceholder: "Search apps…"
+            Component.onCompleted: {
+                currentIndex = 1
+                openSearch()
+            }
             Item {}
         }
     }
@@ -284,6 +329,9 @@ TestCase {
             { tag: "LogosSidePanel closed", component: sidePanelClosed },
             { tag: "LogosSidePanel open", component: sidePanelOpen },
             { tag: "LogosSections list", component: sectionsList },
+            { tag: "LogosSections level", component: sectionsLevel },
+            { tag: "LogosSections search", component: sectionsSearch },
+            { tag: "LogosSections search open", component: sectionsSearchOpen },
             { tag: "LogosCardGrid", component: cardGrid },
             { tag: "LogosCardPair", component: cardPair },
             { tag: "LogosFormLayout", component: form },

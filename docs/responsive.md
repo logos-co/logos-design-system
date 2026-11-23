@@ -61,7 +61,7 @@ In a phone-wide view the title sizes step down; body text stays.
 | `LogosPageBar` | 44 px; search folds into an icon and takes the whole bar when open; ⋯ for the rest | 56 px, search field shown | same |
 | `LogosListDetail` | the list, or the open item's detail in its place; ‹ goes back | list (320) beside the detail | list (360) beside the detail |
 | `LogosSidePanel` | the content, or the open panel in its place; ‹ goes back | the panel (320) beside the content, which narrows for it; ✕ closes it | same |
-| `LogosSections` | opens on the current section; ‹ goes back to the list of sections. **No ☰ drawer** | list of sections (240) beside the section | same |
+| `LogosSections` | the list of sections is the page, a card of rows; a tap opens the section under a ‹ Title row, which names a level deeper and goes up one. **No ☰ drawer** | title, subtitle and accessory (a search) over the list (168) beside the section's card; a level deeper puts the ‹ row at the top of the card | the same, list 200 |
 | `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth`, from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
 | `LogosCardPair` | main card above its side card | side by side 2 : 1 once both are usable (400 and 220) | same |
 | `LogosFormLayout` | one field per row, labels above, buttons stacked full width, main last | narrow fields in pairs | labels beside the controls, at most 720 wide, centred |
@@ -127,9 +127,15 @@ LogosSidePanel {
 }
 ```
 
-An app with several sections (a wallet: assets, activity, settings) uses
-`LogosSections`, each section a page that starts with a `LogosPageBar` with
-`canGoBack: wallet.showingSection` and `onBackRequested: wallet.showList()`.
+A page with several sections, as Basecamp's Settings, uses `LogosSections`:
+its title, subtitle and `accessory` (a search, for the sections that have one)
+head the page, and each section's page goes in the card beside the list. On a
+phone the sections open under a "‹ Settings" row, so the pages need no bar of
+their own. A section that opens a level of its own, such as a table row's
+detail as the page, sets `canGoBack` and `backTitle`: the same row names it
+and `backRequested()` goes up one level; beside the list the row shows at the
+top of the section's card. There is one way back, so the levels draw no back
+of their own.
 
 ## Controls that adapt
 

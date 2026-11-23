@@ -40,7 +40,8 @@ QtObject {
     }
 
     readonly property QtObject sections: QtObject {
-        readonly property int listWidth: 240
+        readonly property int listWidth: 200
+        readonly property int tabletListWidth: 168
     }
 
     readonly property QtObject welcome: QtObject {
