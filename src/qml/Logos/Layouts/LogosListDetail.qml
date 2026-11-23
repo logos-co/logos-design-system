@@ -13,7 +13,8 @@ import Logos.Theme
 // The detail's actions (Reply, Archive) are buttons, never hover-only: from
 // tablet width up a row across the top of the detail, wrapping; at phone width
 // an equal-width bar pinned to the bottom, in thumb reach, above the keyboard
-// and the safe area. A list or detail that is replaced or cleared is taken out.
+// and the safe area. A list or detail that is replaced or cleared is taken out
+// and unanchored; it stays the app's.
 //
 // Public API:
 //     list            the list pane's item
@@ -53,8 +54,10 @@ Item {
     readonly property alias actionBarItem: detailPane.barItem
 
     onListChanged: {
-        if (d.shownList && d.shownList !== list)
+        if (d.shownList && d.shownList !== list) {
+            d.shownList.anchors.fill = undefined
             d.shownList.parent = null
+        }
         if (list) {
             list.parent = listPane
             list.anchors.fill = listPane

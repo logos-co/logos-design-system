@@ -34,6 +34,7 @@ QtObject {
     // Text font sizes (descending hierarchy). In a phone-wide view the titles
     // step down; where targets are touch-sized, badge text grows to stay legible.
     readonly property int mainTitleText: phone ? 96 : 256   // splash / marketing
+    readonly property int displayText: phone ? 28 : 40      // a welcome or hero line
     readonly property int pageTitleText: phone ? 28 : 36    // page-level headline
     readonly property int titleText: phone ? 24 : 30        // section / dialog title
     readonly property int panelTitleText: phone ? 20 : 24   // panel / table title

@@ -7,6 +7,10 @@ LogosCardGrid 1.0 LogosCardGrid.qml
 LogosCardPair 1.0 LogosCardPair.qml
 LogosFormField 1.0 LogosFormField.qml
 LogosFormLayout 1.0 LogosFormLayout.qml
+LogosItemLayout 1.0 LogosItemLayout.qml
+LogosOverflowRow 1.0 LogosOverflowRow.qml
+LogosPageHeader 1.0 LogosPageHeader.qml
+LogosSidebarLayout 1.0 LogosSidebarLayout.qml
 LogosWizard 1.0 LogosWizard.qml
 LogosWelcome 1.0 LogosWelcome.qml
 internal PaneWithActions PaneWithActions.qml

@@ -85,6 +85,20 @@ TestCase {
         compare(p.escapes, 1)
     }
 
+    // Folded by Esc, the focus is on its icon: the next Esc goes on, where it
+    // had stayed in the hidden field and done nothing.
+    function test_the_next_escape_goes_on() {
+        const p = createTemporaryObject(inParent, root)
+        p.search.open()
+        tryVerify(() => p.search.searchBarItem.textInput.activeFocus)
+        keyClick(Qt.Key_Escape)
+        verify(!p.search.expanded)
+        compare(p.escapes, 0)
+        verify(p.search.openButtonItem.activeFocus, "focus on its icon")
+        keyClick(Qt.Key_Escape)
+        compare(p.escapes, 1)
+    }
+
     function test_enter_submits() {
         const s = createRendered()
         const spy = createTemporaryObject(submittedSpy, root, { target: s })
@@ -123,5 +137,47 @@ TestCase {
         s.folds = true
         verify(s.expanded)
         compare(s.text, "chat")
+    }
+
+    // Focused while it was a field, it folds once it folds with no query;
+    // open() had left it unfolded, the bar's title hidden behind an empty field.
+    function test_folding_without_a_query_folds() {
+        const s = createRendered({ folds: false })
+        s.open()
+        tryVerify(() => s.searchBarItem.textInput.activeFocus)
+        s.folds = true
+        verify(!s.expanded)
+
+        s.open()
+        verify(s.expanded)
+        s.folds = false
+        s.folds = true
+        verify(!s.expanded, "a width change takes an empty search back to its icon")
+    }
+
+    // A query set from outside opens a folded search: folded, it filtered
+    // out of sight.
+    function test_a_query_set_from_outside_opens_it() {
+        const s = createRendered()
+        verify(!s.expanded)
+        s.text = "wallet"
+        verify(s.expanded)
+        s.close()
+        verify(!s.expanded)
+    }
+
+    function test_shortcut_hint_shows_in_the_field() {
+        const s = createRendered({ folds: false, shortcutHint: "Ctrl+K" })
+        compare(s.searchBarItem.shortcutHint, "Ctrl+K")
+        verify(s.searchBarItem.shortcutItem.visible)
+    }
+
+    // A touch target tall unless sized: then the field is as tall as it is.
+    function test_the_field_is_as_tall_as_the_toggle() {
+        const s = createRendered({ folds: false })
+        compare(s.searchBarItem.height, Theme.size.touchTarget)
+        s.height = Theme.controls.search.height
+        waitForRendering(s)
+        compare(s.searchBarItem.height, Theme.controls.search.height)
     }
 }

@@ -16,7 +16,9 @@ import Logos.Icons
 //     shortcutHint     literal text to render in the trailing chip
 //                      (e.g. "⌘ K", "Ctrl+K"). Display-only — does not
 //                      bind anything. For platform-aware text, pass the
-//                      `nativeText` of the consumer's own Shortcut.
+//                      `nativeText` of the consumer's own Shortcut. Shown
+//                      only where a keyboard is (Theme.hasKeyboard), at any
+//                      width.
 //     clearable        show a ✕ while the field has text (default true).
 //                      A search that filters a list is view state and should
 //                      survive navigation, which only works if there is an
@@ -164,7 +166,7 @@ Control {
             id: shortcutChip
 
             Layout.alignment: Qt.AlignVCenter
-            visible: root.shortcutHint.length > 0
+            visible: root.shortcutHint.length > 0 && Theme.hasKeyboard
             implicitWidth: shortcutLabel.implicitWidth + Theme.spacing.medium
             implicitHeight: Theme.controls.search.hintHeight
 

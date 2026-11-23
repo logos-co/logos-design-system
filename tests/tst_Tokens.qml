@@ -21,24 +21,24 @@ TestCase {
 
     function typeScale() {
         const t = Theme.typography
-        return [t.mainTitleText, t.pageTitleText, t.titleText, t.panelTitleText,
+        return [t.mainTitleText, t.displayText, t.pageTitleText, t.titleText, t.panelTitleText,
                 t.subtitleText, t.primaryText, t.secondaryText, t.badgeText]
     }
 
     function test_typeScale() {
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 8])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 8])
     }
 
     function test_titlesStepDownInAPhoneWideView() {
         Theme.viewWidth = 390
-        compare(typeScale(), [96, 28, 24, 20, 16, 14, 12, 10])
+        compare(typeScale(), [96, 28, 28, 24, 20, 16, 14, 12, 10])
         Theme.viewWidth = 700
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 8])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 8])
     }
 
     function test_badgeTextGrowsAtTouchDensity() {
         ThemeManager.setDensity("touch")
-        compare(typeScale(), [256, 36, 30, 24, 16, 14, 12, 10])
+        compare(typeScale(), [256, 40, 36, 30, 24, 16, 14, 12, 10])
     }
 
     function test_sizeScale() {
@@ -80,7 +80,7 @@ TestCase {
             { tag: "progressBar",   group: "progressBar",   values: { width: 200, height: 8 } },
             { tag: "radio",         group: "radio",         values: { indicatorSize: 22, dotSize: 8 } },
             { tag: "scrollBar",     group: "scrollBar",     values: { thickness: 6 } },
-            { tag: "search",        group: "search",        values: { width: 400, height: 54, paddingLeft: 10, iconSize: 20, clearButtonSize: 20, clearIconSize: 14, hintHeight: 20 } },
+            { tag: "search",        group: "search",        values: { width: 400, minimumWidth: 200, height: 54, paddingLeft: 10, iconSize: 20, clearButtonSize: 20, clearIconSize: 14, hintHeight: 20 } },
             { tag: "searchToggle",  group: "searchToggle",  values: { fieldWidth: 280 } },
             { tag: "slider",        group: "slider",        values: { width: 200, trackHeight: 4, handleSize: 18 } },
             { tag: "spinBox",       group: "spinBox",       values: { height: 32, buttonWidth: 28 } },
@@ -112,9 +112,11 @@ TestCase {
             { tag: "cardGrid",   group: "cardGrid",   values: { maximumWidth: 1200, statCardWidth: 150, tileWidthPhone: 104, tileWidthTablet: 140, tileWidthDesktop: 180 } },
             { tag: "cardPair",   group: "cardPair",   values: { minimumMainWidth: 400, minimumSideWidth: 220 } },
             { tag: "form",       group: "form",       values: { maximumWidth: 720, labelWidth: 200 } },
+            { tag: "itemLayout", group: "itemLayout", values: { minimumContentWidth: 120, lineSpacing: 4 } },
             { tag: "listDetail", group: "listDetail", values: { tabletListWidth: 320, desktopListWidth: 360 } },
             { tag: "pageBar",    group: "pageBar",    values: { height: 56, phoneHeight: 44 } },
-            { tag: "sections",   group: "sections",   values: { listWidth: 240 } },
+            { tag: "sections",   group: "sections",   values: { listWidth: 200, tabletListWidth: 168 } },
+            { tag: "sidebarLayout", group: "sidebarLayout", values: { sideWidth: 200, minimumContentWidth: 560 } },
             { tag: "sidePanel",  group: "sidePanel",  values: { width: 320 } },
             { tag: "welcome",    group: "welcome",    values: { maximumWidth: 520, buttonWidth: 320, buttonHeight: 48, logoSize: 48 } },
             { tag: "wizard",     group: "wizard",     values: { railHeight: 4, railLabelText: 11, nextMinWidth: 160 } },

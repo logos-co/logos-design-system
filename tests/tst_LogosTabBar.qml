@@ -68,6 +68,94 @@ TestCase {
         }
     }
 
+    // A spacing bound to a token settles once the tabs are in.
+    Component {
+        id: boundSpacing
+        LogosTabBar {
+            spacing: Theme.spacing.large
+            LogosTabButton { text: "All" }
+            LogosTabButton { text: "Installed" }
+            LogosTabButton { text: "Not Installed" }
+        }
+    }
+
+    // The bar's implicit width is its tabs' and the spacing between them; with
+    // a bound spacing it moved under its own binding, a binding loop.
+    function test_a_bound_spacing_makes_no_binding_loop() {
+        failOnWarning(/Binding loop/)
+        const b = createTemporaryObject(boundSpacing, root)
+        waitForRendering(b)
+        let tabs = 0
+        for (let i = 0; i < b.contentChildren.length; ++i)
+            tabs += b.contentChildren[i].implicitWidth
+        fuzzyCompare(b.implicitWidth, tabs + 2 * Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5)
+        b.width = 600
+        waitForRendering(b)
+        fuzzyCompare(b.implicitWidth, tabs + 2 * Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5,
+                     "not the widths it lays the tabs out at")
+    }
+
+    // A tab given its own width, as Qt's TabBar allows, in a bar given one.
+    Component {
+        id: sizedTab
+        LogosTabBar {
+            width: 400
+            spacing: Theme.spacing.large
+            LogosTabButton { text: "All" }
+            LogosTabButton { text: "Transactions"; width: 180 }
+        }
+    }
+
+    // A tab given its own width keeps it, as in Qt's TabBar, and the other
+    // takes what is left. The bar counts each at its implicit width, which is
+    // why such a bar needs a width of its own.
+    function test_a_tab_with_its_own_width_keeps_it() {
+        failOnWarning(/Binding loop/)
+        const b = createTemporaryObject(sizedTab, root)
+        waitForRendering(b)
+        const all = b.contentChildren[0], sized = b.contentChildren[1]
+        compare(sized.width, 180)
+        fuzzyCompare(all.width, b.availableWidth - 180 - Theme.spacing.large, 0.5, "the other takes what is left")
+        fuzzyCompare(b.implicitWidth, all.implicitWidth + sized.implicitWidth + Theme.spacing.large
+                                      + b.leftPadding + b.rightPadding, 0.5, "each at its implicit width")
+    }
+
+    // Tabs given more width than the bar has scroll, as in Qt's TabBar: the
+    // current one comes into view, the last too.
+    Component {
+        id: wideTabs
+        LogosTabBar {
+            width: 300
+            animationDuration: 0
+            LogosTabButton { text: "One"; width: 150 }
+            LogosTabButton { text: "Two"; width: 150 }
+            LogosTabButton { text: "Three"; width: 150 }
+        }
+    }
+
+    function test_tabs_wider_than_the_bar_scroll_to_the_last() {
+        const b = createTemporaryObject(wideTabs, root)
+        waitForRendering(b)
+        verify(b.contentItem.contentWidth > b.width, "wider than the bar")
+        b.currentIndex = 2
+        waitForRendering(b)
+        const last = b.contentChildren[2]
+        const x = last.mapToItem(b, 0, 0).x
+        verify(x >= 0 && x + last.width <= b.width + 0.5, "the last tab in view, at " + x)
+    }
+
+    // A label that changes changes the bar's width with it.
+    function test_a_longer_label_widens_the_bar() {
+        const b = createTemporaryObject(boundSpacing, root)
+        waitForRendering(b)
+        const tab = b.contentChildren[0]
+        const before = b.implicitWidth, tabBefore = tab.implicitWidth
+        tab.text = "Everything there is"
+        waitForRendering(b)
+        verify(tab.implicitWidth > tabBefore)
+        fuzzyCompare(b.implicitWidth, before + tab.implicitWidth - tabBefore, 0.5)
+    }
+
     function init() {
         bar.indicatorColor = Theme.palette.primary
         bar.indicatorHeight = 3

@@ -94,11 +94,121 @@ TestCase {
         id: sectionsList
         LogosSections {
             height: 600
-            title: "Wallet"
-            sections: [{ title: "Assets" }, { title: "Activity" }, { title: "Settings" }]
-            menu: LogosMenu { LogosMenuItem { text: "Lock" } }
-            Component.onCompleted: showList()
+            title: "Settings"
+            subtitle: "Manage modules, apps and dashboards."
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
             Item {}
+        }
+    }
+
+    // A row whose key goes under the name on a phone, its button at the end.
+    Component {
+        id: itemLayout
+        LogosItemLayout {
+            leading: LogosTile { label: "Other publisher"; tileSize: 32; interactive: false }
+            ColumnLayout {
+                LogosText { Layout.fillWidth: true; text: "Other publisher"; elide: Text.ElideRight }
+                LogosText { Layout.fillWidth: true; text: "https://other.example · trusted since 2 Nov 2026"; elide: Text.ElideRight }
+            }
+            meta: [
+                LogosText { Layout.fillWidth: true; text: "AE21 6C2E F524 7A37"; wrapMode: Text.Wrap },
+                LogosCopyButton { value: "did:jwk:other" }
+            ]
+            trailing: LogosIconButton { iconSource: LogosIcons.trash; flat: true }
+        }
+    }
+
+    // A section open a level deeper, under the one back row that names it.
+    Component {
+        id: sectionsLevel
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            canGoBack: true
+            backTitle: "Apps Inspector"
+            // Opens the section, as a tap would; a declared index opens nothing.
+            Component.onCompleted: currentIndex = 1
+            Item {}
+        }
+    }
+
+    // A section with a search: a 🔍 at the end of the back row, folded, then
+    // open across it.
+    Component {
+        id: sectionsSearch
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            searchEnabled: true
+            searchPlaceholder: "Search apps…"
+            Component.onCompleted: currentIndex = 1
+            Item {}
+        }
+    }
+
+    Component {
+        id: sectionsSearchOpen
+        LogosSections {
+            height: 600
+            title: "Settings"
+            sections: [{ title: "Dashboard" }, { title: "Apps Inspector" }, { title: "Appearance" }]
+            searchEnabled: true
+            searchPlaceholder: "Search apps…"
+            Component.onCompleted: {
+                currentIndex = 1
+                openSearch()
+            }
+            Item {}
+        }
+    }
+
+    // A toolbar's buttons, folded into ⋯ on a phone.
+    Component {
+        id: overflowRow
+        LogosOverflowRow {
+            LogosButton { text: "Install Local Package" }
+            LogosButton { text: "Reload" }
+            LogosButton { text: "Manage Repositories" }
+            menu: LogosMenu {
+                LogosMenuItem { text: "Install Local Package…" }
+                LogosMenuItem { text: "Reload" }
+                LogosMenuItem { text: "Manage Repositories…" }
+            }
+        }
+    }
+
+    // A page's title and subtitle, its search a 🔍 at the end of the title's
+    // line, then open across it.
+    Component {
+        id: pageHeader
+        LogosPageHeader {
+            title: "Package Manager"
+            subtitle: "Manage your plugins and packages."
+            searchEnabled: true
+            searchPlaceholder: "Search packages…"
+        }
+    }
+
+    Component {
+        id: pageHeaderOpen
+        LogosPageHeader {
+            title: "Package Manager"
+            subtitle: "Manage your plugins and packages."
+            searchEnabled: true
+            searchPlaceholder: "Search packages…"
+            Component.onCompleted: openSearch()
+        }
+    }
+
+    // A catalog without its sidebar on a phone.
+    Component {
+        id: sidebarLayout
+        LogosSidebarLayout {
+            height: 400
+            side: LogosListView { model: ["All", "Networking", "Storage"] }
+            LogosText { anchors.fill: parent; text: "The catalog"; wrapMode: Text.Wrap }
         }
     }
 
@@ -284,6 +394,14 @@ TestCase {
             { tag: "LogosSidePanel closed", component: sidePanelClosed },
             { tag: "LogosSidePanel open", component: sidePanelOpen },
             { tag: "LogosSections list", component: sectionsList },
+            { tag: "LogosSections level", component: sectionsLevel },
+            { tag: "LogosSections search", component: sectionsSearch },
+            { tag: "LogosSections search open", component: sectionsSearchOpen },
+            { tag: "LogosItemLayout", component: itemLayout },
+            { tag: "LogosOverflowRow", component: overflowRow },
+            { tag: "LogosPageHeader", component: pageHeader },
+            { tag: "LogosPageHeader search open", component: pageHeaderOpen },
+            { tag: "LogosSidebarLayout", component: sidebarLayout },
             { tag: "LogosCardGrid", component: cardGrid },
             { tag: "LogosCardPair", component: cardPair },
             { tag: "LogosFormLayout", component: form },
@@ -325,6 +443,24 @@ TestCase {
             LogosMenuItem { text: "Reload" }
             LogosMenuItem { text: "Settings" }
         }
+    }
+
+    Component {
+        id: comboBox
+        LogosComboBox { width: 200; model: ["All categories", "Networking", "Storage"] }
+    }
+
+    // A picker's list, a sheet on a phone as a menu is.
+    function test_combo_box_sheet_fits() {
+        const box = createTemporaryObject(comboBox, host)
+        box.popupItem.open()
+        tryCompare(box.popupItem, "opened", true)
+        verify(box.sheet)
+        waitForRendering(box.popupItem.background)
+        const found = problems(box.popupItem.background.parent)
+        compare(found.overflow, "", "past the sides")
+        compare(found.small, "", "smaller than a fingertip")
+        box.popupItem.close()
     }
 
     function test_popups_fit_data() {

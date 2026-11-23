@@ -40,6 +40,8 @@ TestCase {
 
     function cleanup() {
         ThemeManager.setDensity("")
+        Theme.viewWidth = 0
+        Theme.hasKeyboard = true
     }
 
     function test_text_alias_round_trips() {
@@ -73,6 +75,20 @@ TestCase {
     function test_shortcutHint_round_trips() {
         bar.shortcutHint = "Ctrl+K"
         compare(bar.shortcutHint, "Ctrl+K")
+    }
+
+    // A shortcut's hint is for a keyboard: shown wherever one is, whatever
+    // the width or density, as in a desktop window narrowed to a phone's;
+    // not without one, on a phone's or a tablet's OS.
+    function test_shortcut_hint_only_where_a_keyboard_is() {
+        bar.shortcutHint = "Ctrl+K"
+        verify(bar.shortcutItem.visible, "with a keyboard")
+        Theme.viewWidth = 390
+        verify(bar.shortcutItem.visible, "a phone-wide desktop window keeps it")
+        ThemeManager.setDensity("touch")
+        verify(bar.shortcutItem.visible, "at touch density too")
+        Theme.hasKeyboard = false
+        verify(!bar.shortcutItem.visible, "without a keyboard")
     }
 
     function test_submitted_emitted_on_textInput_accepted() {

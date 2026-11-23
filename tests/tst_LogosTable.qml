@@ -193,6 +193,22 @@ TestCase {
         compare(t.empty, false)
     }
 
+    // A narrow table's empty text wraps inside it: on a phone a long one ran
+    // off both sides.
+    function test_empty_text_wraps_in_a_narrow_table() {
+        var t = _create()
+        t.anchors.fill = undefined
+        t.width = 200
+        t.height = 300
+        t.model = Qt.createQmlObject('import QtQuick; ListModel {}', t)
+        t.emptyText = "No modules match the current filter."
+        var text = null
+        tryVerify(function() { text = findText(t, t.emptyText); return text !== null })
+        var left = text.mapToItem(t, 0, 0).x
+        verify(left >= 0 && left + text.width <= t.width, "inside the table: " + left + " + " + text.width)
+        verify(text.lineCount > 1, "wrapped")
+    }
+
     // ─── Sizing inputs ───
 
     function test_totalMinWidth_sums_columns() {

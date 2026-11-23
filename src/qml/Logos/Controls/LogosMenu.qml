@@ -114,16 +114,18 @@ Menu {
         }
 
         // Wherever popup() put it, across the bottom of the window. Bound:
-        // its items may not have their height yet.
+        // its items may not have their height yet. The window's overlay goes
+        // when the item the menu is in leaves the window, as a list's row does.
         function place() {
             sheet = phone && root.parent !== null
             if (!sheet)
                 return
             const origin = root.parent.mapFromItem(overlay, 0, 0)
-            root.width = Qt.binding(() => d.overlay.width)
-            root.height = Qt.binding(() => Math.min(root.implicitHeight, d.overlay.height - Theme.controls.dialog.sheetTopGap))
+            root.width = Qt.binding(() => d.overlay ? d.overlay.width : root.implicitWidth)
+            root.height = Qt.binding(() => d.overlay ? Math.min(root.implicitHeight, d.overlay.height - Theme.controls.dialog.sheetTopGap)
+                                                     : root.implicitHeight)
             root.x = origin.x
-            root.y = Qt.binding(() => origin.y + d.overlay.height - root.height + d.offset)
+            root.y = Qt.binding(() => d.overlay ? origin.y + d.overlay.height - root.height + d.offset : 0)
         }
 
         function unplace() {
@@ -133,6 +135,7 @@ Menu {
             offset = 0
             root.width = undefined
             root.height = undefined
+            root.y = root.y
         }
     }
 

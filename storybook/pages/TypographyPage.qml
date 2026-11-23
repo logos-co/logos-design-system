@@ -69,6 +69,7 @@ Rectangle {
 
                 Repeater {
                     model: [
+                        { name: "displayText",    value: Theme.typography.displayText },
                         { name: "pageTitleText",  value: Theme.typography.pageTitleText },
                         { name: "titleText",      value: Theme.typography.titleText },
                         { name: "panelTitleText", value: Theme.typography.panelTitleText },

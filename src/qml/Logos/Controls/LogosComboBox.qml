@@ -22,12 +22,19 @@ import Logos.Icons
 //     popupItem        the dropdown Popup
 //     popupListView    the ListView inside the popup (delegate model is owned
 //                      by ComboBox via root.delegateModel)
+//     popupHandleItem, popupDragAreaItem   the sheet's handle and the strip
+//                      that drags it
 //
 // The closed control keeps whatever width it is given; the dropdown widens to
 // fit its widest entry, up to maxPopupWidthFactor times the control and never
 // past the width of the window, and is kept inside the window when the control
 // sits near an edge. It is as tall as its rows up to the height of the window,
 // and scrolls past that.
+//
+// In a phone-wide window the list opens as a sheet across the bottom
+// instead, as LogosMenu's does: the page dims, the entries span the width, and
+// a tap on the page or a drag down on the handle closes it. `sheet` says when
+// it is open as one.
 //
 // Example:
 //     LogosComboBox {
@@ -46,11 +53,39 @@ ComboBox {
     // Horizontal inset of a dropdown entry; also what the width allows for.
     readonly property real entryPadding: Theme.spacing.medium
 
+    readonly property bool sheet: sheetState.active
+
     // Exposed for inspection (e.g., from tests). Read-only.
     readonly property alias contentLabel: contentText
     readonly property alias backgroundItem: bg
     readonly property alias popupItem: dropdownPopup
     readonly property alias popupListView: popupList
+    readonly property alias popupHandleItem: handle
+    readonly property alias popupDragAreaItem: dragArea
+
+    // The list as a sheet across the bottom of a phone-wide window.
+    QtObject {
+        id: sheetState
+
+        readonly property Item overlay: dropdownPopup.Overlay.overlay
+        readonly property bool phone: overlay !== null && Theme.windowClass(overlay.width) === "phone"
+        // Decided as it opens, where the window is phone-wide.
+        property bool active: false
+        // Placed against the window's overlay, which goes when the box leaves
+        // the window, as a list's row does.
+        readonly property bool placed: active && overlay !== null
+        // Where the window's top left is, in the control.
+        property point origin: Qt.point(0, 0)
+        // How far a drag on the handle has pulled it down.
+        property real offset: 0
+
+        readonly property Transition slideIn: Transition {
+            NumberAnimation { target: sheetState; property: "offset"; from: dropdownPopup.height; to: 0; duration: 200; easing.type: Easing.OutCubic }
+        }
+        readonly property Transition slideOut: Transition {
+            NumberAnimation { target: sheetState; property: "offset"; to: dropdownPopup.height; duration: 150; easing.type: Easing.InCubic }
+        }
+    }
 
     QtObject {
         id: d
@@ -168,8 +203,12 @@ ComboBox {
     popup: Popup {
         id: dropdownPopup
 
-        y: root.height + Theme.controls.combo.popupGap
+        x: sheetState.placed ? sheetState.origin.x : 0
+        y: sheetState.placed ? sheetState.origin.y + sheetState.overlay.height - height + sheetState.offset
+                             : root.height + Theme.controls.combo.popupGap
         width: {
+            if (sheetState.placed)
+                return sheetState.overlay.width
             var wanted = Math.max(root.width,
                                   Math.min(implicitWidth, root.width * root.maxPopupWidthFactor))
             return root.Window.window
@@ -177,11 +216,36 @@ ComboBox {
                    : wanted
         }
         implicitHeight: contentItem.implicitHeight + topPadding + bottomPadding
-        height: root.Window.window
-                ? Math.min(implicitHeight, root.Window.height - topMargin - bottomMargin)
-                : implicitHeight
+        height: sheetState.placed
+                ? Math.min(implicitHeight, sheetState.overlay.height - Theme.controls.dialog.sheetTopGap)
+                : root.Window.window
+                  ? Math.min(implicitHeight, root.Window.height - topMargin - bottomMargin)
+                  : implicitHeight
         padding: Theme.size.borderWidth
-        margins: Theme.spacing.small
+        // As a sheet: a strip for the handle above the entries, a fingertip tall.
+        topPadding: sheetState.active ? Theme.size.touchTarget : padding
+        bottomPadding: sheetState.active ? Theme.spacing.large + Theme.bottomInset(sheetState.overlay) : padding
+        // Kept inside the window, a sheet couldn't slide in or follow a drag.
+        margins: sheetState.active ? -1 : Theme.spacing.small
+        modal: sheetState.phone
+
+        // Not a disabled Transition, which a popup runs anyway.
+        enter: sheetState.active ? sheetState.slideIn : null
+        exit: sheetState.active ? sheetState.slideOut : null
+
+        onAboutToShow: {
+            sheetState.active = sheetState.phone
+            if (sheetState.active)
+                sheetState.origin = root.mapFromItem(sheetState.overlay, 0, 0)
+        }
+        onClosed: {
+            sheetState.active = false
+            sheetState.offset = 0
+        }
+
+        Overlay.modal: Rectangle {
+            color: Theme.palette.scrim
+        }
 
         contentItem: ListView {
             id: popupList
@@ -205,7 +269,48 @@ ComboBox {
         background: Rectangle {
             color: Theme.palette.backgroundSecondary
             border.color: Theme.palette.border
-            radius: Theme.spacing.radiusSmall
+            radius: sheetState.active ? Theme.spacing.radiusXlarge : Theme.spacing.radiusSmall
+            // Only for a sheet: setting any corner's radius redraws the whole border.
+            Binding on bottomLeftRadius { when: sheetState.active; value: 0 }
+            Binding on bottomRightRadius { when: sheetState.active; value: 0 }
+
+            Rectangle {
+                id: handle
+                visible: sheetState.active
+                anchors.horizontalCenter: parent.horizontalCenter
+                y: Theme.spacing.small
+                width: Theme.controls.dialog.handleWidth
+                height: Theme.controls.dialog.handleHeight
+                radius: height / 2
+                color: Theme.palette.borderStrong
+            }
+
+            // Only the handle's strip drags it: a swipe on the entries scrolls them.
+            Item {
+                id: dragArea
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: dropdownPopup.topPadding
+
+                // Scene positions, so moving the sheet doesn't move the measure.
+                DragHandler {
+                    enabled: sheetState.active
+                    target: null
+                    xAxis.enabled: false
+                    onCentroidChanged: if (active)
+                        sheetState.offset = Math.max(0, centroid.scenePosition.y - centroid.scenePressPosition.y)
+                    onActiveChanged: {
+                        if (active || !sheetState.active)
+                            return
+                        if (sheetState.offset > dropdownPopup.height / 4)
+                            dropdownPopup.close()
+                        else
+                            snapBack.start()
+                    }
+                }
+            }
+
+            NumberAnimation { id: snapBack; target: sheetState; property: "offset"; to: 0; duration: 150; easing.type: Easing.OutCubic }
         }
     }
 

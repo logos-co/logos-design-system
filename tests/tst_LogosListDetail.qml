@@ -203,4 +203,20 @@ TestCase {
         v.list = null
         compare(oldList.parent, null)
     }
+
+    // One taken out lets go of its place: it no longer follows its pane's
+    // size, so the app can put it elsewhere at a size of its own.
+    function test_a_replaced_pane_lets_go_of_its_place() {
+        const v = create(1000)
+        const oldDetail = v.detail, oldList = v.list
+        v.detail = createTemporaryObject(plainRect, root)
+        v.list = null
+        for (const old of [oldDetail, oldList]) {
+            compare(old.anchors.fill, null, old.objectName)
+            old.height = 50
+        }
+        v.height = 360
+        compare(oldDetail.height, 50, "not the detail pane's height")
+        compare(oldList.height, 50, "not the list pane's height")
+    }
 }

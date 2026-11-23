@@ -31,6 +31,13 @@ QtObject {
     // density, and in a phone-width view at any density.
     readonly property bool touch: density === "touch" || viewClass === "phone"
 
+    // ===== INPUT =====
+    // A keyboard is there to press shortcuts: on a desktop's operating system,
+    // at any width, as a desktop window narrowed to a phone's still has one;
+    // not on a phone's or a tablet's (Android, iOS). The host can say
+    // otherwise, as for a tablet with a keyboard attached.
+    property bool hasKeyboard: Qt.platform.os !== "android" && Qt.platform.os !== "ios"
+
     // ===== WIDTH CLASSES =====
     // Layout follows the width of the app's own area, not the screen:
     // phone < 600 ≤ tablet < 840 ≤ desktop (Android's window size classes).
@@ -47,6 +54,13 @@ QtObject {
     function pageMargin(width) {
         const cls = windowClass(width)
         return cls === "phone" ? spacing.large : cls === "tablet" ? spacing.xlarge : spacing.xxlarge
+    }
+    // The narrowest cell of a tile in a catalogue `width` wide, a grid's
+    // minimum cell width: three across a phone, more as it widens.
+    function tileWidth(width) {
+        const cls = windowClass(width)
+        return cls === "phone" ? layouts.cardGrid.tileWidthPhone
+             : cls === "tablet" ? layouts.cardGrid.tileWidthTablet : layouts.cardGrid.tileWidthDesktop
     }
 
     // ===== WHAT COVERS THE WINDOW'S EDGES =====

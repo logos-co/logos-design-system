@@ -25,6 +25,11 @@ QtObject {
         readonly property int labelWidth: 200
     }
 
+    readonly property QtObject itemLayout: QtObject {
+        readonly property int minimumContentWidth: 120
+        readonly property int lineSpacing: 4
+    }
+
     readonly property QtObject listDetail: QtObject {
         readonly property int tabletListWidth: 320
         readonly property int desktopListWidth: 360
@@ -39,8 +44,14 @@ QtObject {
         readonly property int width: 320
     }
 
+    readonly property QtObject sidebarLayout: QtObject {
+        readonly property int sideWidth: 200
+        readonly property int minimumContentWidth: 560
+    }
+
     readonly property QtObject sections: QtObject {
-        readonly property int listWidth: 240
+        readonly property int listWidth: 200
+        readonly property int tabletListWidth: 168
     }
 
     readonly property QtObject welcome: QtObject {

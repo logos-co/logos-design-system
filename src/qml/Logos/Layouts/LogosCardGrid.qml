@@ -12,11 +12,12 @@ import Logos.Theme
 //
 // Public API:
 //     minimumCellWidth    a card's narrowest (default cardGrid.statCardWidth);
-//                         for a catalogue of tiles, cardGrid.tileWidth*
+//                         for a catalogue of tiles, Theme.tileWidth(width)
 //     maximumColumns      at most this many columns; 0 (default) for no limit
 //     balanced            no lone card on the last row (default true); false for
 //                         a catalogue, where a partly filled last row is normal
 //     maximumWidth        the content's widest (default cardGrid.maximumWidth)
+//     spacing             between the cards, across and down (default Theme.spacing.large)
 //     columns             read-only; the columns in use
 //     content (default)   the cards; a Repeater's are counted too
 //
@@ -33,6 +34,7 @@ Item {
     property int maximumColumns: 0
     property bool balanced: true
     property real maximumWidth: Theme.layouts.cardGrid.maximumWidth
+    property real spacing: Theme.spacing.large
     readonly property int columns: d.columns
     default property alias content: grid.data
 
@@ -81,7 +83,7 @@ Item {
         x: (root.width - width) / 2
         width: d.contentWidth
         columns: d.columns
-        columnSpacing: Theme.spacing.large
-        rowSpacing: Theme.spacing.large
+        columnSpacing: root.spacing
+        rowSpacing: root.spacing
     }
 }

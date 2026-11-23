@@ -677,10 +677,14 @@ Rectangle {
     Component {
         id: _defaultEmptyDelegate
 
+        // Wraps inside a narrow table rather than run past its sides.
         LogosText {
+            width: Math.min(implicitWidth, root.width - 2 * Theme.pageMargin(root.width))
             text: root.emptyText
             color: Theme.palette.textSecondary
             font.pixelSize: Theme.typography.primaryText
+            horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.Wrap
         }
     }
 

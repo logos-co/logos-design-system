@@ -38,6 +38,14 @@ TestCase {
         compare(Theme.pageMargin(1280), Theme.spacing.xxlarge)
     }
 
+    function test_tileWidth() {
+        compare(Theme.tileWidth(390), Theme.layouts.cardGrid.tileWidthPhone)
+        compare(Theme.tileWidth(700), Theme.layouts.cardGrid.tileWidthTablet)
+        compare(Theme.tileWidth(1280), Theme.layouts.cardGrid.tileWidthDesktop)
+        // Three across a phone, from its narrowest, inside the page margins.
+        compare(Math.floor((360 - 2 * Theme.pageMargin(360)) / Theme.tileWidth(360)), 3)
+    }
+
     // Until the host says otherwise, a view is a desktop one.
     function test_unknownViewWidthIsDesktop() {
         compare(Theme.viewWidth, 0)

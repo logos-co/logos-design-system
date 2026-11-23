@@ -61,6 +61,7 @@ Control {
             text: root.placeholderText
             color: root.placeholderTextColor
             font.pixelSize: Theme.typography.secondaryText
+            elide: Text.ElideRight
             visible: input.text.length === 0
         }
 

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtTest
 
 import Logos.Controls
@@ -259,6 +260,43 @@ TestCase {
         const area = createRendered(badgeOverClickable)
         mouseClick(area.badge)
         compare(area.clicks, 1)
+    }
+
+    // At touch density too: the tile's tap is the tile's.
+    function test_touch_tip_inside_a_clickable_lets_the_click_through() {
+        ThemeManager.setDensity("touch")
+        const area = createRendered(badgeOverClickable)
+        mouseClick(area.badge)
+        compare(area.clicks, 1)
+    }
+
+    // A cut-off label in a row that is a button: Basecamp's app list. Its tip
+    // left the row neither its tap nor its long press, the row's menu.
+    Component {
+        id: labelInButton
+        ItemDelegate {
+            property int clicks: 0
+            property int holds: 0
+            readonly property alias tip: tooltip
+            width: 240
+            height: 48
+            onClicked: clicks++
+            onPressAndHold: holds++
+            contentItem: LogosText {
+                text: "A long name"
+                LogosToolTip { id: tooltip; text: "A long name, in full" }
+            }
+        }
+    }
+
+    function test_touch_tip_inside_a_button_leaves_it_its_presses() {
+        ThemeManager.setDensity("touch")
+        const row = createRendered(labelInButton)
+        mouseClick(row)
+        compare(row.clicks, 1)
+        holdOn(row)
+        compare(row.holds, 1)
+        verify(!row.tip.opened)
     }
 
     function test_leaving_touch_density_lets_a_click_through_again() {

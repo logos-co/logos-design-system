@@ -55,6 +55,19 @@ TestCase {
     }
     Component { id: plainRect; Rectangle {} }
 
+    Component {
+        id: withActionShownLater
+        LogosSidePanel {
+            id: shownLater
+            property bool more: false
+            height: 400
+            title: "wallet"
+            content: Rectangle {}
+            panel: Rectangle {}
+            panelActions: [ Rectangle { implicitWidth: 80; implicitHeight: 40; color: "#ff0000"; visible: shownLater.more } ]
+        }
+    }
+
     function cleanup() {
         Theme.keyboardHeight = 0
         Theme.safeAreaBottom = 0
@@ -121,6 +134,25 @@ TestCase {
         compare(v.panelPaneItem.width, 390)
     }
 
+    // Beside the content, a panel framed as a card keeps a space from it and
+    // needs no hairline; on a phone, as the page, it fills the width.
+    function test_spacing_and_divider() {
+        const v = create(1000, { panelOpen: true, spacing: 12, divider: false })
+        compare(v.contentPaneItem.width, 1000 - Theme.layouts.sidePanel.width - 12)
+        compare(v.panelFrameItem.mapToItem(v, 0, 0).x, 1000 - Theme.layouts.sidePanel.width)
+        verify(!v.dividerItem.visible)
+        v.width = 390
+        compare(v.panelPaneItem.width, 390)
+        v.panelOpen = false
+        compare(v.contentPaneItem.width, 390, "closed, the content has it all")
+    }
+
+    function test_a_hairline_beside_the_content_by_default() {
+        const v = create(1000, { panelOpen: true })
+        verify(v.dividerItem.visible)
+        compare(v.contentPaneItem.width, 1000 - Theme.layouts.sidePanel.width)
+    }
+
     function test_content_and_panel_go_into_their_panes() {
         const v = create(1000, { panelOpen: true })
         compare(v.content.parent, v.contentPaneItem)
@@ -138,6 +170,22 @@ TestCase {
         compare(replacement.parent, v.panelPaneItem)
         v.content = null
         compare(oldContent.parent, null)
+    }
+
+    // One taken out lets go of its place: it no longer follows its pane's
+    // size, so the app can put it elsewhere at a size of its own.
+    function test_a_replaced_item_lets_go_of_its_place() {
+        const v = create(1000, { panelOpen: true })
+        const oldPanel = v.panel, oldContent = v.content
+        v.panel = createTemporaryObject(plainRect, root)
+        v.content = null
+        for (const old of [oldPanel, oldContent]) {
+            compare(old.anchors.fill, null, old.objectName)
+            old.height = 50
+        }
+        v.height = 360
+        compare(oldPanel.height, 50, "not the panel's height")
+        compare(oldContent.height, 50, "not the content pane's height")
     }
 
     function test_escape_and_back_close_the_panel_data() {
@@ -207,6 +255,20 @@ TestCase {
         verify(v.contentPaneItem.visible)
     }
 
+    // Where the host draws the way back, on a phone the bar only names the
+    // panel: one way back. Beside the content ✕ still closes it.
+    function test_back_in_host_leaves_the_bar_its_title() {
+        const phone = createTemporaryObject(withActions, root, { width: 390, panelOpen: true, backInHost: true })
+        waitForRendering(phone)
+        verify(phone.headerItem.visible)
+        compare(phone.headerItem.titleItem.text, "wallet")
+        verify(!phone.headerItem.backButtonItem.visible)
+
+        const beside = createTemporaryObject(withActions, root, { width: 1000, panelOpen: true, backInHost: true })
+        waitForRendering(beside)
+        verify(beside.closeButtonItem.visible)
+    }
+
     // Beside the content a row across the top of the panel, at their own widths.
     function test_beside_the_actions_are_a_row_at_the_top() {
         const v = createTemporaryObject(withActions, root, { width: 1000, panelOpen: true })
@@ -230,6 +292,48 @@ TestCase {
         compare(install.width, remove.width)
         verify(install.mapToItem(v, 0, 0).x < remove.mapToItem(v, 0, 0).x, "the main one first")
         compare(v.panelPaneItem.mapToItem(v, 0, 0).y + v.panelPaneItem.height, bar.mapToItem(v, 0, 0).y)
+    }
+
+    // Actions that are all hidden, as a row's with none to offer, leave no bar
+    // and no row: on a phone the panel had an empty band at the bottom. One
+    // shown again brings it back.
+    function test_hidden_actions_leave_no_bar_data() {
+        return [ { tag: "phone", width: 390 }, { tag: "desktop", width: 1000 } ]
+    }
+
+    function test_hidden_actions_leave_no_bar(data) {
+        const v = createTemporaryObject(withActions, root, { width: data.width, panelOpen: true })
+        waitForRendering(v)
+        v.panelActions[0].visible = false
+        v.panelActions[1].visible = false
+        waitForRendering(v)
+        compare(v.actionBarItem.height, 0)
+        compare(v.actionRowItem.height, 0)
+        const pane = v.panelPaneItem
+        compare(pane.mapToItem(v, 0, 0).y, v.headerItem.height, "right under the page bar")
+        compare(pane.mapToItem(v, 0, 0).y + pane.height, v.height, "down to the bottom")
+
+        v.panelActions[0].visible = true
+        waitForRendering(v)
+        verify((data.width < 600 ? v.actionBarItem : v.actionRowItem).height > 0)
+    }
+
+    // An action hidden in the row and shown once in the bar, or the other way
+    // round, is drawn, not only placed.
+    function test_an_action_shown_after_moving_is_drawn_data() {
+        return [ { tag: "row to bar", from: 1000, to: 390 }, { tag: "bar to row", from: 390, to: 1000 } ]
+    }
+
+    function test_an_action_shown_after_moving_is_drawn(data) {
+        const v = createTemporaryObject(withActionShownLater, root, { width: data.from, panelOpen: true })
+        waitForRendering(v)
+        v.width = data.to
+        waitForRendering(v)
+        v.more = true
+        waitForRendering(v)
+        const action = v.panelActions[0]
+        const centre = action.mapToItem(root, action.width / 2, action.height / 2)
+        compare(String(grabImage(root).pixel(Math.round(centre.x), Math.round(centre.y))), String(action.color))
     }
 
     // Widened again, the buttons go back to their own widths in the row.

@@ -44,6 +44,17 @@ TestCase {
     Component { id: rejectedSpy; SignalSpy { signalName: "rejected" } }
 
     Component {
+        id: withActionsShownLater
+        LogosDialog {
+            id: shownLater
+            property bool more: false
+            title: "Install?"
+            leftActions: [ Rectangle { implicitWidth: 80; implicitHeight: 40; color: "#0000ff"; visible: shownLater.more } ]
+            rightActions: [ Rectangle { implicitWidth: 80; implicitHeight: 40; color: "#ff0000"; visible: shownLater.more } ]
+        }
+    }
+
+    Component {
         id: placedByTheApp
         LogosDialog {
             anchors.centerIn: parent
@@ -199,6 +210,49 @@ TestCase {
         tryCompare(cancel, "width", d.footerItem.width - 2 * Theme.spacing.large)
         compare(remove.width, cancel.width)
         verify(remove.mapToItem(d.footerItem, 0, 0).y > cancel.mapToItem(d.footerItem, 0, 0).y)
+    }
+
+    // Actions hidden at first are drawn once shown, before it opens or while
+    // it is open, not only placed.
+    function test_actions_shown_later_are_drawn_data() {
+        return [{ tag: "before it opens", whileOpen: false }, { tag: "while open", whileOpen: true }]
+    }
+
+    function test_actions_shown_later_are_drawn(data) {
+        const d = createTemporaryObject(withActionsShownLater, phoneHost)
+        d.more = !data.whileOpen
+        d.open()
+        tryCompare(d, "opened", true)
+        d.more = true
+        tryCompare(d, "y", settledY(d))
+        waitForRendering(root)
+        const image = grabImage(root)
+        for (const action of [d.leftActions[0], d.rightActions[0]]) {
+            const centre = action.mapToItem(root, action.width / 2, action.height / 2)
+            compare(String(image.pixel(Math.round(centre.x), Math.round(centre.y))), String(action.color))
+        }
+    }
+
+    // Its parent leaves the window and goes, as a list's row does under a
+    // refresh: after the dialog was a sheet, or while it is one.
+    function test_its_parent_goes_away_cleanly_data() {
+        return [{ tag: "closed", open: false }, { tag: "open", open: true }]
+    }
+
+    function test_its_parent_goes_away_cleanly(data) {
+        failOnWarning(/TypeError/)
+        const host = hostComponent.createObject(root, { width: 390, height: 300 })
+        const d = placedByItself.createObject(host)
+        d.open()
+        tryCompare(d, "opened", true)
+        verify(d.sheet)
+        if (!data.open) {
+            d.close()
+            tryCompare(d, "visible", false)
+        }
+        host.parent = null
+        host.destroy()
+        wait(50)
     }
 
     function test_widening_turns_a_sheet_into_a_centred_dialog() {

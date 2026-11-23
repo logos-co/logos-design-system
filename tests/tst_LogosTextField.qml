@@ -40,6 +40,14 @@ TestCase {
         ThemeManager.setDensity("")
     }
 
+    // A placeholder longer than the field ends in "…", not cut mid-letter.
+    function test_long_placeholder_ends_in_an_ellipsis() {
+        field.placeholderText = "https://example.com/a/long/path/to/its/logos-repo.json"
+        verify(field.placeholderItem.truncated)
+        field.placeholderText = "Enter text"
+        verify(!field.placeholderItem.truncated)
+    }
+
     function test_text_alias_get_set() {
         field.text = "hello"
         compare(field.text, "hello")

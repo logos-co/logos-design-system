@@ -44,6 +44,19 @@ TestCase {
     }
 
     Component { id: itemComp; LogosMenuItem {} }
+
+    Component {
+        id: holderComp
+        Item {
+            width: 40
+            height: 40
+            readonly property alias menu: heldMenu
+            LogosMenu {
+                id: heldMenu
+                LogosMenuItem { text: "Reload" }
+            }
+        }
+    }
     Component { id: spyComp; SignalSpy {} }
 
     function cleanup() {
@@ -164,6 +177,27 @@ TestCase {
         compare(last.height, Theme.controls.menuItem.height)
         compare(menu.height, menu.implicitHeight)
         verify(last.mapToItem(overlayOf(menu), 0, last.height).y <= overlayOf(menu).height - menu.bottomPadding + 0.5)
+    }
+
+    // The item it is the menu of goes away, and the menu with it, as a list's
+    // row does under a refresh: after it was a sheet, or while it is one. The
+    // sheet's place followed the window's overlay, which is then gone.
+    function test_its_item_goes_away_cleanly_data() {
+        return [{ tag: "closed", open: false }, { tag: "open", open: true }]
+    }
+
+    function test_its_item_goes_away_cleanly(data) {
+        failOnWarning(/TypeError/)
+        const holder = holderComp.createObject(root)
+        holder.menu.popupUnder(holder)
+        tryCompare(holder.menu, "opened", true)
+        settled(holder.menu)
+        if (!data.open)
+            closeAndWait(holder.menu)
+        // Out of the window first, as a view's delegate leaves it.
+        holder.parent = null
+        holder.destroy()
+        wait(50)
     }
 
     function test_closed_it_sizes_itself_again() {
