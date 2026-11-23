@@ -41,6 +41,11 @@ fields, rows, checkboxes (the box keeps its size inside a transparent
 margin), the page bar's ‹, a table's checkbox cells. A long press opens a
 tooltip, so never put something only in a tooltip.
 
+Input follows the platform, not the width. `Theme.hasKeyboard` is false on
+Android and iOS, and a host can set it, as for a tablet with a keyboard
+attached; a search's shortcut hint ("Ctrl+K") shows only where it is true,
+so a desktop window narrowed to a phone's width keeps it.
+
 Read sizes from `Theme.controls.*` and `Theme.size.*`, never write them as
 numbers: that is how a control gets its touch size.
 

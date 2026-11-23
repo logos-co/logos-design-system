@@ -20,7 +20,7 @@ import Logos.Controls
 //                           for one that says the title again (default true)
 //     searchEnabled         the page has a search
 //     searchPlaceholder     its placeholder
-//     searchShortcutHint    a keyboard shortcut shown in it beside the title, e.g. "Ctrl+K"
+//     searchShortcutHint    a keyboard shortcut shown in it, e.g. "Ctrl+K", where a keyboard is
 //     searchWidth           its width beside the title (default Theme.controls.search.width)
 //     searchText            read-only; the query, "" while searchEnabled is false
 //     openSearch([query])   focus the search, opening it on a phone, its query
@@ -123,7 +123,7 @@ Item {
             visible: root.searchEnabled
             folds: d.phone
             placeholderText: root.searchPlaceholder
-            shortcutHint: folds ? "" : root.searchShortcutHint
+            shortcutHint: root.searchShortcutHint
             Layout.row: 0
             Layout.column: d.searching ? 0 : 1
             Layout.columnSpan: d.searching ? 2 : 1

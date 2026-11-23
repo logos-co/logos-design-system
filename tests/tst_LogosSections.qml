@@ -145,14 +145,21 @@ TestCase {
         compare(s.searchText, "")
     }
 
-    // A keyboard shortcut is shown beside the list, not on a phone.
-    function test_shortcut_hint_beside_the_list_only() {
+    // A keyboard shortcut shows wherever a keyboard is: beside the list, and
+    // in the search open across a narrow desktop window's back row; not
+    // without one.
+    function test_shortcut_hint_where_a_keyboard_is() {
         const s = create(1000, { searchShortcutHint: "Ctrl+K" })
         s.currentIndex = 1
-        compare(s.searchItem.shortcutHint, "Ctrl+K")
+        const hint = s.searchItem.searchBarItem.shortcutItem
+        verify(hint.visible, "beside the list")
         s.width = 390
         verify(s.showingSection)
-        compare(s.searchItem.shortcutHint, "")
+        s.openSearch()
+        tryVerify(() => hint.visible, 2000, "open, in a phone-wide window with a keyboard")
+        Theme.hasKeyboard = false
+        verify(!hint.visible, "not without a keyboard")
+        Theme.hasKeyboard = true
     }
 
     // Given a query, it searches for that, open on a phone.

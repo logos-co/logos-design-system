@@ -269,7 +269,7 @@ Item {
                 visible: d.searchShown
                 folds: !root.twoPane
                 placeholderText: root.searchPlaceholder
-                shortcutHint: folds ? "" : root.searchShortcutHint
+                shortcutHint: root.searchShortcutHint
                 Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
                 Layout.preferredWidth: folds ? -1 : root.searchWidth
                 Layout.maximumWidth: folds ? Number.POSITIVE_INFINITY

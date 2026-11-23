@@ -173,11 +173,19 @@ TestCase {
         compare(h.searchText, "chat")
     }
 
-    function test_shortcut_hint_beside_the_title_only() {
+    // A keyboard's shortcut shows wherever a keyboard is: beside the title,
+    // and in the search open across a narrow desktop window's title line;
+    // not without one.
+    function test_shortcut_hint_where_a_keyboard_is() {
         const h = create(1100, { searchShortcutHint: "Ctrl+K" })
-        compare(h.searchItem.shortcutHint, "Ctrl+K")
+        const hint = h.searchItem.searchBarItem.shortcutItem
+        verify(hint.visible, "beside the title")
         h.width = 390
-        compare(h.searchItem.shortcutHint, "")
+        h.openSearch()
+        tryVerify(() => hint.visible, 2000, "open, in a phone-wide window with a keyboard")
+        Theme.hasKeyboard = false
+        verify(!hint.visible, "not without a keyboard")
+        Theme.hasKeyboard = true
     }
 
     function test_openSearch_data() {
