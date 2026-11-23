@@ -68,6 +68,33 @@ TestCase {
         }
     }
 
+    // A spacing bound to a token settles once the tabs are in.
+    Component {
+        id: boundSpacing
+        LogosTabBar {
+            spacing: Theme.spacing.large
+            LogosTabButton { text: "All" }
+            LogosTabButton { text: "Installed" }
+            LogosTabButton { text: "Not Installed" }
+        }
+    }
+
+    // The bar's implicit width is its tabs' and the spacing between them; with
+    // a bound spacing it moved under its own binding, a binding loop.
+    function test_a_bound_spacing_makes_no_binding_loop() {
+        failOnWarning(/Binding loop/)
+        const b = createTemporaryObject(boundSpacing, root)
+        waitForRendering(b)
+        let tabs = 0
+        for (let i = 0; i < b.contentChildren.length; ++i)
+            tabs += b.contentChildren[i].implicitWidth
+        fuzzyCompare(b.implicitWidth, tabs + 2 * Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5)
+        b.width = 600
+        waitForRendering(b)
+        fuzzyCompare(b.implicitWidth, tabs + 2 * Theme.spacing.large + b.leftPadding + b.rightPadding, 0.5,
+                     "not the widths it lays the tabs out at")
+    }
+
     function init() {
         bar.indicatorColor = Theme.palette.primary
         bar.indicatorHeight = 3

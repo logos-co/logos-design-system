@@ -143,10 +143,16 @@ Item {
                 Theme.scrollIntoView(root.Window.window.activeFocusItem, scroll)
         }
         property bool complete: false
-        // One page per step; a step without one would show nothing.
+        // One page per step; a step without one would show nothing. Checked
+        // again once the change is through: a step and its page come and go
+        // one after the other.
         readonly property bool mismatched: complete && pages.count !== count
         onMismatchedChanged: if (mismatched)
-            console.warn("LogosWizard: " + count + " steps but " + pages.count + " pages")
+            Qt.callLater(warnIfMismatched)
+        function warnIfMismatched() {
+            if (mismatched)
+                console.warn("LogosWizard: " + count + " steps but " + pages.count + " pages")
+        }
         readonly property int count: root.steps.length
         readonly property bool last: root.currentIndex >= count - 1
         readonly property bool hintShown: !root.canGoNext && root.nextHint !== ""

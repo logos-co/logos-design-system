@@ -35,7 +35,7 @@ Item {
     readonly property bool stacked: (stackOnPhone && Theme.windowClass(width) === "phone") || d.rowWidth > width
 
     implicitWidth: d.rowWidth
-    implicitHeight: stacked ? stack.implicitHeight : row.implicitHeight
+    implicitHeight: grid.implicitHeight
 
     QtObject {
         id: d
@@ -56,64 +56,52 @@ Item {
             return w + Math.max(0, all.length - 1) * Theme.spacing.small
         }
 
-        onAllChanged: {
+        // The grid's cells: room before, between and after the two sides, as
+        // the alignment asks. A row, or a stack; never moved between two, as
+        // a Row hides for good an item it held hidden once it leaves (Qt
+        // culls it).
+        readonly property Item before: Item {
+            Layout.fillWidth: true
+            visible: !root.stacked && (root.alignment === Qt.AlignHCenter || root.alignment === Qt.AlignRight)
+        }
+        readonly property Item between: Item {
+            Layout.fillWidth: true
+            visible: !root.stacked && root.alignment === Qt.AlignJustify
+        }
+        readonly property Item after: Item {
+            Layout.fillWidth: true
+            visible: !root.stacked && (root.alignment === Qt.AlignHCenter || root.alignment === Qt.AlignLeft)
+        }
+        readonly property var cells: {
+            const items = [before]
+            for (let i = 0; i < root.leftActions.length; ++i)
+                items.push(root.leftActions[i])
+            items.push(between)
+            for (let i = 0; i < root.rightActions.length; ++i)
+                items.push(root.rightActions[i])
+            items.push(after)
+            return items
+        }
+
+        onAllChanged: stretch()
+
+        // Full width in the stack, their own in the row.
+        function stretch() {
             for (let i = 0; i < all.length; ++i)
-                all[i].Layout.fillWidth = true
-        }
-
-        // The stack's layout sized and placed them; a Row sets only x, and keeps
-        // the size and y it finds.
-        function unstack() {
-            for (let i = 0; i < all.length; ++i) {
-                all[i].width = undefined
-                all[i].height = undefined
-                all[i].y = 0
-            }
+                all[i].Layout.fillWidth = root.stacked
         }
     }
 
-    onStackedChanged: if (!stacked) Qt.callLater(d.unstack)
+    onStackedChanged: d.stretch()
 
-    RowLayout {
-        id: row
-        visible: !root.stacked
-        anchors.fill: parent
-        spacing: Theme.spacing.small
-
-        Item {
-            visible: root.alignment === Qt.AlignHCenter || root.alignment === Qt.AlignRight
-            Layout.fillWidth: true
-        }
-
-        Row {
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            spacing: Theme.spacing.small
-            children: root.stacked ? [] : root.leftActions
-        }
-
-        Item {
-            visible: root.alignment === Qt.AlignJustify
-            Layout.fillWidth: true
-        }
-
-        Row {
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-            spacing: Theme.spacing.small
-            children: root.stacked ? [] : root.rightActions
-        }
-
-        Item {
-            visible: root.alignment === Qt.AlignHCenter || root.alignment === Qt.AlignLeft
-            Layout.fillWidth: true
-        }
-    }
-
-    ColumnLayout {
-        id: stack
-        visible: root.stacked
+    GridLayout {
+        id: grid
         anchors.left: parent.left
         anchors.right: parent.right
-        spacing: Theme.spacing.small
-        children: root.stacked ? d.all : []
+        y: root.stacked ? 0 : (root.height - height) / 2
+        flow: root.stacked ? GridLayout.TopToBottom : GridLayout.LeftToRight
+        rowSpacing: Theme.spacing.small
+        columnSpacing: Theme.spacing.small
+        children: d.cells
     }
 }

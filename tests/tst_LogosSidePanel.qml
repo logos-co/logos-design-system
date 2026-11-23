@@ -55,6 +55,19 @@ TestCase {
     }
     Component { id: plainRect; Rectangle {} }
 
+    Component {
+        id: withActionShownLater
+        LogosSidePanel {
+            id: shownLater
+            property bool more: false
+            height: 400
+            title: "wallet"
+            content: Rectangle {}
+            panel: Rectangle {}
+            panelActions: [ Rectangle { implicitWidth: 80; implicitHeight: 40; color: "#ff0000"; visible: shownLater.more } ]
+        }
+    }
+
     function cleanup() {
         Theme.keyboardHeight = 0
         Theme.safeAreaBottom = 0
@@ -230,6 +243,48 @@ TestCase {
         compare(install.width, remove.width)
         verify(install.mapToItem(v, 0, 0).x < remove.mapToItem(v, 0, 0).x, "the main one first")
         compare(v.panelPaneItem.mapToItem(v, 0, 0).y + v.panelPaneItem.height, bar.mapToItem(v, 0, 0).y)
+    }
+
+    // Actions that are all hidden, as a row's with none to offer, leave no bar
+    // and no row: on a phone the panel had an empty band at the bottom. One
+    // shown again brings it back.
+    function test_hidden_actions_leave_no_bar_data() {
+        return [ { tag: "phone", width: 390 }, { tag: "desktop", width: 1000 } ]
+    }
+
+    function test_hidden_actions_leave_no_bar(data) {
+        const v = createTemporaryObject(withActions, root, { width: data.width, panelOpen: true })
+        waitForRendering(v)
+        v.panelActions[0].visible = false
+        v.panelActions[1].visible = false
+        waitForRendering(v)
+        compare(v.actionBarItem.height, 0)
+        compare(v.actionRowItem.height, 0)
+        const pane = v.panelPaneItem
+        compare(pane.mapToItem(v, 0, 0).y, v.headerItem.height, "right under the page bar")
+        compare(pane.mapToItem(v, 0, 0).y + pane.height, v.height, "down to the bottom")
+
+        v.panelActions[0].visible = true
+        waitForRendering(v)
+        verify((data.width < 600 ? v.actionBarItem : v.actionRowItem).height > 0)
+    }
+
+    // An action hidden in the row and shown once in the bar, or the other way
+    // round, is drawn, not only placed.
+    function test_an_action_shown_after_moving_is_drawn_data() {
+        return [ { tag: "row to bar", from: 1000, to: 390 }, { tag: "bar to row", from: 390, to: 1000 } ]
+    }
+
+    function test_an_action_shown_after_moving_is_drawn(data) {
+        const v = createTemporaryObject(withActionShownLater, root, { width: data.from, panelOpen: true })
+        waitForRendering(v)
+        v.width = data.to
+        waitForRendering(v)
+        v.more = true
+        waitForRendering(v)
+        const action = v.panelActions[0]
+        const centre = action.mapToItem(root, action.width / 2, action.height / 2)
+        compare(String(grabImage(root).pixel(Math.round(centre.x), Math.round(centre.y))), String(action.color))
     }
 
     // Widened again, the buttons go back to their own widths in the row.

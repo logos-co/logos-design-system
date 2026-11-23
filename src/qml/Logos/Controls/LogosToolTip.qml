@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Templates as T
 
 import Logos.Theme
 
@@ -23,7 +24,9 @@ import Logos.Theme
 // At touch density, where there is no hover, a long-press on the parent opens
 // the tip and a tap closes it. On a Logos control that long-press is then not
 // also a click. Set `openOnLongPress: false` for a tip the control opens
-// itself. Don't let a tip be the only place something is said.
+// itself. Inside something else that takes presses, a button or a mouse area
+// such as a list's row, the presses stay its own and the tip is hover-only.
+// Don't let a tip be the only place something is said.
 //
 // The text is plain, as LogosText's is; set `textFormat: Text.StyledText` for
 // markup of your own.
@@ -132,7 +135,17 @@ ToolTip {
 
     QtObject {
         id: longPress
-        readonly property bool wanted: root.openOnLongPress && Theme.touch && !!root.parent && root.text.length > 0
+        // A handler on the parent would take the taps and long presses of a
+        // button or mouse area it is in. A Logos control opens its own tips.
+        readonly property bool insidePresses: {
+            for (let item = root.parent; item; item = item.parent)
+                if (item instanceof T.AbstractButton || item instanceof MouseArea
+                        || ("mouseAreaItem" in item && item.mouseAreaItem))
+                    return true
+            return false
+        }
+        readonly property bool wanted: root.openOnLongPress && Theme.touch && !!root.parent
+                                       && root.text.length > 0 && !insidePresses
         property QtObject handler: null
         onWantedChanged: sync()
 

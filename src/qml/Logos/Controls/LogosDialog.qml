@@ -114,40 +114,37 @@ Dialog {
             NumberAnimation { target: d; property: "offset"; to: root.height; duration: 150; easing.type: Easing.InCubic }
         }
 
-        readonly property var stacked: {
+        // The footer's grid: the left actions, room, the right ones. A row, or
+        // on a phone a stack; never moved between two, as a Row hides for good
+        // an item it held hidden once it leaves (Qt culls it).
+        readonly property Item gap: Item { Layout.fillWidth: true; visible: !d.phone }
+        readonly property var footerItems: {
             const items = []
             for (let i = 0; i < root.leftActions.length; ++i)
                 items.push(root.leftActions[i])
+            items.push(gap)
             for (let i = 0; i < root.rightActions.length; ++i)
                 items.push(root.rightActions[i])
             return items
         }
+        onFooterItemsChanged: stretch()
 
-        onStackedChanged: {
-            for (let i = 0; i < stacked.length; ++i)
-                stacked[i].Layout.fillWidth = true
+        // Full width in the stack, their own in the row.
+        function stretch() {
+            for (let i = 0; i < footerItems.length; ++i)
+                if (footerItems[i] !== gap)
+                    footerItems[i].Layout.fillWidth = phone
         }
 
         // A Binding wouldn't give the anchor back, so it is set again, live.
         onPhoneChanged: {
+            stretch()
             if (phone) {
                 root.anchors.centerIn = undefined
-            } else {
-                if (centredOn === "parent")
-                    root.anchors.centerIn = Qt.binding(() => root.parent)
-                else if (centredOn === "overlay")
-                    root.anchors.centerIn = Qt.binding(() => root.Overlay.overlay)
-                Qt.callLater(unstack)
-            }
-        }
-
-        // The stack's layout sized and placed them; a Row sets only x, and keeps
-        // the size and y it finds.
-        function unstack() {
-            for (let i = 0; i < stacked.length; ++i) {
-                stacked[i].width = undefined
-                stacked[i].height = undefined
-                stacked[i].y = 0
+            } else if (centredOn === "parent") {
+                root.anchors.centerIn = Qt.binding(() => root.parent)
+            } else if (centredOn === "overlay") {
+                root.anchors.centerIn = Qt.binding(() => root.Overlay.overlay)
             }
         }
     }
@@ -320,48 +317,21 @@ Dialog {
     footer: Rectangle {
         id: footerWrap
         color: "transparent"
-        visible: root.leftActions.length > 0 || root.rightActions.length > 0
-        implicitHeight: visible
-                        ? (d.phone ? stack.implicitHeight : footerLayout.implicitHeight)
-                          + Theme.spacing.medium + Theme.spacing.large + d.safeArea
-                        : 0
+        visible: d.hasActions
+        implicitHeight: visible ? actions.implicitHeight + Theme.spacing.medium + Theme.spacing.large + d.safeArea : 0
 
-        RowLayout {
-            id: footerLayout
-            visible: !d.phone
-            anchors.fill: parent
-            anchors.leftMargin: Theme.spacing.large
-            anchors.rightMargin: Theme.spacing.large
-            anchors.topMargin: Theme.spacing.medium
-            anchors.bottomMargin: Theme.spacing.large
-            spacing: Theme.spacing.small
-
-            Row {
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-                spacing: Theme.spacing.small
-                children: d.phone ? [] : root.leftActions
-            }
-
-            Item { Layout.fillWidth: true }
-
-            Row {
-                Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
-                spacing: Theme.spacing.small
-                children: d.phone ? [] : root.rightActions
-            }
-        }
-
-        ColumnLayout {
-            id: stack
-            visible: d.phone
+        GridLayout {
+            id: actions
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.leftMargin: Theme.spacing.large
             anchors.rightMargin: Theme.spacing.large
             anchors.topMargin: Theme.spacing.medium
-            spacing: Theme.spacing.small
-            children: d.phone ? d.stacked : []
+            flow: d.phone ? GridLayout.TopToBottom : GridLayout.LeftToRight
+            rowSpacing: Theme.spacing.small
+            columnSpacing: Theme.spacing.small
+            children: d.footerItems
         }
     }
 }

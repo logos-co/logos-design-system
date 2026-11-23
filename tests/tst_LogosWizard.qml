@@ -36,6 +36,17 @@ TestCase {
         }
     }
 
+    // A step that comes and goes with its page, as an optional one does.
+    Component {
+        id: optionalStep
+        LogosWizard {
+            property bool extra: true
+            steps: extra ? ["A", "B"] : ["A"]
+            Item {}
+            Repeater { model: extra ? 1 : 0; Item {} }
+        }
+    }
+
     Component {
         id: welcomeScreen
         Rectangle { objectName: "welcome" }
@@ -230,8 +241,19 @@ TestCase {
     function test_it_warns_when_steps_and_pages_differ() {
         ignoreWarning(/LogosWizard: 3 steps but 2 pages/)
         createTemporaryObject(shortOfPages, root, { width: 900, height: 500 })
+        wait(0)
         failOnWarning(/LogosWizard:/)
         create(1000)
+    }
+
+    function test_a_step_and_its_page_change_together_without_a_warning() {
+        failOnWarning(/LogosWizard:/)
+        const w = createTemporaryObject(optionalStep, root, { width: 900, height: 500 })
+        w.extra = false
+        wait(0)
+        w.extra = true
+        wait(0)
+        compare(w.steps.length, 2)
     }
 
     // Esc and the phone's Back key go back, to the welcome screen in the end;
