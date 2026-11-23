@@ -25,6 +25,11 @@ QtObject {
         readonly property int labelWidth: 200
     }
 
+    readonly property QtObject itemLayout: QtObject {
+        readonly property int minimumContentWidth: 120
+        readonly property int lineSpacing: 4
+    }
+
     readonly property QtObject listDetail: QtObject {
         readonly property int tabletListWidth: 320
         readonly property int desktopListWidth: 360

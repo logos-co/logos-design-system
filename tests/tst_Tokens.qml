@@ -112,6 +112,7 @@ TestCase {
             { tag: "cardGrid",   group: "cardGrid",   values: { maximumWidth: 1200, statCardWidth: 150, tileWidthPhone: 104, tileWidthTablet: 140, tileWidthDesktop: 180 } },
             { tag: "cardPair",   group: "cardPair",   values: { minimumMainWidth: 400, minimumSideWidth: 220 } },
             { tag: "form",       group: "form",       values: { maximumWidth: 720, labelWidth: 200 } },
+            { tag: "itemLayout", group: "itemLayout", values: { minimumContentWidth: 120, lineSpacing: 4 } },
             { tag: "listDetail", group: "listDetail", values: { tabletListWidth: 320, desktopListWidth: 360 } },
             { tag: "pageBar",    group: "pageBar",    values: { height: 56, phoneHeight: 44 } },
             { tag: "sections",   group: "sections",   values: { listWidth: 200, tabletListWidth: 168 } },

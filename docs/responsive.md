@@ -62,6 +62,7 @@ In a phone-wide view the title sizes step down; body text stays.
 | `LogosListDetail` | the list, or the open item's detail in its place; ‹ goes back | list (320) beside the detail | list (360) beside the detail |
 | `LogosSidePanel` | the content, or the open panel in its place; ‹ goes back | the panel (320) beside the content, which narrows for it; ✕ closes it | same |
 | `LogosSections` | the list of sections is the page, a card of rows; a tap opens the section under a ‹ Title row, which names a level deeper and goes up one. **No ☰ drawer** | title, subtitle and accessory (a search) over the list (168) beside the section's card; a level deeper puts the ‹ row at the top of the card | the same, list 200 |
+| `LogosItemLayout` | one line of an item while it fits; else meta goes under the content, to the item's end, wrapping, and leading and trailing stay at the ends, at the top | by what fits, not the class | same |
 | `LogosCardGrid` | as many equal columns as fit at `minimumCellWidth`, from its own width; never one card alone on the last row (`balanced`); content at most 1200, centred | same | same |
 | `LogosCardPair` | main card above its side card | side by side 2 : 1 once both are usable (400 and 220) | same |
 | `LogosFormLayout` | one field per row, labels above, buttons stacked full width, main last | narrow fields in pairs | labels beside the controls, at most 720 wide, centred |
@@ -137,6 +138,25 @@ and `backRequested()` goes up one level; beside the list the row shows at the
 top of the section's card. There is one way back, so the levels draw no back
 of their own.
 
+A row, a header or a field and its button whose parts move under each other
+when they don't fit uses `LogosItemLayout` rather than its own width checks:
+it measures what fits, so it keeps one line wherever that works, at any
+width class.
+
+```qml
+LogosItemLayout {
+    width: parent.width
+    leading: LogosTile { label: publisher.name; interactive: false }
+    ColumnLayout {
+        LogosText { Layout.fillWidth: true; text: publisher.name; elide: Text.ElideRight }
+        LogosText { Layout.fillWidth: true; text: publisher.url; elide: Text.ElideRight }
+    }
+    meta: [ LogosText { Layout.fillWidth: true; text: publisher.fingerprint; wrapMode: Text.Wrap },
+            LogosCopyButton { value: publisher.did } ]
+    trailing: LogosIconButton { iconSource: LogosIcons.trash }
+}
+```
+
 ## Controls that adapt
 
 - **`LogosButtonRow`**: buttons side by side, or stacked full width on a phone
@@ -174,6 +194,9 @@ of their own.
   Use the layouts, `Layout.fillWidth`, or
   `Math.min(preferred, parent.width - 2 * Theme.pageMargin(parent.width))`.
 - **Read the window's width for layout.** Use the component's own.
+- **Branch on the width class to make things fit.** `narrow ? a : b` in a
+  page means a layout is missing; `LogosItemLayout` and the layouts above
+  measure what fits instead.
 - **Add a ☰ drawer** for navigation. Sections become a list the page goes back
   to; app-wide actions go in the page bar's ⋯.
 - **Rely on hover**, or put information only in a tooltip.

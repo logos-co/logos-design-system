@@ -20,6 +20,7 @@ qt_add_qml_module(logos_layouts_qml
         LogosCardPair.qml
         LogosFormField.qml
         LogosFormLayout.qml
+        LogosItemLayout.qml
         LogosWizard.qml
         LogosWelcome.qml
         PaneWithActions.qml

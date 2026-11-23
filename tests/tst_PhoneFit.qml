@@ -101,6 +101,23 @@ TestCase {
         }
     }
 
+    // A row whose key goes under the name on a phone, its button at the end.
+    Component {
+        id: itemLayout
+        LogosItemLayout {
+            leading: LogosTile { label: "Other publisher"; tileSize: 32; interactive: false }
+            ColumnLayout {
+                LogosText { Layout.fillWidth: true; text: "Other publisher"; elide: Text.ElideRight }
+                LogosText { Layout.fillWidth: true; text: "https://other.example · trusted since 2 Nov 2026"; elide: Text.ElideRight }
+            }
+            meta: [
+                LogosText { Layout.fillWidth: true; text: "AE21 6C2E F524 7A37"; wrapMode: Text.Wrap },
+                LogosCopyButton { value: "did:jwk:other" }
+            ]
+            trailing: LogosIconButton { iconSource: LogosIcons.trash; flat: true }
+        }
+    }
+
     // A section open a level deeper, under the one back row that names it.
     Component {
         id: sectionsLevel
@@ -332,6 +349,7 @@ TestCase {
             { tag: "LogosSections level", component: sectionsLevel },
             { tag: "LogosSections search", component: sectionsSearch },
             { tag: "LogosSections search open", component: sectionsSearchOpen },
+            { tag: "LogosItemLayout", component: itemLayout },
             { tag: "LogosCardGrid", component: cardGrid },
             { tag: "LogosCardPair", component: cardPair },
             { tag: "LogosFormLayout", component: form },

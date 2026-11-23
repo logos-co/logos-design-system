@@ -94,6 +94,7 @@ ApplicationWindow {
         { section: "Layouts (not designed)", title: "LogosCardGrid",        file: "LogosCardGridPage.qml" },
         { section: "Layouts (not designed)", title: "LogosCardPair",        file: "LogosCardPairPage.qml" },
         { section: "Layouts (not designed)", title: "LogosFormLayout",      file: "LogosFormLayoutPage.qml" },
+        { section: "Layouts (not designed)", title: "LogosItemLayout",      file: "LogosItemLayoutPage.qml" },
         { section: "Layouts (not designed)", title: "LogosListDetail",      file: "LogosListDetailPage.qml" },
         { section: "Layouts (not designed)", title: "LogosPageBar",         file: "LogosPageBarPage.qml" },
         { section: "Layouts (not designed)", title: "LogosSections",        file: "LogosSectionsPage.qml" },
