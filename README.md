@@ -55,7 +55,7 @@ The bars and panes a page is built from; controls go inside them. Each arranges 
 - `LogosOverflowRow` — a row of items, such as a toolbar's buttons, while they fit; otherwise ⋯ at its end, opening the app's menu with the same actions. It measures what fits, never the width class.
 - `LogosSections` — a page with several sections, such as an app's settings: a title and subtitle, a section's search on their right, and a list of pill rows beside the section's card from tablet width; on a phone the list is the page and a section opens under a "‹ Title" row, its search a 🔍 at the row's end that opens across it. A section a level deeper (a row's detail) names it in the same row, and back goes up one level; beside the list the row is at the top of the card. There is no ☰ drawer, and one way back.
 
-All are placeholders for now, under **Layouts (not designed)** in the storybook. [docs/responsive.md](docs/responsive.md) shows how a page is put together from them.
+All are placeholders for now, under **Layouts (not designed)** in the storybook. [docs/responsive.md](docs/responsive.md) shows how a page is put together from them. The storybook's **Reference app**, a wallet, puts them together from a phone to a desktop.
 
 #### Designed vs placeholder
 

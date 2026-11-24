@@ -103,7 +103,9 @@ ApplicationWindow {
         { section: "Layouts (not designed)", title: "LogosSidebarLayout",   file: "LogosSidebarLayoutPage.qml" },
         { section: "Layouts (not designed)", title: "LogosSidePanel",       file: "LogosSidePanelPage.qml" },
         { section: "Layouts (not designed)", title: "LogosWelcome",         file: "LogosWelcomePage.qml" },
-        { section: "Layouts (not designed)", title: "LogosWizard",          file: "LogosWizardPage.qml" }
+        { section: "Layouts (not designed)", title: "LogosWizard",          file: "LogosWizardPage.qml" },
+
+        { section: "Reference app", title: "Wallet", file: "ReferenceAppPage.qml" }
     ]
 
     ListModel {
