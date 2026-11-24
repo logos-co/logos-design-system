@@ -5,6 +5,12 @@ design system. The short version: build the page from `Logos.Layouts`, put
 `Logos.Controls` inside, never fix a width, and check it in the storybook's
 phone preview.
 
+The storybook's **Reference app** is a wallet built this way, one section per
+kind of page: a dashboard, a table with its rows' detail, a form and settings
+(`storybook/pages/reference/`). The `mobile-ready-ui` skill
+(`.claude/skills/mobile-ready-ui/SKILL.md`) is the checklist for an agent
+writing an app's screens.
+
 ## Width classes
 
 Layout follows the width of the app's own area, not the screen's. An app
@@ -228,6 +234,9 @@ LogosItemLayout {
   (`storybook/PhoneChecks.js`) on every layout and the adapting controls at
   390 px. A new layout or control that adapts to its width gets a scene there,
   and its own tests at each width class.
+- `tests/tst_ReferenceApp.qml` puts the reference app through every section
+  and level at 390, 700 (touch) and 1280 with the same checks: the way to test
+  a page that has states.
 - `tests/tst_StorybookPhoneFit.qml` loads every storybook page at 390 px and
   fails on anything past the sides, so the Preview shows no red. A demo at a
   fixed width takes `Layout.fillWidth` and `Layout.maximumWidth` instead of
