@@ -1,6 +1,7 @@
 #include <QtQuickTest>
 #include <QCoreApplication>
 #include <QDir>
+#include <QFile>
 #include <QFileInfo>
 #include <QLoggingCategory>
 #include <QQuickStyle>
@@ -20,6 +21,18 @@
 #ifndef QUICK_TEST_SOURCE_DIR
 #define QUICK_TEST_SOURCE_DIR ""
 #endif
+
+// Whether a qrc: URL names a file that ships, for tst_LogosIcons.qml: the
+// test binary has no SVG image plugin, so an Image can't tell.
+class Resources : public QObject
+{
+    Q_OBJECT
+public:
+    Q_INVOKABLE bool exists(const QUrl& url) const
+    {
+        return url.scheme() == QLatin1String("qrc") && QFile::exists(QLatin1Char(':') + url.path());
+    }
+};
 
 // C++-only theme API for tst_ThemeRegistry.qml.
 class ThemeTestHelper : public QObject
@@ -178,6 +191,8 @@ int main(int argc, char* argv[])
     static ThemeTestHelper themeTestHelper(installDir.path());
     qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeManager", &themeManager);
     qmlRegisterSingletonInstance("LogosTests", 1, 0, "ThemeTestHelper", &themeTestHelper);
+    static Resources resources;
+    qmlRegisterSingletonInstance("LogosTests", 1, 0, "Resources", &resources);
 
     const QByteArray sourceDirBytes = sourceDir.toUtf8();
     const char* sourceDirPtr = sourceDirBytes.isEmpty()

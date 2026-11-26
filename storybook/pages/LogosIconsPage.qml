@@ -61,6 +61,7 @@ Rectangle {
                     { name: "trash",   value: LogosIcons.trash },
                     { name: "more",    value: LogosIcons.more },
                     { name: "search",  value: LogosIcons.search },
+                    { name: "filter",  value: LogosIcons.filter },
                     { name: "close",   value: LogosIcons.close },
                     { name: "copy",    value: LogosIcons.copy },
                     { name: "check",   value: LogosIcons.check }

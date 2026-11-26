@@ -17,6 +17,7 @@ QtObject {
     readonly property url trash:    Qt.resolvedUrl("icons/delete.svg")
     readonly property url more:     Qt.resolvedUrl("icons/more.svg")
     readonly property url search:   Qt.resolvedUrl("icons/search.svg")
+    readonly property url filter:   Qt.resolvedUrl("icons/filter.svg")
     readonly property url close:    Qt.resolvedUrl("icons/close.svg")
     readonly property url copy:     Qt.resolvedUrl("icons/copy.svg")
     readonly property url check:    Qt.resolvedUrl("icons/check.svg")

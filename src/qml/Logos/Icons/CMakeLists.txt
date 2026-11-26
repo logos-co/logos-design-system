@@ -23,6 +23,7 @@ qt_add_qml_module(logos_icons_qml
         icons/close.svg
         icons/copy.svg
         icons/delete.svg
+        icons/filter.svg
         icons/grid.svg
         icons/install.svg
         icons/list.svg
