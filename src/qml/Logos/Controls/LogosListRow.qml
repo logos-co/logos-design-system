@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 // Its AbstractButton is the base of every style's switch and checkbox; the
 // QtQuick.Controls name doesn't match them in a type check.
@@ -38,7 +37,7 @@ import Logos.Controls
 // Example:
 //     LogosListRow { title: qsTr("Network"); value: qsTr("Testnet"); showChevron: true; onClicked: openNetwork() }
 //     LogosListRow { title: qsTr("Notifications"); accessory: LogosSwitch { checked: true } }
-AbstractButton {
+LogosAbstractButton {
     id: root
 
     property string title: ""
@@ -68,8 +67,6 @@ AbstractButton {
         readonly property bool hasIcon: root.iconSource.toString() !== ""
     }
 
-    hoverEnabled: true
-    focusPolicy: Qt.StrongFocus
     implicitHeight: Math.max(subtitle !== "" ? Theme.controls.listRow.subtitleHeight : Theme.controls.listRow.height,
                              implicitContentHeight + topPadding + bottomPadding)
     leftPadding: Theme.controls.listRow.paddingX
@@ -192,9 +189,5 @@ AbstractButton {
         anchors.leftMargin: root.leftPadding + (d.hasIcon ? Theme.controls.listRow.iconSize + contentRow.spacing : 0)
         height: Theme.size.borderWidth
         color: Theme.palette.borderSubtle
-    }
-
-    LongPressToolTips {
-        control: root
     }
 }

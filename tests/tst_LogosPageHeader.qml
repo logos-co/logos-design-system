@@ -32,6 +32,11 @@ TestCase {
         SignalSpy { signalName: "searchSubmitted" }
     }
 
+    Component {
+        id: backSpy
+        SignalSpy { signalName: "backRequested" }
+    }
+
     function init() {
         failOnWarning(/Binding loop/)
     }
@@ -277,5 +282,78 @@ TestCase {
         keyClick(Qt.Key_Return)
         compare(spy.count, 1)
         compare(spy.signalArguments[0][0], "chat")
+    }
+
+    // A page that pushed a level of its own: a ‹ before the title, the two
+    // the way back. The title moves right for it, never up or down.
+    function test_a_pushed_level_puts_a_back_before_the_title() {
+        const h = create(390, { shortTitle: "Packages" })
+        const spy = createTemporaryObject(backSpy, root, { target: h })
+        const title = h.titleItem
+        const x = xOf(title, h)
+        const y = yOf(title, h)
+        const height = h.implicitHeight
+        compare(h.backIconItem.visible, false)
+        mouseClick(title)
+        compare(spy.count, 0, "only a title")
+
+        h.canGoBack = true
+        waitForRendering(h)
+        verify(h.backIconItem.visible)
+        verify(xOf(h.backIconItem, h) < xOf(title, h), "before the title")
+        verify(xOf(title, h) > x, "the title after it")
+        compare(yOf(title, h), y, "not up or down")
+        compare(h.implicitHeight, height)
+        verify(h.backButtonItem.height >= Theme.size.touchTarget, "a touch target")
+        mouseClick(title)
+        compare(spy.count, 1)
+        mouseClick(h.backIconItem)
+        compare(spy.count, 2)
+
+        h.canGoBack = false
+        waitForRendering(h)
+        compare(h.backIconItem.visible, false)
+        compare(xOf(title, h), x)
+        compare(yOf(title, h), y)
+    }
+
+    // A page that turns its search off over the level: the 🔍 going moves
+    // nothing up or down either.
+    function test_the_title_line_holds_still_as_the_search_goes() {
+        const h = create(390, { shortTitle: "Packages" })
+        const y = yOf(h.titleItem, h)
+        const height = h.implicitHeight
+        h.canGoBack = true
+        h.searchEnabled = false
+        waitForRendering(h)
+        compare(yOf(h.titleItem, h), y)
+        compare(h.implicitHeight, height)
+    }
+
+    // Without a search, a phone's title line is a touch row all the same.
+    function test_a_phone_title_line_is_a_touch_row() {
+        const h = create(390, { searchEnabled: false, shortTitle: "Packages" })
+        compare(h.backButtonItem.height, Theme.size.touchTarget)
+        const y = yOf(h.titleItem, h)
+        const height = h.implicitHeight
+        h.canGoBack = true
+        waitForRendering(h)
+        compare(yOf(h.titleItem, h), y)
+        compare(h.implicitHeight, height)
+    }
+
+    // Wide, with a search field beside: the same, the subtitle as it was.
+    function test_a_pushed_level_on_a_wide_header() {
+        const h = create(1100)
+        const y = yOf(h.titleItem, h)
+        const height = h.implicitHeight
+        h.canGoBack = true
+        waitForRendering(h)
+        verify(h.backIconItem.visible)
+        compare(yOf(h.titleItem, h), y)
+        compare(h.implicitHeight, height)
+        verify(h.backButtonItem.height >= Theme.size.touchTarget, "a touch target all the same")
+        verify(h.subtitleItem.visible, "the subtitle as it was")
+        verify(xOf(h.searchItem, h) >= xOf(h.titleItem, h) + h.titleItem.implicitWidth, "the field clear of it")
     }
 }

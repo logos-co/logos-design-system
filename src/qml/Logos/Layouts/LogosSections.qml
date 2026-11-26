@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import Logos.Theme
@@ -174,7 +173,7 @@ Item {
     }
 
     // "‹ Where back goes": the whole row is the back target and names it.
-    component BackRow: AbstractButton {
+    component BackRow: LogosAbstractButton {
         id: backButton
 
         property string label: ""
