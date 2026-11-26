@@ -122,6 +122,18 @@ TestCase {
         compare(clicked.count, 1)
     }
 
+    // A tap on the switch itself is the switch's: it toggles once, and it
+    // isn't a tap on the row.
+    function test_a_tap_on_the_switch_is_the_switchs() {
+        const r = createRendered(switchRow)
+        const toggled = createTemporaryObject(spyComponent, root, { target: r.accessory, signalName: "toggled" })
+        const rowClicked = createTemporaryObject(spyComponent, root, { target: r, signalName: "clicked" })
+        mouseClick(r.accessory)
+        verify(r.accessory.checked)
+        compare(toggled.count, 1)
+        compare(rowClicked.count, 0)
+    }
+
     // A row tap is a tap on the switch, so a disabled switch stays as it is.
     function test_row_tap_leaves_a_disabled_accessory_alone() {
         const r = createRendered(disabledSwitchRow)
