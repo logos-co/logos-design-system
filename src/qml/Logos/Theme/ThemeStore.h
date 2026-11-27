@@ -36,6 +36,12 @@ public:
     QVariantMap palette() const { return m_palette; }
     QColor color(const QString& token) const { return m_palette.value(token).value<QColor>(); }
 
+    // Theme's sizes for C++ (QSS, widgets): "spacing.small", "size.controlLarge",
+    // "typography.primaryText". Only those the same in every view: a phone's
+    // titles and touch's badge text are QML's. 0 for an unknown token.
+    static QStringList metricTokens();
+    static int metric(const QString& token);
+
     // How big controls are: "compact", "comfortable" or "touch". The saved
     // choice, or the platform's default (touch on phones and tablets).
     static QStringList densities();

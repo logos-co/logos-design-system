@@ -98,6 +98,20 @@ QObject::connect(store, &Logos::ThemeStore::paletteChanged, w, apply);
 - `paletteChanged()` fires on a switch and when the current theme is
   reinstalled with other colours.
 
+Sizes come from the same header, so QSS and widgets use the same numbers as
+`Theme.spacing`, `Theme.size` and `Theme.typography`:
+
+```cpp
+const int pad = Logos::ThemeStore::metric("spacing.small");          // 8
+label->setStyleSheet(QStringLiteral("font-size: %1px;")
+    .arg(Logos::ThemeStore::metric("typography.primaryText")));       // 14
+```
+
+- `metric(token)` takes `"<group>.<name>"` as QML spells it; 0 for an unknown
+  token. `metricTokens()` lists them.
+- Only numbers that are the same in every view: a phone's titles and touch's
+  badge text change with the view, so they are QML's alone.
+
 Link the design system once per process: a second copy has its own store, so
 its views would not follow theme changes. The store detects that and logs a
 critical `logos.theme` error.

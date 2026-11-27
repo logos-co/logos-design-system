@@ -120,6 +120,24 @@ const QStringList& paletteTokenList()
     return v;
 }
 
+// Spacing.qml's, Sizes.qml's and Typography.qml's numbers that don't depend on
+// the view, for C++ (QSS, widgets), which tst_Metrics checks against the QML.
+struct Metric { const char* token; int value; };
+const Metric kMetrics[] = {
+    { "spacing.tiny", 4 }, { "spacing.small", 8 }, { "spacing.medium", 12 },
+    { "spacing.large", 16 }, { "spacing.xlarge", 20 }, { "spacing.xxlarge", 40 },
+    { "spacing.radiusTiny", 2 }, { "spacing.radiusSmall", 4 }, { "spacing.radiusMedium", 6 },
+    { "spacing.radiusLarge", 8 }, { "spacing.radiusXlarge", 16 }, { "spacing.radiusPill", 999 },
+    { "size.controlXSmall", 24 }, { "size.controlSmall", 32 }, { "size.controlMedium", 36 },
+    { "size.controlLarge", 40 }, { "size.controlXLarge", 44 },
+    { "size.iconXSmall", 12 }, { "size.iconSmall", 16 }, { "size.iconMedium", 20 },
+    { "size.borderWidth", 1 }, { "size.focusWidth", 2 }, { "size.touchTarget", 44 },
+    { "typography.weightRegular", 400 }, { "typography.weightMedium", 500 },
+    { "typography.weightBold", 700 },
+    { "typography.subtitleText", 16 }, { "typography.primaryText", 14 },
+    { "typography.secondaryText", 12 },
+};
+
 // Colours DarkTheme.qml derives from another one. A theme that sets the
 // source but not the derived colour gets it re-derived, not dark's.
 struct Derived { const char* token; const char* source; double alpha; };
@@ -338,6 +356,24 @@ void Logos::ThemeStore::setChoiceFile(const QString& path)
 QStringList Logos::ThemeStore::paletteTokens()
 {
     return paletteTokenList();
+}
+
+QStringList Logos::ThemeStore::metricTokens()
+{
+    QStringList l;
+    for (const Metric& m : kMetrics)
+        l << QLatin1String(m.token);
+    return l;
+}
+
+int Logos::ThemeStore::metric(const QString& token)
+{
+    for (const Metric& m : kMetrics) {
+        if (token == QLatin1String(m.token))
+            return m.value;
+    }
+    qCWarning(lcTheme) << "unknown metric" << token;
+    return 0;
 }
 
 void Logos::ThemeStore::addDirectory(const QString& dir)
