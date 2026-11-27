@@ -54,6 +54,8 @@ public:
             QDir(dir.filePath(sub)).removeRecursively();
         Logos::ThemeStore::instance()->rescan();
     }
+    Q_INVOKABLE QStringList metricTokens() const { return Logos::ThemeStore::metricTokens(); }
+    Q_INVOKABLE int metric(const QString& token) const { return Logos::ThemeStore::metric(token); }
     Q_INVOKABLE QString savedTheme() const
     {
         return QSettings(m_installDir + "/theme.ini", QSettings::IniFormat).value("theme").toString();
